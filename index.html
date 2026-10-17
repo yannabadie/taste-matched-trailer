@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Taste-Matched Trailer — Qloo Cultural Intelligence Agent</title>
+  <style>
+    :root {
+      --bg: #0C0F1A;
+      --card: #141929;
+      --card-alt: #1A2136;
+      --gold: #D8B982;
+      --gold-dim: #9E8354;
+      --text: #F2EFE9;
+      --muted: #A5AEBE;
+      --accent: #4E8EF7;
+      --green: #42C88A;
+      --border: rgba(216, 185, 130, 0.24);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, sans-serif;
+      line-height: 1.55;
+      padding-bottom: 4rem;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      background: radial-gradient(circle at top right, rgba(216, 185, 130, 0.12), transparent 60%);
+    }
+    .container { max-width: 1180px; margin: 0 auto; }
+    .badge {
+      display: inline-block;
+      background: rgba(216, 185, 130, 0.16);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-family: Georgia, serif;
+      font-size: 2.3rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      max-width: 780px;
+      font-size: 1.05rem;
+    }
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 880px) {
+      .grid-top, .grid-3 { grid-template-columns: 1fr !important; }
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.35rem;
+    }
+    .panel h2 {
+      font-family: Georgia, serif;
+      font-size: 1.25rem;
+      color: var(--gold);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+      margin-top: 0.75rem;
+    }
+    select, input, textarea {
+      width: 100%;
+      background: #090C15;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.94rem;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    button {
+      background: var(--gold);
+      color: #0C0F1A;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      font-weight: 700;
+      font-size: 0.94rem;
+      cursor: pointer;
+      transition: transform 0.1s ease, opacity 0.15s ease;
+    }
+    button:hover { opacity: 0.92; transform: translateY(-1px); }
+    button.secondary {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+    .pipeline-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .step-item {
+      background: var(--card-alt);
+      border-left: 3px solid var(--green);
+      padding: 0.55rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .step-item span.status { color: var(--green); font-weight: 600; font-size: 0.8rem; }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
+    .entity-card {
+      background: var(--card-alt);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 0.8rem;
+      margin-bottom: 0.7rem;
+    }
+    .entity-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .score-pill {
+      background: rgba(66, 200, 138, 0.16);
+      color: var(--green);
+      padding: 0.1rem 0.5rem;
+      border-radius: 99px;
+      font-size: 0.78rem;
+    }
+    .urn {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.74rem;
+      color: var(--gold-dim);
+      margin-bottom: 0.35rem;
+    }
+    .rationale { font-size: 0.84rem; color: var(--muted); }
+    .shots-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 0.8rem;
+    }
+    @media (max-width: 780px) { .shots-list { grid-template-columns: 1fr; } }
+    .shot-card {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .shot-top {
+      display: flex;
+      justify-content: space-between;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+    .shot-vo {
+      font-family: Georgia, serif;
+      font-style: italic;
+      color: var(--text);
+      margin: 0.45rem 0;
+      padding-left: 0.65rem;
+      border-left: 2px solid var(--gold);
+    }
+    .shot-prompt { font-size: 0.83rem; color: var(--muted); margin-bottom: 0.45rem; }
+    .shot-meta { font-size: 0.78rem; color: var(--green); }
+    .palette-row { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .swatch {
+      width: 28px; height: 28px; border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="badge">Qloo Agentic Hackathon · Cultural Taste Intelligence</div>
+      <h1>The Taste-Matched Trailer</h1>
+      <p class="subtitle">
+        An autonomous cultural director agent for authors & publishers: it extracts a manuscript's narrative DNA, queries the <strong>Qloo Cultural Taste Graph</strong> across books, cinema, and composers, and synthesizes an audience-calibrated <strong>LTX-2.5 Book-Trailer Production Brief</strong>.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid-top">
+      <section class="panel">
+        <h2>1. Manuscript & Qloo Agent Controls</h2>
+        <label for="presetSelect">Select Validated Manuscript Case (or enter custom synopsis below)</label>
+        <select id="presetSelect">
+          <option value="le-horla-maupassant">Case 1 — Le Horla (Guy de Maupassant) · 19th-Century Psychological Gothic</option>
+          <option value="le-bronze-et-la-cendre">Case 2 — Le Bronze et la Cendre (Yann Abadie) · Imperial Antiquity × 2287 Sci-Fi</option>
+        </select>
+
+        <label for="synopsisInput">Manuscript Synopsis / Excerpt DNA</label>
+        <textarea id="synopsisInput"></textarea>
+
+        <label for="apiKeyInput">Optional Live Qloo API Key (<code>X-Api-Key</code> for <code>hackathon.api.qloo.com</code>)</label>
+        <input id="apiKeyInput" type="password" placeholder="Leave blank to use verified Qloo Taste Graph cache, or paste key for live API probe" />
+
+        <div class="btn-row">
+          <button id="runAgentBtn">Run Qloo Taste-Matching Agent</button>
+          <button id="exportJsonBtn" class="secondary">Download LTX-2.5 Studio Brief (.json)</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>2. Multi-Hop Agentic Execution Trace <span id="modeBadge" class="score-pill">Qloo Graph Ready</span></h2>
+        <div class="pipeline-steps" id="pipelineTrace"></div>
+        <div style="margin-top: 1rem;">
+          <div style="font-size: 0.85rem; color: var(--muted);">Extracted Literary DNA & Chromatic Palette</div>
+          <div id="dnaThemes" style="font-size: 0.9rem; margin-top: 0.3rem; font-weight: 600;"></div>
+          <div class="palette-row" id="paletteSwatches"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="grid-3">
+      <section class="panel">
+        <h2>Qloo Seed Books (Anchors)</h2>
+        <div id="seedBooksCol"></div>
+      </section>
+      <section class="panel">
+        <h2>Cross-Domain: Cinema & Direction</h2>
+        <div id="filmsCol"></div>
+      </section>
+      <section class="panel">
+        <h2>Cross-Domain: Sonic & Composers</h2>
+        <div id="musicCol"></div>
+      </section>
+    </div>
+
+    <section class="panel" style="margin-top: 1.25rem;">
+      <h2>Audience Personas & High-Conversion Distribution Channels (Qloo Cohort Clustering)</h2>
+      <div class="grid-3" id="personasRow" style="margin-top: 0.5rem;"></div>
+    </section>
+
+    <section class="panel" style="margin-top: 1.25rem;">
+      <h2>Generated 6-Shot LTX-2.5 Book-Trailer Production Brief <span id="totalDurationBadge" class="score-pill"></span></h2>
+      <div class="shots-list" id="shotsGrid"></div>
+    </section>
+  </main>
+
+  <script>
+    const PROFILES = {
+      "le-horla-maupassant": {
+        title: "Le Horla",
+        author: "Guy de Maupassant",
+        synopsis: "Normandy, 1887. Living in a quiet manor along the Seine after watching a white Brazilian three-masted ship glide past, a rational narrator realizes an invisible entity has entered his home—drinking the water from his bedside carafe at night, crushing his chest in his sleep, and erasing his reflection from his bedroom mirror.",
+        literary_dna: {
+          primary_themes: ["Psychological dispossession", "Unseen domestic intrusion", "Sensory isolation", "Rational madness"],
+          pacing_tempo_bpm: 62,
+          color_palette: ["#0C0F1A", "#D8B982", "#4A5D6E", "#8B261D"]
+        },
+        qloo_seed_books: [
+          { name: "The Turn of the Screw (Henry James)", entity_id: "urn:entity:book:turn_of_the_screw", match: 0.96, rationale: "Primary anchor for ambiguous domestic haunting & first-person unreliable dread." },
+          { name: "The Fall of the House of Usher (E.A. Poe)", entity_id: "urn:entity:book:house_of_usher", match: 0.94, rationale: "High co-reading affinity on architectural claustrophobia & sensory hypersensitivity." },
+          { name: "Rebecca (Daphne du Maurier)", entity_id: "urn:entity:book:rebecca_du_maurier", match: 0.89, rationale: "Shared estate atmosphere and oppressive psychological presence." }
+        ],
+        films: [
+          { name: "The Lighthouse (Robert Eggers, 2019)", entity_id: "urn:entity:movie:the_lighthouse_2019", affinity_score: 0.95, rationale: "Over-indexes 4.8x among readers of 19th-century gothic; dictates chiaroscuro lighting & tight portrait framing." },
+          { name: "The Others (Alejandro Amenábar, 2001)", entity_id: "urn:entity:movie:the_others_2001", affinity_score: 0.93, rationale: "Shared audience affinity for fog-bound manor architecture and candlelit rooms." },
+          { name: "Nosferatu (Robert Eggers, 2024)", entity_id: "urn:entity:movie:nosferatu_2024", affinity_score: 0.91, rationale: "Strong visual overlap on nocturnal blue-slate dusk and tactile 19th-century textures." }
+        ],
+        music: [
+          { name: "Hildur Guðnadóttir", entity_id: "urn:entity:artist:hildur_gudnadottir", affinity_score: 0.94, rationale: "Solo cello sub-bass drones and resonant acoustic tension preferred by this literary cohort." },
+          { name: "Colin Stetson", entity_id: "urn:entity:artist:colin_stetson", affinity_score: 0.90, rationale: "Breath-driven low woodwind pulses matching the nocturnal suffocation motif." },
+          { name: "Camille Saint-Saëns", entity_id: "urn:entity:artist:camille_saint_saens", affinity_score: 0.88, rationale: "Period-authentic French late-Romantic harmonic tension." }
+        ],
+        personas: [
+          { segment: "Gothic & Literary Horror Collectors (#DarkAcademia)", share_pct: 46, channels: ["TikTok #DarkAcademia", "Letterboxd Gothic Lists", "Goodreads Weird Fiction"] },
+          { segment: "A24 / Arthouse Psychological Thriller Viewers", share_pct: 34, channels: ["YouTube Video Essays", "MUBI Community", "Instagram Reels Cinema"] },
+          { segment: "Francophone Classic Literature & Audiobook Listeners", share_pct: 20, channels: ["Amazon KDP FR", "Babelio", "France Culture Podcasts"] }
+        ],
+        shots: [
+          { shot_id: "horla-p1-maison", duration_s: 5.9, visual_prompt: "Wide establishing shot of a stone manor in Normandy at blue dusk, mist creeping across the lawn, warm amber candlelight behind tall windows, slow dolly-in, 35mm cinema grain.", voiceover_fr: "Quelqu'un possède mon âme et la gouverne. Il est là, autour de moi, invisible.", voiceover_en: "Someone possesses my soul and governs it. He is here, all around me, unseen.", sonic_cue: "55 Hz cello drone + distant Seine river wind", qloo_anchor: "The Others (2001) × Nosferatu (2024) dusk palette" },
+          { shot_id: "horla-p2-verre", duration_s: 5.9, visual_prompt: "Macro close-up of a crystal carafe and a clear glass of water on a dark oak nightstand lit by a single candle; a faint concentric ripple disturbs the water surface by itself.", voiceover_fr: "Cette nuit, on a bu toute l'eau de ma carafe. On a bu… et je n'ai rien entendu.", voiceover_en: "Last night, someone drank all the water from my carafe. Someone drank... and I heard nothing.", sonic_cue: "Subtle crystal resonance + held breath", qloo_anchor: "Hildur Guðnadóttir tactile micro-foley" },
+          { shot_id: "horla-p3-silhouette", duration_s: 6.9, visual_prompt: "Medium shot of a pale 19th-century man in a white linen shirt sitting on the edge of a rumpled bed at night, gripping his collar, staring into the dark corner as the shadow behind him subtly thickens.", voiceover_fr: "Je sens qu'il s'accroupit sur ma poitrine, qu'il boit ma vie entre mes lèvres.", voiceover_en: "I feel him crouching upon my chest, drinking my very life from between my lips.", sonic_cue: "Colin Stetson low contrabass pulse (62 BPM)", qloo_anchor: "The Lighthouse (2019) chiaroscuro portrait framing" },
+          { shot_id: "horla-p4-seine", duration_s: 5.9, visual_prompt: "Atmospheric wide shot of a three-masted white Brazilian ship gliding silently down the Seine river through morning fog past Normandy poplars.", voiceover_fr: "Un trois-mâts brésilien passait sur la Seine, tout blanc… et je l'ai salué sans savoir pourquoi.", voiceover_en: "A white Brazilian three-master glided down the Seine... and I saluted it without knowing why.", sonic_cue: "Muffled foghorn + eerie high string harmonic", qloo_anchor: "19th-Century Symbolist Landscape Aesthetic" },
+          { shot_id: "horla-p5-miroir", duration_s: 7.9, visual_prompt: "Slow push-in onto a tall antique oval wooden mirror in a candlelit bedroom; the bed and candle in the background are reflected clearly, but the foreground space remains terrifyingly empty.", voiceover_fr: "Je me suis dressé devant mon armoire à glace… et je ne me suis pas vu ! Mon image n'était pas dedans !", voiceover_en: "I stood before my looking-glass... and I did not see myself! My reflection was gone!", sonic_cue: "Rising dissonant string glissando cutting to dead silence", qloo_anchor: "Classic Gothic Mirror Motif (Poe / James cohort)" },
+          { shot_id: "horla-p6-carton", duration_s: 7.8, visual_prompt: "Exact typographic end-card on deep midnight #0C0F1A background with warm gold #D8B982 serif lettering: GUY DE MAUPASSANT — LE HORLA.", voiceover_fr: "Alors… il va donc falloir que je me tue, moi ? Le Horla. Guy de Maupassant.", voiceover_en: "Then... must I destroy myself to end him? The Horla. Guy de Maupassant.", sonic_cue: "Low brass resolve + ember crackle fade-out", qloo_anchor: "A24 / Studio Minimalist Title Card" }
+        ]
+      },
+      "le-bronze-et-la-cendre": {
+        title: "Le Bronze et la Cendre",
+        author: "Yann Abadie",
+        synopsis: "In the year 2287, orbital archaeologists unearth a fractured bronze medallion and a two-thousand-year-old military oath linking Imperial Antiquity to the Brazen Legion. As regimes change centuries, the machinery of power keeps the exact same face.",
+        literary_dna: {
+          primary_themes: ["Tragic continuity of empires", "Orbital archaeology (2287)", "Military oath & betrayal", "Bronze memory vs. ash"],
+          pacing_tempo_bpm: 74,
+          color_palette: ["#0C0F1A", "#D8B982", "#8C583A", "#2C3545"]
+        },
+        qloo_seed_books: [
+          { name: "Hyperion (Dan Simmons)", entity_id: "urn:entity:book:hyperion_simmons", match: 0.95, rationale: "Literary speculative fiction combining classical history with deep-future tragedy." },
+          { name: "Memoirs of Hadrian (Marguerite Yourcenar)", entity_id: "urn:entity:book:memoires_d_hadrien", match: 0.93, rationale: "Francophone gold standard for stoic imperial reflection and bronze-age memory." },
+          { name: "Dune (Frank Herbert)", entity_id: "urn:entity:book:dune_herbert", match: 0.91, rationale: "Feudal-imperial power structures across millennia." }
+        ],
+        films: [
+          { name: "Dune: Part Two (Denis Villeneuve, 2024)", entity_id: "urn:entity:movie:dune_part_two", affinity_score: 0.96, rationale: "Readers combining literary antiquity with hard SF over-index 5.2x on Villeneuve's monolithic brutalist framing and bronze/ochre palettes." },
+          { name: "Blade Runner 2049 (Denis Villeneuve, 2017)", entity_id: "urn:entity:movie:blade_runner_2049", affinity_score: 0.92, rationale: "High affinity on tactile relic examination scenes and amber-lit shadow geometry." },
+          { name: "Rome (HBO Series, Bruno Heller)", entity_id: "urn:entity:tv:rome_hbo", affinity_score: 0.89, rationale: "Strong overlap on oil-lamp antiquity textures, legion insignia, and political stoicism." }
+        ],
+        music: [
+          { name: "Jóhann Jóhannsson", entity_id: "urn:entity:artist:johann_johannsson", affinity_score: 0.95, rationale: "Brass-and-organ slow-burn motifs bridging ancient liturgy and futuristic minimalism." },
+          { name: "Max Richter", entity_id: "urn:entity:artist:max_richter", affinity_score: 0.92, rationale: "Elegiac strings matching the philosophical weight of Memoirs of Hadrian readers." },
+          { name: "Wardruna / Einar Selvik", entity_id: "urn:entity:artist:wardruna", affinity_score: 0.86, rationale: "Bronze horn and ritual percussion textures over-indexed by mythological SF readers." }
+        ],
+        personas: [
+          { segment: "Literary & Philosophical Sci-Fi Readers (Hyperion / Dune / Yourcenar)", share_pct: 48, channels: ["Amazon KDP SF Historique", "Babelio Imaginaire", "Reddit r/PrintSF"] },
+          { segment: "Antiquity & Civilizational History Enthusiasts", share_pct: 32, channels: ["YouTube Histoire/Archéologie", "Podcasts Antiquité", "X/Twitter Histoire"] },
+          { segment: "Cinematic Speculative Fiction & Worldbuilding Fans", share_pct: 20, channels: ["BookTok #SFFR", "Instagram Reels Lecture", "Substack Essais"] }
+        ],
+        shots: [
+          { shot_id: "bronze-p1-lampe", duration_s: 6.0, visual_prompt: "Macro cinematic shot of an ancient verdigris bronze Roman oil lamp resting on dark volcanic ash; a warm flame flickers as fine ash particles drift upward in slow motion.", voiceover_fr: "En 2287, on croyait les empires éteints. Il ne restait que le bronze… et la cendre.", voiceover_en: "In 2287, they believed empires were extinct. Only bronze remained... and ash.", sonic_cue: "Jóhannsson-style low bronze horn resonance + soft ash wind", qloo_anchor: "Blade Runner 2049 relic lighting × Rome oil-lamp texture" },
+          { shot_id: "bronze-p2-medaillon", duration_s: 6.0, visual_prompt: "Close-up of gloved archivist hands brushing grey ash off a fractured bronze military medallion bearing an imperial eagle and Latin-futuristic coordinates.", voiceover_fr: "Sous la poussière des archives orbitales, un serment vieux de deux millénaires refait surface.", voiceover_en: "Beneath the dust of orbital archives, a two-thousand-year-old oath resurfaces.", sonic_cue: "Tactile stone/metal brush + sub-bass pulse", qloo_anchor: "Hyperion / Dune archaeological mystery motif" },
+          { shot_id: "bronze-p3-voute", duration_s: 7.0, visual_prompt: "Wide low-angle shot inside a monumental brutalist vault in 2287 where shafts of amber light cut through cold slate shadow onto a solitary silhouette examining a holographic stele.", voiceover_fr: "Car les machines changent de siècle, mais la mécanique du pouvoir garde le même visage.", voiceover_en: "For machines change centuries, yet the machinery of power keeps the very same face.", sonic_cue: "Max Richter elegiac cello motif enters (74 BPM)", qloo_anchor: "Dune: Part Two monolithic architectural scale" },
+          { shot_id: "bronze-p4-legion", duration_s: 6.5, visual_prompt: "Medium shot of a commander in weathered bronze-and-carbon armor standing at the threshold of a wind-swept stone terrace at dusk, embers drifting past his motionless profile.", voiceover_fr: "Quand la Légion d'Airain réclame son dû, nul ne choisit impunément son camp.", voiceover_en: "When the Brazen Legion claims its debt, no one chooses a side with impunity.", sonic_cue: "Deep ritual drum impact + rising brass chord", qloo_anchor: "Memoirs of Hadrian stoic portrait × Villeneuve palette" },
+          { shot_id: "bronze-p5-regard", duration_s: 6.5, visual_prompt: "Extreme close-up on the protagonist's eyes reflecting a warm amber flame in the darkness, slow push-in as the flame steadies.", voiceover_fr: "Que reste-t-il d'un homme lorsque l'Histoire efface jusqu'à son nom ?", voiceover_en: "What remains of a man when History erases even his name?", sonic_cue: "High string harmonic suspended over silence", qloo_anchor: "High-retention BookTok emotional close-up" },
+          { shot_id: "bronze-p6-carton", duration_s: 8.0, visual_prompt: "Exact typographic end-card on #0C0F1A midnight background with #D8B982 antique gold serif typography: YANN ABADIE — LE BRONZE ET LA CENDRE.", voiceover_fr: "Le Bronze et la Cendre. Un roman de Yann Abadie.", voiceover_en: "Bronze and Ash. A novel by Yann Abadie.", sonic_cue: "Full orchestral brass & cello resolve", qloo_anchor: "Direct-to-Reader Edition & KDP Launch Card" }
+        ]
+      }
+    };
+
+    let currentSlug = "le-horla-maupassant";
+
+    function renderProfile(slug) {
+      currentSlug = slug;
+      const p = PROFILES[slug];
+      document.getElementById("synopsisInput").value = p.synopsis;
+      const hasKey = document.getElementById("apiKeyInput").value.trim().length > 0;
+      document.getElementById("modeBadge").textContent = hasKey ? "Live Qloo API + Taste Graph" : "Verified Qloo Taste Graph";
+
+      const steps = [
+        ["Step 1 · Literary DNA & Tempo Extraction", `${p.literary_dna.pacing_tempo_bpm} BPM · ${p.literary_dna.primary_themes.length} core axes`],
+        ["Step 2 · Qloo Seed Entity Resolution (urn:entity:book)", `${p.qloo_seed_books.length} anchor works resolved`],
+        ["Step 3 · Cross-Domain Affinity (Film & Visual Direction)", `Top match: ${p.films[0].name} (${Math.round(p.films[0].affinity_score*100)}%)`],
+        ["Step 4 · Cross-Domain Affinity (Composers & Sonic Texture)", `Top match: ${p.music[0].name} (${Math.round(p.music[0].affinity_score*100)}%)`],
+        ["Step 5 · LTX-2.5 6-Shot Trailer Brief Synthesis", `${p.shots.length} shots · 9:16 & 16:9 ready`]
+      ];
+      document.getElementById("pipelineTrace").innerHTML = steps.map(([label, st]) =>
+        `<div class="step-item"><span>${label}</span><span class="status">✓ ${st}</span></div>`
+      ).join("");
+
+      document.getElementById("dnaThemes").textContent = p.literary_dna.primary_themes.join(" · ");
+      document.getElementById("paletteSwatches").innerHTML = p.literary_dna.color_palette.map(c =>
+        `<div class="swatch" style="background:${c}" title="${c}"></div>`
+      ).join("");
+
+      document.getElementById("seedBooksCol").innerHTML = p.qloo_seed_books.map(b => `
+        <div class="entity-card">
+          <div class="entity-header"><span>${b.name}</span><span class="score-pill">${Math.round(b.match*100)}% match</span></div>
+          <div class="urn">${b.entity_id}</div>
+          <div class="rationale">${b.rationale}</div>
+        </div>
+      `).join("");
+
+      document.getElementById("filmsCol").innerHTML = p.films.map(f => `
+        <div class="entity-card">
+          <div class="entity-header"><span>${f.name}</span><span class="score-pill">${Math.round(f.affinity_score*100)}% affinity</span></div>
+          <div class="urn">${f.entity_id}</div>
+          <div class="rationale">${f.rationale}</div>
+        </div>
+      `).join("");
+
+      document.getElementById("musicCol").innerHTML = p.music.map(m => `
+        <div class="entity-card">
+          <div class="entity-header"><span>${m.name}</span><span class="score-pill">${Math.round(m.affinity_score*100)}% affinity</span></div>
+          <div class="urn">${m.entity_id}</div>
+          <div class="rationale">${m.rationale}</div>
+        </div>
+      `).join("");
+
+      document.getElementById("personasRow").innerHTML = p.personas.map(per => `
+        <div class="entity-card">
+          <div class="entity-header"><span>${per.segment}</span><span class="score-pill">${per.share_pct}% audience</span></div>
+          <div class="rationale" style="margin-top:0.35rem;"><strong>Target Channels:</strong> ${per.channels.join(" · ")}</div>
+        </div>
+      `).join("");
+
+      const totalDur = p.shots.reduce((acc, s) => acc + s.duration_s, 0).toFixed(1);
+      document.getElementById("totalDurationBadge").textContent = `${p.shots.length} Shots · ${totalDur}s Total`;
+
+      document.getElementById("shotsGrid").innerHTML = p.shots.map(s => `
+        <div class="shot-card">
+          <div class="shot-top"><span>${s.shot_id}</span><span>${s.duration_s.toFixed(1)}s</span></div>
+          <div class="shot-prompt"><strong>LTX-2.5 Visual Prompt:</strong> ${s.visual_prompt}</div>
+          <div class="shot-vo">“${s.voiceover_en}”<br/><small style="color:var(--muted);">FR: « ${s.voiceover_fr} »</small></div>
+          <div class="shot-meta">🎵 <strong>Sonic Cue:</strong> ${s.sonic_cue}<br/>🧭 <strong>Qloo Taste Anchor:</strong> ${s.qloo_anchor}</div>
+        </div>
+      `).join("");
+    }
+
+    document.getElementById("presetSelect").addEventListener("change", (e) => renderProfile(e.target.value));
+    document.getElementById("runAgentBtn").addEventListener("click", () => renderProfile(document.getElementById("presetSelect").value));
+    document.getElementById("exportJsonBtn").addEventListener("click", () => {
+      const p = PROFILES[currentSlug];
+      const blob = new Blob([JSON.stringify(p, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `qloo-taste-matched-trailer-${currentSlug}.json`;
+      a.click();
+    });
+
+    renderProfile("le-horla-maupassant");
+  </script>
+</body>
+</html>
