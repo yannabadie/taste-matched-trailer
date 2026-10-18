@@ -234,11 +234,14 @@ class TasteMatchedTrailerAgentTests(unittest.TestCase):
         self.assertEqual(comp_alpha[0]["name"], "Eduard Artemyev")
         self.assertEqual(comp_beta[0]["name"], "Hans Zimmer")
 
-        # Audience personas & share percentages must differ and sum to 100
+        # Audience personas must NOT fabricate share_pct when Qloo only returns entity affinities
         personas_alpha = live_alpha["qloo_cross_domain_graph"]["audience_personas"]
         personas_beta = live_beta["qloo_cross_domain_graph"]["audience_personas"]
-        self.assertEqual(sum(p["share_pct"] for p in personas_alpha), 100)
-        self.assertEqual(sum(p["share_pct"] for p in personas_beta), 100)
+        for p_item in personas_alpha + personas_beta:
+            self.assertIsNone(p_item["share_pct"])
+            self.assertEqual(p_item["share_pct_provenance"], "not_provided_by_qloo_api")
+        self.assertEqual(personas_alpha[0]["qloo_affinity"], 0.97)
+        self.assertEqual(personas_beta[0]["qloo_affinity"], 0.84)
         self.assertNotEqual(personas_alpha, personas_beta)
         self.assertNotEqual(personas_alpha, offline["qloo_cross_domain_graph"]["audience_personas"])
 
@@ -253,6 +256,65 @@ class TasteMatchedTrailerAgentTests(unittest.TestCase):
             self.assertNotEqual(s_a["sonic_cue"], s_b["sonic_cue"])
             self.assertNotEqual(s_a["visual_prompt"], s_b["visual_prompt"])
             self.assertTrue(len(s_a["qloo_source_entity_ids"]) >= 2)
+
+    def test_no_score_clamping_and_no_rank_fallback_when_score_missing(self) -> None:
+        def _unclamped_and_unrated_transport(url: str, headers: dict[str, str]) -> dict[str, Any]:
+            if "/search" in url and "urn%3Aentity%3Abook" in url:
+                return {
+                    "results": {
+                        "entities": [
+                            {
+                                "name": "Unrated Seed Book",
+                                "entity_id": "urn:entity:book:unrated_seed",
+                            }
+                        ]
+                    }
+                }
+            if "urn%3Aentity%3Amovie" in url:
+                return {
+                    "results": {
+                        "entities": [
+                            {
+                                "name": "Low Affinity Film",
+                                "entity_id": "urn:entity:movie:low_aff",
+                                "query": {"affinity": 0.12},
+                            }
+                        ]
+                    }
+                }
+            if "urn%3Aentity%3Aartist" in url:
+                return {
+                    "results": {
+                        "entities": [
+                            {
+                                "name": "High Popularity Composer",
+                                "entity_id": "urn:entity:artist:high_pop",
+                                "popularity": 0.9991,
+                            }
+                        ]
+                    }
+                }
+            return {"results": {"entities": []}}
+
+        res = run_agent(
+            "le-bronze-et-la-cendre",
+            api_key="test-key-verbatim",
+            http_get_json=_unclamped_and_unrated_transport,
+            strict_live=True,
+        )
+        # Missing score must remain None, never replaced by rank fallback
+        self.assertIsNone(res["qloo_seed_books"][0]["match"])
+        self.assertEqual(res["qloo_seed_books"][0]["score_field_source"], "missing_in_qloo_payload")
+
+        # 0.12 must remain 0.12 (not clamped to 0.50)
+        film0 = res["qloo_cross_domain_graph"]["films_and_visual_aesthetic"][0]
+        self.assertEqual(film0["affinity_score"], 0.12)
+        self.assertEqual(film0["score_field_source"], "query.affinity")
+
+        # 0.9991 must remain 0.9991 (not clamped to 0.99)
+        comp0 = res["qloo_cross_domain_graph"]["soundtrack_and_composers"][0]
+        self.assertEqual(comp0["affinity_score"], 0.9991)
+        self.assertEqual(comp0["score_field_source"], "popularity")
 
     def test_export_ltx_brief_includes_provenance_and_live_anchors(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

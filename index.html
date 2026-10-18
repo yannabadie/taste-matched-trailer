@@ -568,16 +568,21 @@
       return [];
     }
 
-    function extractScore(entity, idx) {
+    function extractScore(entity) {
       const q = entity.query || {};
-      const candidates = [q.affinity, q.score, entity.affinity_score, entity.affinity, entity.score, entity.popularity];
+      const candidates = [q.affinity, q.score, entity.affinity_score, entity.affinity, entity.match, entity.score, entity.popularity];
       for (const c of candidates) {
         if (typeof c === "number" && !Number.isNaN(c)) {
-          const norm = c > 1.0 ? (c <= 100 ? c / 100 : 1 / (1 + c)) : c;
-          return Math.max(0.50, Math.min(0.99, Number(norm.toFixed(2))));
+          return c;
         }
       }
-      return Number(Math.max(0.70, 0.95 - idx * 0.03).toFixed(2));
+      return null;
+    }
+
+    function formatScorePill(val, suffix) {
+      if (val === null || val === undefined) return `unrated (${suffix})`;
+      if (val >= 0 && val <= 1) return `${Math.round(val * 100)}% ${suffix}`;
+      return `${val} ${suffix}`;
     }
 
     async function fetchQlooJson(pathAndQuery, apiKey) {
@@ -686,28 +691,33 @@
           p.qloo_seed_books = bookRes.entities.slice(0, 3).map((e, i) => ({
             name: e.name || `Qloo Book #${i + 1}`,
             entity_id: String(e.entity_id || e.id || `urn:entity:book:live_${i + 1}`),
-            match: extractScore(e, i),
+            match: extractScore(e),
             rationale: `Live Qloo API verified seed entity (${e.entity_id || e.id}).`
           }));
           p.films = filmRes.entities.slice(0, 3).map((e, i) => ({
             name: e.name || `Qloo Film #${i + 1}`,
             entity_id: String(e.entity_id || e.id || `urn:entity:movie:live_${i + 1}`),
-            affinity_score: extractScore(e, i),
-            rationale: `Live Qloo API cross-domain film match (${Math.round(extractScore(e, i) * 100)}% affinity).`
+            affinity_score: extractScore(e),
+            rationale: `Live Qloo API cross-domain film match (${formatScorePill(extractScore(e), "affinity")}).`
           }));
           p.music = musicRes.entities.slice(0, 3).map((e, i) => ({
             name: e.name || `Qloo Composer #${i + 1}`,
             entity_id: String(e.entity_id || e.id || `urn:entity:artist:live_${i + 1}`),
-            affinity_score: extractScore(e, i),
-            rationale: `Live Qloo API sonic affinity match (${Math.round(extractScore(e, i) * 100)}% affinity).`
+            affinity_score: extractScore(e),
+            rationale: `Live Qloo API sonic affinity match (${formatScorePill(extractScore(e), "affinity")}).`
           }));
           const f0 = p.films[0], f1 = p.films[1] || f0;
           const c0 = p.music[0], c1 = p.music[1] || c0;
           const b0 = p.qloo_seed_books[0];
+          p.personas = [
+            { segment: `Literary Cohort anchored on ${b0.name}`, share_pct: null, qloo_affinity: b0.match, channels: ["BookTok", "Goodreads", "Babelio"] },
+            { segment: `Cinema Cohort anchored on ${f0.name}`, share_pct: null, qloo_affinity: f0.affinity_score, channels: ["Letterboxd", "MUBI", "YouTube Film Essays"] },
+            { segment: `Sonic Cohort anchored on ${c0.name}`, share_pct: null, qloo_affinity: c0.affinity_score, channels: ["Spotify Soundtrack Curators", "Bandcamp"] }
+          ];
           p.shots = p.shots.map((s, idx) => ({
             ...s,
             qloo_anchor: idx % 2 === 0
-              ? `${f0.name} (${Math.round(f0.affinity_score * 100)}% live Qloo) × ${b0.name}`
+              ? `${f0.name} (${formatScorePill(f0.affinity_score, "live Qloo")}) × ${b0.name}`
               : `${f1.name} framing × ${c0.name} sonic profile`,
             sonic_cue: `${idx % 2 === 0 ? c0.name : c1.name} live Qloo cue (${p.literary_dna.pacing_tempo_bpm} BPM)`,
             visual_prompt: `${s.visual_prompt} [Live Qloo visual grade: ${f0.name} (${f0.entity_id})]`
@@ -715,13 +725,14 @@
           p.agent_execution = {
             mode: "live_qloo_api_verified",
             qloo_api_verified: true,
-            data_provenance: "qloo_live_api_responses"
+            data_provenance: "qloo_live_api_responses",
+            score_handling: "verbatim_from_qloo_payload_no_clamping_or_rank_fallback"
           };
           modeBadge.textContent = "Live Qloo API Verified (qloo_api_verified: true)";
           steps = [
             ["Step 1 · Live Qloo Book Resolution", `${p.qloo_seed_books.length} live entities (${p.qloo_seed_books[0].name})`],
-            ["Step 2 · Live Cross-Domain Film Insights", `Top live match: ${p.films[0].name} (${Math.round(p.films[0].affinity_score * 100)}%)`],
-            ["Step 3 · Live Cross-Domain Composer Insights", `Top live match: ${p.music[0].name} (${Math.round(p.music[0].affinity_score * 100)}%)`],
+            ["Step 2 · Live Cross-Domain Film Insights", `Top live match: ${p.films[0].name} (${formatScorePill(p.films[0].affinity_score, "affinity")})`],
+            ["Step 3 · Live Cross-Domain Composer Insights", `Top live match: ${p.music[0].name} (${formatScorePill(p.music[0].affinity_score, "affinity")})`],
             ["Step 4 · Dynamic Shot Brief Re-Synthesis", `6 shots updated from live API entities`],
             ["Verification Status", `qloo_api_verified = true`]
           ];
@@ -753,7 +764,7 @@
 
       document.getElementById("seedBooksCol").innerHTML = p.qloo_seed_books.map(b => `
         <div class="entity-card">
-          <div class="entity-header"><span>${b.name}</span><span class="score-pill">${Math.round(b.match*100)}% match</span></div>
+          <div class="entity-header"><span>${b.name}</span><span class="score-pill">${formatScorePill(b.match, "match")}</span></div>
           <div class="urn">${b.entity_id}</div>
           <div class="rationale">${b.rationale}</div>
         </div>
@@ -761,7 +772,7 @@
 
       document.getElementById("filmsCol").innerHTML = p.films.map(f => `
         <div class="entity-card">
-          <div class="entity-header"><span>${f.name}</span><span class="score-pill">${Math.round(f.affinity_score*100)}% affinity</span></div>
+          <div class="entity-header"><span>${f.name}</span><span class="score-pill">${formatScorePill(f.affinity_score, "affinity")}</span></div>
           <div class="urn">${f.entity_id}</div>
           <div class="rationale">${f.rationale}</div>
         </div>
@@ -769,7 +780,7 @@
 
       document.getElementById("musicCol").innerHTML = p.music.map(m => `
         <div class="entity-card">
-          <div class="entity-header"><span>${m.name}</span><span class="score-pill">${Math.round(m.affinity_score*100)}% affinity</span></div>
+          <div class="entity-header"><span>${m.name}</span><span class="score-pill">${formatScorePill(m.affinity_score, "affinity")}</span></div>
           <div class="urn">${m.entity_id}</div>
           <div class="rationale">${m.rationale}</div>
         </div>
@@ -777,7 +788,7 @@
 
       document.getElementById("personasRow").innerHTML = p.personas.map(per => `
         <div class="entity-card">
-          <div class="entity-header"><span>${per.segment}</span><span class="score-pill">${per.share_pct}% audience</span></div>
+          <div class="entity-header"><span>${per.segment}</span><span class="score-pill">${per.share_pct !== null && per.share_pct !== undefined ? per.share_pct + "% audience" : formatScorePill(per.qloo_affinity, "Qloo affinity (no % in API)")}</span></div>
           <div class="rationale" style="margin-top:0.35rem;"><strong>Target Channels:</strong> ${per.channels.join(" · ")}</div>
         </div>
       `).join("");

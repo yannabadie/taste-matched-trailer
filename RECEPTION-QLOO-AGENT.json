@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-18T15:34:57+0200",
+  "review_refs_resolved": [
+    "mc_6b2c9eb7d5f098100fc46e42 v2 & v3",
+    "mc_8e3739cfd35118c7b805dd7e v1",
+    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/suivi/2026-10-18-1231-controle-correctifs-ascendant-qloo.json"
+  ],
+  "code_and_provenance_fixes": {
+    "score_clamping_and_rank_fallback_removed": true,
+    "score_extraction_policy": "_extract_score_with_provenance returns verbatim numeric score and field name from Qloo payload, or (None, 'missing_in_qloo_payload') when absent",
+    "fabricated_audience_share_removed": true,
+    "audience_personas_policy": "compute_audience_personas_from_qloo sets share_pct=None and share_pct_provenance='not_provided_by_qloo_api' unless Qloo payload explicitly includes demographic percentages",
+    "unit_tests_executed": 5,
+    "unit_tests_passed": 5,
+    "live_qloo_api_key_status": "external_key_pending_devpost_onboarding",
+    "live_endpoint_unprovisioned_probe": {
+      "mode": "live_qloo_api_failed_fallback_to_demo",
+      "qloo_api_verified": false,
+      "data_provenance": "precomputed_reference_fixture_after_api_error",
+      "live_qloo_probe_results": 0,
+      "api_errors": [
+        "https://hackathon.api.qloo.com/search?query=Hyperion+Dan+Simmons&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://api.qloo.com/search?query=Hyperion+Dan+Simmons&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://hackathon.api.qloo.com/search?query=Memoirs+of+Hadrian+Marguerite+Yourcenar&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://api.qloo.com/search?query=Memoirs+of+Hadrian+Marguerite+Yourcenar&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://hackathon.api.qloo.com/search?query=Dune+Frank+Herbert&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://api.qloo.com/search?query=Dune+Frank+Herbert&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://hackathon.api.qloo.com/search?query=Foundation+Isaac+Asimov&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://api.qloo.com/search?query=Foundation+Isaac+Asimov&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
+        "https://hackathon.api.qloo.com/v2/insights?filter.type=urn%3Aentity%3Amovie&signal.interests.entities=&take=5 -> HTTP 401",
+        "https://api.qloo.com/v2/insights?filter.type=urn%3Aentity%3Amovie&signal.interests.entities=&take=5 -> HTTP 401"
+      ],
+      "steps_completed": [
+        "live_qloo_api_attempt_failed",
+        "offline_fixture_fallback_loaded"
+      ],
+      "verification_note": "A Qloo API key was provided, but live endpoints did not return complete cross-domain entities. Falling back to static offline demo fixtures (`qloo_api_verified = False`)."
+    }
+  },
+  "artifacts": {
+    "taste_matched_trailer_agent.py": {
+      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/taste_matched_trailer_agent.py",
+      "bytes": 49363,
+      "mtime_ns": 1792330340761437804,
+      "sha256": "26442a5b46ad59a00b0941ccd30c58d35d51883074f4fb7cbde2e16f2531a7ec"
+    },
+    "test_taste_matched_trailer_agent.py": {
+      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/test_taste_matched_trailer_agent.py",
+      "bytes": 16309,
+      "mtime_ns": 1792330468067480196,
+      "sha256": "a64438c70cfb0add6140954738e20f2bc83c4349f8476ff9ff7564ac96f7dc20"
+    },
+    "index.html": {
+      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/index.html",
+      "bytes": 46081,
+      "mtime_ns": 1792330426596331066,
+      "sha256": "d1b0b8763040f7f6bc99e24f9bad8caa32b981e9d61b6b21ff01fd55ccb0f707"
+    },
+    "README.md": {
+      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/README.md",
+      "bytes": 4717,
+      "mtime_ns": 1792318322959200409,
+      "sha256": "cc46fdcea6be72701b39f5bd7aa19308417268713fac350284e2b29d6bccf5f1"
+    },
+    "test-results-qloo-agent.txt": {
+      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/test-results-qloo-agent.txt",
+      "bytes": 1242,
+      "mtime_ns": 1792330491347168311,
+      "sha256": "c5d0f2d7a8670009429d28d2092835a0e112e4a14f4736ed394760f96bc5c02d"
+    }
+  }
+}

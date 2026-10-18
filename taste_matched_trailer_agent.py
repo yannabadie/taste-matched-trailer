@@ -401,31 +401,41 @@ def _extract_entities_from_payload(payload: dict[str, Any]) -> list[dict[str, An
     return []
 
 
-def _extract_score(entity: dict[str, Any], rank_idx: int) -> float:
-    """Extracts and normalizes an affinity/match score in [0.50, 0.99] from a Qloo entity payload."""
-    candidates: list[Any] = [
-        entity.get("affinity_score"),
-        entity.get("affinity"),
-        entity.get("match"),
-        entity.get("score"),
-        entity.get("popularity"),
-    ]
+def _extract_score_with_provenance(entity: dict[str, Any]) -> tuple[float | None, str]:
+    """Extracts the exact numeric score returned by Qloo without clamping or rank-based fallback.
+
+    Returns `(score, field_source)`. If no numeric score exists in the Qloo entity payload,
+    returns `(None, "missing_in_qloo_payload")`.
+    """
+    candidates: list[tuple[str, Any]] = []
     query_block = entity.get("query")
     if isinstance(query_block, dict):
-        candidates.insert(0, query_block.get("affinity"))
-        candidates.insert(1, query_block.get("score"))
-    for raw in candidates:
-        if isinstance(raw, (int, float)):
-            val = float(raw)
-            if val > 1.0:
-                val = val / 100.0 if val <= 100.0 else 1.0 / (1.0 + val)
-            return round(max(0.50, min(0.99, val)), 2)
-    return round(max(0.70, 0.95 - rank_idx * 0.03), 2)
+        candidates.append(("query.affinity", query_block.get("affinity")))
+        candidates.append(("query.score", query_block.get("score")))
+    candidates.extend(
+        [
+            ("affinity_score", entity.get("affinity_score")),
+            ("affinity", entity.get("affinity")),
+            ("match", entity.get("match")),
+            ("score", entity.get("score")),
+            ("popularity", entity.get("popularity")),
+        ]
+    )
+    for field_name, raw in candidates:
+        if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+            return float(raw), field_name
+    return None, "missing_in_qloo_payload"
+
+
+def _format_score_label(score: float | None, prefix: str = "Qloo score") -> str:
+    if score is None:
+        return f"{prefix}: unrated in payload"
+    return f"{prefix}: {score:.4g}"
 
 
 def _extract_entity_id(entity: dict[str, Any], default_prefix: str, rank_idx: int) -> str:
     raw_id = str(entity.get("entity_id") or entity.get("id") or f"{default_prefix}_{rank_idx + 1}")
-    if not raw_id.startswith("urn:entity:"):
+    if not raw_id.startswith("urn:entity:") and not raw_id.startswith("urn:tag:") and not raw_id.startswith("urn:demographics:"):
         return f"{default_prefix}:{raw_id}"
     return raw_id
 
@@ -541,68 +551,71 @@ def compute_audience_personas_from_qloo(
     seed_books: list[dict[str, Any]],
     films: list[dict[str, Any]],
     composers: list[dict[str, Any]],
+    demographic_entities: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Derives audience persona segments and share percentages directly from live Qloo entity affinities."""
-    book_avg = sum(float(b.get("match", 0.85)) for b in seed_books) / max(1, len(seed_books))
-    film_avg = sum(float(f.get("affinity_score", 0.85)) for f in films) / max(1, len(films))
-    music_avg = sum(float(c.get("affinity_score", 0.85)) for c in composers) / max(1, len(composers))
+    """Builds audience persona entries strictly from Qloo API data without fabricating `share_pct`.
 
-    # Weight each cohort by the live API domain strength + deterministic fingerprint of returned entity names
-    top_book_name = seed_books[0]["name"] if seed_books else "Seed Book"
-    top_film_name = films[0]["name"] if films else "Top Film"
-    top_composer_name = composers[0]["name"] if composers else "Top Composer"
+    - If Qloo returned explicit demographic/tag entities with a `share_pct` or `percentage` field,
+      that exact numeric value and its field name are preserved.
+    - Otherwise, `share_pct` is set to `None` with `share_pct_provenance = "not_provided_by_qloo_api"`
+      and the verbatim `qloo_affinity` of each domain's top entity is reported instead of inventing
+      proportions from coefficients or hashes.
+    """
+    if demographic_entities:
+        personas: list[dict[str, Any]] = []
+        for idx, d_ent in enumerate(demographic_entities[:3]):
+            q_block = d_ent.get("query") if isinstance(d_ent.get("query"), dict) else {}
+            raw_pct = d_ent.get("share_pct") if d_ent.get("share_pct") is not None else d_ent.get("percentage", q_block.get("share_pct"))
+            pct_val = float(raw_pct) if isinstance(raw_pct, (int, float)) and not isinstance(raw_pct, bool) else None
+            score_val, score_src = _extract_score_with_provenance(d_ent)
+            personas.append(
+                {
+                    "segment": str(d_ent.get("name") or d_ent.get("id") or f"Qloo Audience Cluster #{idx + 1}"),
+                    "entity_id": _extract_entity_id(d_ent, "urn:demographics:cluster", idx),
+                    "share_pct": pct_val,
+                    "share_pct_provenance": "qloo_api_demographic_field" if pct_val is not None else "not_provided_by_qloo_api",
+                    "qloo_affinity": score_val,
+                    "qloo_score_field_source": score_src,
+                    "channels": list(d_ent.get("channels") or []),
+                    "source": "qloo_live_api",
+                }
+            )
+        return personas
 
-    name_hash_boost = (sum(ord(ch) for ch in (top_book_name + top_film_name + top_composer_name)) % 9) - 4
-    w_book = max(0.15, book_avg * 1.35 + (name_hash_boost * 0.01))
-    w_film = max(0.15, film_avg * 1.10 - (name_hash_boost * 0.005))
-    w_music = max(0.10, music_avg * 0.75)
+    top_book = seed_books[0] if seed_books else {"name": "Seed Book", "entity_id": "urn:entity:book:0", "match": None, "score_field_source": "missing_in_qloo_payload"}
+    top_film = films[0] if films else {"name": "Top Film", "entity_id": "urn:entity:movie:0", "affinity_score": None, "score_field_source": "missing_in_qloo_payload"}
+    top_comp = composers[0] if composers else {"name": "Top Composer", "entity_id": "urn:entity:artist:0", "affinity_score": None, "score_field_source": "missing_in_qloo_payload"}
 
-    total = w_book + w_film + w_music
-    s1 = round((w_book / total) * 100)
-    s2 = round((w_film / total) * 100)
-    s3 = max(5, 100 - s1 - s2)
-    if s1 + s2 + s3 != 100:
-        s1 = 100 - s2 - s3
-
-    if slug == "le-horla-maupassant":
-        return [
-            {
-                "segment": f"Readers over-indexing on {top_book_name} & Psychological Gothic",
-                "share_pct": s1,
-                "channels": ["TikTok #DarkAcademia", "Goodreads Gothic Cohort", "Babelio Fantastique"],
-                "source": "qloo_live_derived",
-            },
-            {
-                "segment": f"Viewers of {top_film_name} & Arthouse Thriller Cinema",
-                "share_pct": s2,
-                "channels": ["Letterboxd Lists", "MUBI Community", "YouTube Cinema Essays"],
-                "source": "qloo_live_derived",
-            },
-            {
-                "segment": f"Listeners of {top_composer_name} & Dark Chamber Soundtracks",
-                "share_pct": s3,
-                "channels": ["Spotify Soundtrack Curators", "Bandcamp Modern Classical", "France Culture"],
-                "source": "qloo_live_derived",
-            },
-        ]
     return [
         {
-            "segment": f"Speculative & Historical Fiction Readers ({top_book_name} cohort)",
-            "share_pct": s1,
-            "channels": ["Amazon KDP SF Historique", "Babelio Imaginaire", "Reddit r/PrintSF"],
-            "source": "qloo_live_derived",
+            "segment": f"Literary Cohort anchored on {top_book['name']}",
+            "anchor_entity_id": top_book["entity_id"],
+            "share_pct": None,
+            "share_pct_provenance": "not_provided_by_qloo_api",
+            "qloo_affinity": top_book.get("match"),
+            "qloo_score_field_source": top_book.get("score_field_source", "missing_in_qloo_payload"),
+            "channels": ["BookTok", "Goodreads", "Babelio"] if slug == "le-horla-maupassant" else ["Amazon KDP", "Babelio Imaginaire", "Reddit r/PrintSF"],
+            "source": "qloo_live_entity_affinity_only",
         },
         {
-            "segment": f"Cinematic Sci-Fi & Antiquity Viewers ({top_film_name} cohort)",
-            "share_pct": s2,
-            "channels": ["YouTube Archéologie/Cinéma", "Letterboxd Sci-Fi", "X/Twitter Histoire"],
-            "source": "qloo_live_derived",
+            "segment": f"Cinema Cohort anchored on {top_film['name']}",
+            "anchor_entity_id": top_film["entity_id"],
+            "share_pct": None,
+            "share_pct_provenance": "not_provided_by_qloo_api",
+            "qloo_affinity": top_film.get("affinity_score"),
+            "qloo_score_field_source": top_film.get("score_field_source", "missing_in_qloo_payload"),
+            "channels": ["Letterboxd", "MUBI", "YouTube Film Essays"],
+            "source": "qloo_live_entity_affinity_only",
         },
         {
-            "segment": f"Instrumental & Epic Score Listeners ({top_composer_name} cohort)",
-            "share_pct": s3,
-            "channels": ["BookTok #SFFR", "Spotify Epic Minimalist", "Substack Essais"],
-            "source": "qloo_live_derived",
+            "segment": f"Sonic Cohort anchored on {top_comp['name']}",
+            "anchor_entity_id": top_comp["entity_id"],
+            "share_pct": None,
+            "share_pct_provenance": "not_provided_by_qloo_api",
+            "qloo_affinity": top_comp.get("affinity_score"),
+            "qloo_score_field_source": top_comp.get("score_field_source", "missing_in_qloo_payload"),
+            "channels": ["Spotify Soundtrack Curators", "Bandcamp", "YouTube Shorts Audio"],
+            "source": "qloo_live_entity_affinity_only",
         },
     ]
 
@@ -615,21 +628,21 @@ def synthesize_trailer_shots_from_qloo_graph(
     pacing_bpm: int,
 ) -> list[dict[str, Any]]:
     """Dynamically rewrites shot `qloo_anchor`, `sonic_cue`, and `visual_prompt` from live Qloo entities."""
-    f0 = films[0] if len(films) > 0 else {"name": "Primary Qloo Film", "entity_id": "urn:entity:movie:0", "affinity_score": 0.90}
+    f0 = films[0] if len(films) > 0 else {"name": "Primary Qloo Film", "entity_id": "urn:entity:movie:0", "affinity_score": None}
     f1 = films[1] if len(films) > 1 else f0
     f2 = films[2] if len(films) > 2 else f1
 
-    c0 = composers[0] if len(composers) > 0 else {"name": "Primary Qloo Composer", "entity_id": "urn:entity:artist:0", "affinity_score": 0.90}
+    c0 = composers[0] if len(composers) > 0 else {"name": "Primary Qloo Composer", "entity_id": "urn:entity:artist:0", "affinity_score": None}
     c1 = composers[1] if len(composers) > 1 else c0
     c2 = composers[2] if len(composers) > 2 else c1
 
-    b0 = seed_books[0] if len(seed_books) > 0 else {"name": "Primary Qloo Book", "entity_id": "urn:entity:book:0", "match": 0.90}
+    b0 = seed_books[0] if len(seed_books) > 0 else {"name": "Primary Qloo Book", "entity_id": "urn:entity:book:0", "match": None}
     b1 = seed_books[1] if len(seed_books) > 1 else b0
 
     shot_recipes = [
         {
-            "anchor": f"{f0['name']} ({int(f0['affinity_score'] * 100)}% Qloo match) × {f1['name']} visual grading",
-            "sonic": f"{c0['name']}-inspired low drone ({int(c0['affinity_score'] * 100)}% Qloo affinity) + atmospheric wind",
+            "anchor": f"{f0['name']} ({_format_score_label(f0.get('affinity_score'), 'Qloo match')}) × {f1['name']} visual grading",
+            "sonic": f"{c0['name']}-inspired low drone ({_format_score_label(c0.get('affinity_score'), 'Qloo affinity')}) + atmospheric wind",
             "style_suffix": f"Visual aesthetic calibrated to Qloo twin film {f0['name']} ({f0['entity_id']}).",
             "sources": [f0["entity_id"], f1["entity_id"], c0["entity_id"]],
         },
@@ -640,14 +653,14 @@ def synthesize_trailer_shots_from_qloo_graph(
             "sources": [c0["entity_id"], b0["entity_id"]],
         },
         {
-            "anchor": f"{f1['name']} ({int(f1['affinity_score'] * 100)}% Qloo match) framing & shadow geometry",
-            "sonic": f"{c1['name']} rhythmic pulse at {pacing_bpm} BPM ({int(c1['affinity_score'] * 100)}% Qloo affinity)",
+            "anchor": f"{f1['name']} ({_format_score_label(f1.get('affinity_score'), 'Qloo match')}) framing & shadow geometry",
+            "sonic": f"{c1['name']} rhythmic pulse at {pacing_bpm} BPM ({_format_score_label(c1.get('affinity_score'), 'Qloo affinity')})",
             "style_suffix": f"Lighting and shadow contrast anchored in {f1['name']} ({f1['entity_id']}).",
             "sources": [f1["entity_id"], c1["entity_id"]],
         },
         {
             "anchor": f"{b1['name']} narrative motif × {f2['name']} atmospheric palette",
-            "sonic": f"{c2['name']} harmonic texture ({int(c2['affinity_score'] * 100)}% Qloo affinity) + deep sub-bass impact",
+            "sonic": f"{c2['name']} harmonic texture ({_format_score_label(c2.get('affinity_score'), 'Qloo affinity')}) + deep sub-bass impact",
             "style_suffix": f"Wide environmental composition echoing {f2['name']} ({f2['entity_id']}).",
             "sources": [b1["entity_id"], f2["entity_id"], c2["entity_id"]],
         },
@@ -735,11 +748,13 @@ def run_agent(
                 ent_id = _extract_entity_id(top_hit, "urn:entity:book", q_idx)
                 if ent_id not in seen_book_ids:
                     seen_book_ids.add(ent_id)
+                    score_val, score_src = _extract_score_with_provenance(top_hit)
                     live_seed_books.append(
                         {
                             "name": str(top_hit.get("name") or seed_q),
                             "entity_id": ent_id,
-                            "match": _extract_score(top_hit, q_idx),
+                            "match": score_val,
+                            "score_field_source": score_src,
                             "source": "qloo_live_api",
                         }
                     )
@@ -762,15 +777,16 @@ def run_agent(
         live_films: list[dict[str, Any]] = []
         for idx, m_hit in enumerate(movie_hits[:3]):
             ent_id = _extract_entity_id(m_hit, "urn:entity:movie", idx)
-            score = _extract_score(m_hit, idx)
+            score_val, score_src = _extract_score_with_provenance(m_hit)
             tags_summary = _extract_tags_summary(m_hit)
             live_films.append(
                 {
                     "name": str(m_hit.get("name") or f"Qloo Film #{idx + 1}"),
                     "entity_id": ent_id,
-                    "affinity_score": score,
+                    "affinity_score": score_val,
+                    "score_field_source": score_src,
                     "rationale": (
-                        f"Live Qloo API ({movie_endpoint_used}) affinity {score:.2f} "
+                        f"Live Qloo API ({movie_endpoint_used}, { _format_score_label(score_val, score_src) }) "
                         f"seeded by {', '.join(seed_entity_ids[:2]) or 'manuscript themes'} "
                         f"[{tags_summary}]."
                     ),
@@ -793,15 +809,16 @@ def run_agent(
         live_composers: list[dict[str, Any]] = []
         for idx, a_hit in enumerate(artist_hits[:3]):
             ent_id = _extract_entity_id(a_hit, "urn:entity:artist", idx)
-            score = _extract_score(a_hit, idx)
+            score_val, score_src = _extract_score_with_provenance(a_hit)
             tags_summary = _extract_tags_summary(a_hit)
             live_composers.append(
                 {
                     "name": str(a_hit.get("name") or f"Qloo Artist #{idx + 1}"),
                     "entity_id": ent_id,
-                    "affinity_score": score,
+                    "affinity_score": score_val,
+                    "score_field_source": score_src,
                     "rationale": (
-                        f"Live Qloo API ({artist_endpoint_used}) sonic affinity {score:.2f} "
+                        f"Live Qloo API ({artist_endpoint_used}, { _format_score_label(score_val, score_src) }) "
                         f"[{tags_summary}]."
                     ),
                     "source": "qloo_live_api",
@@ -834,6 +851,8 @@ def run_agent(
                 "mode": "live_qloo_api_verified",
                 "qloo_api_verified": True,
                 "data_provenance": "qloo_live_api_responses",
+                "score_handling": "verbatim_from_qloo_payload_no_clamping_or_rank_fallback",
+                "audience_share_handling": "no_fabricated_demographic_percentages_when_absent_from_qloo",
                 "movie_endpoint_used": movie_endpoint_used,
                 "artist_endpoint_used": artist_endpoint_used,
                 "live_qloo_probe_results": len(live_seed_books) + len(live_films) + len(live_composers),

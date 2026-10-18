@@ -1,0 +1,12 @@
+test_export_ltx_brief_includes_provenance_and_live_anchors (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_export_ltx_brief_includes_provenance_and_live_anchors) ... ok
+test_failed_api_call_does_not_claim_verified (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_failed_api_call_does_not_claim_verified) ... /Users/yannabadie/.local/share/uv/python/cpython-3.14.8-macos-aarch64-none/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 401: 'Unauthorized'>
+  _warnings.warn(self.warn_message, ResourceWarning)
+ok
+test_live_api_responses_genuinely_determine_scores_and_brief (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_live_api_responses_genuinely_determine_scores_and_brief) ... ok
+test_no_score_clamping_and_no_rank_fallback_when_score_missing (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_no_score_clamping_and_no_rank_fallback_when_score_missing) ... ok
+test_offline_demo_mode_is_explicitly_unverified (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_offline_demo_mode_is_explicitly_unverified) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+OK
