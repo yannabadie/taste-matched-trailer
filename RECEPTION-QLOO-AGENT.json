@@ -1,61 +1,53 @@
 {
-  "schema_version": 1,
-  "generated_at": "2026-10-18T15:34:57+0200",
+  "schema_version": 2,
+  "generated_at": "2026-10-18T23:42:18+02:00",
   "review_refs_resolved": [
     "mc_6b2c9eb7d5f098100fc46e42 v2 & v3",
     "mc_8e3739cfd35118c7b805dd7e v1",
-    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/suivi/2026-10-18-1231-controle-correctifs-ascendant-qloo.json"
+    "mc_3d487e730c3a183acb4c2d2b v1",
+    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/parallel/2026-10-18/qloo/PLAN-INTEGRATION.txt",
+    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/parallel/2026-10-18/qloo/validate_backend.py",
+    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/parallel/2026-10-18/qloo/validate_web.cjs"
   ],
   "code_and_provenance_fixes": {
     "score_clamping_and_rank_fallback_removed": true,
-    "score_extraction_policy": "_extract_score_with_provenance returns verbatim numeric score and field name from Qloo payload, or (None, 'missing_in_qloo_payload') when absent",
-    "fabricated_audience_share_removed": true,
-    "audience_personas_policy": "compute_audience_personas_from_qloo sets share_pct=None and share_pct_provenance='not_provided_by_qloo_api' unless Qloo payload explicitly includes demographic percentages",
-    "unit_tests_executed": 5,
-    "unit_tests_passed": 5,
+    "popularity_excluded_from_affinity": true,
+    "missing_entity_ids_rejected": true,
+    "empty_http_200_recorded_as_failure": true,
+    "legacy_insights_labeled_separately_from_v2": true,
+    "strict_live_mode_supported": true,
+    "editorial_cohort_mapping_separated_from_clustering": true,
+    "web_ltx_brief_export_contract_aligned": true,
+    "web_escape_html_and_race_guard_added": true,
+    "web_custom_synopsis_preserved_and_used": true,
+    "unit_tests_executed": 6,
+    "unit_tests_passed": 6,
+    "validate_backend_checks": "12/12 PASS",
+    "validate_web_checks": "12/12 PASS",
+    "check_lineage_verified": true,
+    "github_commit": "4a3f739c736ec362edcb97bd78015d0664564a3e",
     "live_qloo_api_key_status": "external_key_pending_devpost_onboarding",
-    "live_endpoint_unprovisioned_probe": {
-      "mode": "live_qloo_api_failed_fallback_to_demo",
-      "qloo_api_verified": false,
-      "data_provenance": "precomputed_reference_fixture_after_api_error",
-      "live_qloo_probe_results": 0,
-      "api_errors": [
-        "https://hackathon.api.qloo.com/search?query=Hyperion+Dan+Simmons&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://api.qloo.com/search?query=Hyperion+Dan+Simmons&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://hackathon.api.qloo.com/search?query=Memoirs+of+Hadrian+Marguerite+Yourcenar&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://api.qloo.com/search?query=Memoirs+of+Hadrian+Marguerite+Yourcenar&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://hackathon.api.qloo.com/search?query=Dune+Frank+Herbert&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://api.qloo.com/search?query=Dune+Frank+Herbert&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://hackathon.api.qloo.com/search?query=Foundation+Isaac+Asimov&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://api.qloo.com/search?query=Foundation+Isaac+Asimov&types=urn%3Aentity%3Abook&take=5 -> HTTP 401",
-        "https://hackathon.api.qloo.com/v2/insights?filter.type=urn%3Aentity%3Amovie&signal.interests.entities=&take=5 -> HTTP 401",
-        "https://api.qloo.com/v2/insights?filter.type=urn%3Aentity%3Amovie&signal.interests.entities=&take=5 -> HTTP 401"
-      ],
-      "steps_completed": [
-        "live_qloo_api_attempt_failed",
-        "offline_fixture_fallback_loaded"
-      ],
-      "verification_note": "A Qloo API key was provided, but live endpoints did not return complete cross-domain entities. Falling back to static offline demo fixtures (`qloo_api_verified = False`)."
-    }
+    "live_qloo_api_verified": false,
+    "live_qloo_api_note": "No QLOO_API_KEY provisioned in local environment (issued manually via https://forms.gle/zz12orkLHTAneLGz6 for https://hackathon.api.qloo.com). Mode remains offline_precomputed_demo (qloo_api_verified=False) until key is supplied."
   },
   "artifacts": {
     "taste_matched_trailer_agent.py": {
       "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/taste_matched_trailer_agent.py",
-      "bytes": 49363,
-      "mtime_ns": 1792330340761437804,
-      "sha256": "26442a5b46ad59a00b0941ccd30c58d35d51883074f4fb7cbde2e16f2531a7ec"
+      "bytes": 51763,
+      "mtime_ns": 1792359264481765832,
+      "sha256": "953533f5eaba07dfc02112987a531e3cc5eb8cc402bb0bba8616fb72fe2169ec"
     },
     "test_taste_matched_trailer_agent.py": {
       "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/test_taste_matched_trailer_agent.py",
-      "bytes": 16309,
-      "mtime_ns": 1792330468067480196,
-      "sha256": "a64438c70cfb0add6140954738e20f2bc83c4349f8476ff9ff7564ac96f7dc20"
+      "bytes": 18141,
+      "mtime_ns": 1792359491776911562,
+      "sha256": "342cf17b5dbee4a3fbd950a16d81333782d80848214dcd68c48e541b395fc0ed"
     },
     "index.html": {
       "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/index.html",
-      "bytes": 46081,
-      "mtime_ns": 1792330426596331066,
-      "sha256": "d1b0b8763040f7f6bc99e24f9bad8caa32b981e9d61b6b21ff01fd55ccb0f707"
+      "bytes": 50851,
+      "mtime_ns": 1792359446338608944,
+      "sha256": "de7c38c72760ef2dfde4683330e2942bbcc5e60907b03a51033738a97fb67269"
     },
     "README.md": {
       "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/README.md",
@@ -65,9 +57,15 @@
     },
     "test-results-qloo-agent.txt": {
       "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/test-results-qloo-agent.txt",
-      "bytes": 1242,
-      "mtime_ns": 1792330491347168311,
-      "sha256": "c5d0f2d7a8670009429d28d2092835a0e112e4a14f4736ed394760f96bc5c02d"
+      "bytes": 1436,
+      "mtime_ns": 1792359503022736590,
+      "sha256": "e3e563f5d4d82a96179151befba5989a140db834cf38a2fc9068c294368187eb"
+    },
+    "brief-bronze-ltx25.json": {
+      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/brief-bronze-ltx25.json",
+      "bytes": 7375,
+      "mtime_ns": 1792359575134144664,
+      "sha256": "6de4a7e57adfce191efd916c1cd2f9250e1dccea9d661057116cfa3a64be366b"
     }
   }
 }
