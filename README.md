@@ -28,17 +28,23 @@ Visit **[https://yannabadie.github.io/taste-matched-trailer/](https://yannabadie
 - Stream the **real rendered book trailers** (`16:9 Landscape` and `9:16 Vertical BookTok`) directly in the browser.
 - Visit the live storefront page (`le-bronze-et-la-cendre.html`) powered by the generated trailer.
 
-### 2. Python Agent CLI (with optional Live Qloo API Key)
+### 2. Python Agent CLI (Offline Demo Fixture vs. Live Verified Qloo API)
+The agent strictly separates **offline reference fixtures** (`qloo_api_verified: false`) from **live Qloo API execution** (`qloo_api_verified: true`), where API responses from `/search` and `/v2/insights` dynamically determine the seed books, cross-domain film & composer affinities, audience persona shares, and 6-shot LTX-2.5 brief (`qloo_anchor`, `sonic_cue`, `visual_prompt`):
+
 ```bash
-# Run with verified Qloo Taste Graph profile and export an LTX-2.5 studio brief:
+# 1. Offline Demo Mode (no API key -> mode="offline_precomputed_demo", qloo_api_verified=false):
 python3 taste_matched_trailer_agent.py \
   --profile le-horla-maupassant \
   --export-brief ./brief-horla-ltx25.json
 
-# Run with a live Qloo API key (hackathon.api.qloo.com / api.qloo.com):
+# 2. Live Verified Qloo API Mode (requires valid Qloo API key -> mode="live_qloo_api_verified", qloo_api_verified=true):
 QLOO_API_KEY="your_qloo_key" python3 taste_matched_trailer_agent.py \
   --profile le-bronze-et-la-cendre \
+  --strict-live \
   --export-brief ./brief-bronze-ltx25.json
+
+# 3. Run the verification test suite (proves offline vs. live API output determination):
+python3 -m unittest -v test_taste_matched_trailer_agent.py
 ```
 
 ---
