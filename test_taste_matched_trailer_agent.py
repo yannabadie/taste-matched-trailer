@@ -278,7 +278,12 @@ class TasteMatchedTrailerAgentTests(unittest.TestCase):
                                 "name": "Low Affinity Film",
                                 "entity_id": "urn:entity:movie:low_aff",
                                 "query": {"affinity": 0.12},
-                            }
+                            },
+                            {
+                                "name": "Ultra High Affinity Film",
+                                "entity_id": "urn:entity:movie:high_aff",
+                                "query": {"affinity": 0.9991},
+                            },
                         ]
                     }
                 }
@@ -287,7 +292,7 @@ class TasteMatchedTrailerAgentTests(unittest.TestCase):
                     "results": {
                         "entities": [
                             {
-                                "name": "High Popularity Composer",
+                                "name": "Popularity Only Composer",
                                 "entity_id": "urn:entity:artist:high_pop",
                                 "popularity": 0.9991,
                             }
@@ -306,15 +311,42 @@ class TasteMatchedTrailerAgentTests(unittest.TestCase):
         self.assertIsNone(res["qloo_seed_books"][0]["match"])
         self.assertEqual(res["qloo_seed_books"][0]["score_field_source"], "missing_in_qloo_payload")
 
-        # 0.12 must remain 0.12 (not clamped to 0.50)
+        # 0.12 must remain 0.12 (not clamped to 0.50) and 0.9991 must remain 0.9991 (not clamped to 0.99)
         film0 = res["qloo_cross_domain_graph"]["films_and_visual_aesthetic"][0]
+        film1 = res["qloo_cross_domain_graph"]["films_and_visual_aesthetic"][1]
         self.assertEqual(film0["affinity_score"], 0.12)
         self.assertEqual(film0["score_field_source"], "query.affinity")
+        self.assertEqual(film1["affinity_score"], 0.9991)
+        self.assertEqual(film1["score_field_source"], "query.affinity")
 
-        # 0.9991 must remain 0.9991 (not clamped to 0.99)
+        # Popularity must NEVER be used as affinity_score
         comp0 = res["qloo_cross_domain_graph"]["soundtrack_and_composers"][0]
-        self.assertEqual(comp0["affinity_score"], 0.9991)
-        self.assertEqual(comp0["score_field_source"], "popularity")
+        self.assertIsNone(comp0["affinity_score"])
+        self.assertEqual(comp0["score_field_source"], "missing_in_qloo_payload")
+
+    def test_search_only_and_missing_ids_are_rejected_in_strict_live(self) -> None:
+        def _search_only_transport(url: str, headers: dict[str, str]) -> dict[str, Any]:
+            if "/v2/insights" in url or "/insights" in url:
+                return {"results": {"entities": []}}
+            return {
+                "results": {
+                    "entities": [
+                        {"name": "Search Discovery Only", "entity_id": "urn:entity:item:1", "query": {"affinity": 0.5}}
+                    ]
+                }
+            }
+
+        with self.assertRaises(RuntimeError):
+            run_agent("le-bronze-et-la-cendre", api_key="test-key", http_get_json=_search_only_transport, strict_live=True)
+
+        fallback_res = run_agent("le-bronze-et-la-cendre", api_key="test-key", http_get_json=_search_only_transport, strict_live=False)
+        self.assertFalse(fallback_res["agent_execution"]["qloo_api_verified"])
+
+        def _missing_id_transport(url: str, headers: dict[str, str]) -> dict[str, Any]:
+            return {"results": {"entities": [{"name": "Entity Without ID", "query": {"affinity": 0.8}}]}}
+
+        with self.assertRaises(RuntimeError):
+            run_agent("le-bronze-et-la-cendre", api_key="test-key", http_get_json=_missing_id_transport, strict_live=True)
 
     def test_export_ltx_brief_includes_provenance_and_live_anchors(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

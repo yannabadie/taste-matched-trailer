@@ -42,7 +42,6 @@ from typing import Any, Callable
 
 QLOO_BASE_URLS = (
     "https://hackathon.api.qloo.com",
-    "https://api.qloo.com",
 )
 
 HttpGetJsonFn = Callable[[str, dict[str, str]], dict[str, Any]]
@@ -402,23 +401,21 @@ def _extract_entities_from_payload(payload: dict[str, Any]) -> list[dict[str, An
 
 
 def _extract_score_with_provenance(entity: dict[str, Any]) -> tuple[float | None, str]:
-    """Extracts the exact numeric score returned by Qloo without clamping or rank-based fallback.
+    """Extracts the exact numeric affinity score returned by Qloo without clamping or rank-based fallback.
 
-    Returns `(score, field_source)`. If no numeric score exists in the Qloo entity payload,
+    Popularity is never treated as an affinity score.
+    Returns `(score, field_source)`. If no numeric affinity score exists in the Qloo entity payload,
     returns `(None, "missing_in_qloo_payload")`.
     """
     candidates: list[tuple[str, Any]] = []
     query_block = entity.get("query")
     if isinstance(query_block, dict):
         candidates.append(("query.affinity", query_block.get("affinity")))
-        candidates.append(("query.score", query_block.get("score")))
     candidates.extend(
         [
             ("affinity_score", entity.get("affinity_score")),
             ("affinity", entity.get("affinity")),
             ("match", entity.get("match")),
-            ("score", entity.get("score")),
-            ("popularity", entity.get("popularity")),
         ]
     )
     for field_name, raw in candidates:
@@ -433,8 +430,14 @@ def _format_score_label(score: float | None, prefix: str = "Qloo score") -> str:
     return f"{prefix}: {score:.4g}"
 
 
-def _extract_entity_id(entity: dict[str, Any], default_prefix: str, rank_idx: int) -> str:
-    raw_id = str(entity.get("entity_id") or entity.get("id") or f"{default_prefix}_{rank_idx + 1}")
+def _extract_entity_id(entity: dict[str, Any], default_prefix: str) -> str | None:
+    """Extracts a non-empty entity ID from a Qloo payload, or returns None if missing (never fabricates IDs)."""
+    raw_val = entity.get("entity_id") or entity.get("id")
+    if raw_val is None:
+        return None
+    raw_id = str(raw_val).strip()
+    if not raw_id:
+        return None
     if not raw_id.startswith("urn:entity:") and not raw_id.startswith("urn:tag:") and not raw_id.startswith("urn:demographics:"):
         return f"{default_prefix}:{raw_id}"
     return raw_id
@@ -474,6 +477,8 @@ def query_qloo_endpoint(
             entities = _extract_entities_from_payload(payload)
             if entities:
                 return entities, payload
+            if errors_out is not None:
+                errors_out.append(f"{url} -> HTTP 200 (0 entities returned)")
         except urllib.error.HTTPError as exc:
             if errors_out is not None:
                 errors_out.append(f"{url} -> HTTP {exc.code}")
@@ -508,20 +513,28 @@ def query_qloo_insights_live(
     fallback_query: str,
     http_get_json: HttpGetJsonFn | None = None,
     errors_out: list[str] | None = None,
+    strict_live: bool = False,
 ) -> tuple[list[dict[str, Any]], str, list[dict[str, Any]]]:
-    """Queries Qloo `/v2/insights` (with `/insights` and `/search` fallbacks) seeded by resolved book entities."""
+    """Queries Qloo `/v2/insights` seeded by resolved book entities.
+
+    When `strict_live=False`, may fall back to legacy `/insights` or `/search` for discovery,
+    labeling the endpoint accurately (`qloo_legacy_insights` or `qloo_live_search`) so that
+    only `/v2/insights` can qualify as `qloo_api_verified = True`.
+    """
     raw_payloads: list[dict[str, Any]] = []
     clean_seeds = [s.split(":")[-1] if s.startswith("urn:entity:") else s for s in seed_entity_ids if s]
     seed_param = ",".join(clean_seeds[:4])
 
-    insight_paths = [
-        f"/v2/insights?{urllib.parse.urlencode({'filter.type': target_entity_type, 'signal.interests.entities': seed_param, 'take': 5})}",
-        f"/insights?{urllib.parse.urlencode({'filter.type': target_entity_type, 'signal.interests.entities': seed_param, 'take': 5})}",
-    ]
-    for path in insight_paths:
+    if not seed_param:
+        if errors_out is not None:
+            errors_out.append(f"Skipped /v2/insights for {target_entity_type}: no resolved seed book entity IDs")
+        if strict_live:
+            return [], "none", raw_payloads
+    else:
+        v2_path = f"/v2/insights?{urllib.parse.urlencode({'filter.type': target_entity_type, 'signal.interests.entities': seed_param, 'take': 5})}"
         entities, payload = query_qloo_endpoint(
             api_key=api_key,
-            path_and_query=path,
+            path_and_query=v2_path,
             http_get_json=http_get_json,
             errors_out=errors_out,
         )
@@ -530,7 +543,24 @@ def query_qloo_insights_live(
         if entities:
             return entities, "qloo_v2_insights", raw_payloads
 
-    # Fallback to live Qloo `/search` on target domain if `/v2/insights` requires different account tier params
+        if strict_live:
+            return [], "none", raw_payloads
+
+        legacy_path = f"/insights?{urllib.parse.urlencode({'filter.type': target_entity_type, 'signal.interests.entities': seed_param, 'take': 5})}"
+        entities, payload = query_qloo_endpoint(
+            api_key=api_key,
+            path_and_query=legacy_path,
+            http_get_json=http_get_json,
+            errors_out=errors_out,
+        )
+        if payload is not None:
+            raw_payloads.append(payload)
+        if entities:
+            return entities, "qloo_legacy_insights", raw_payloads
+
+    if strict_live:
+        return [], "none", raw_payloads
+
     search_params = urllib.parse.urlencode({"query": fallback_query, "types": target_entity_type, "take": 5})
     entities, payload = query_qloo_endpoint(
         api_key=api_key,
@@ -553,17 +583,20 @@ def compute_audience_personas_from_qloo(
     composers: list[dict[str, Any]],
     demographic_entities: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Builds audience persona entries strictly from Qloo API data without fabricating `share_pct`.
+    """Builds editorial audience cohort proposals anchored on Qloo entities without fabricating `share_pct`.
 
     - If Qloo returned explicit demographic/tag entities with a `share_pct` or `percentage` field,
       that exact numeric value and its field name are preserved.
     - Otherwise, `share_pct` is set to `None` with `share_pct_provenance = "not_provided_by_qloo_api"`
-      and the verbatim `qloo_affinity` of each domain's top entity is reported instead of inventing
-      proportions from coefficients or hashes.
+      and the verbatim `qloo_affinity` of each domain's top entity is reported alongside editorial
+      channel proposals (`channel_provenance = "editorial_proposal_not_qloo_clustering"`).
     """
     if demographic_entities:
         personas: list[dict[str, Any]] = []
         for idx, d_ent in enumerate(demographic_entities[:3]):
+            ent_id = _extract_entity_id(d_ent, "urn:demographics:cluster")
+            if not ent_id:
+                continue
             q_block = d_ent.get("query") if isinstance(d_ent.get("query"), dict) else {}
             raw_pct = d_ent.get("share_pct") if d_ent.get("share_pct") is not None else d_ent.get("percentage", q_block.get("share_pct"))
             pct_val = float(raw_pct) if isinstance(raw_pct, (int, float)) and not isinstance(raw_pct, bool) else None
@@ -571,7 +604,7 @@ def compute_audience_personas_from_qloo(
             personas.append(
                 {
                     "segment": str(d_ent.get("name") or d_ent.get("id") or f"Qloo Audience Cluster #{idx + 1}"),
-                    "entity_id": _extract_entity_id(d_ent, "urn:demographics:cluster", idx),
+                    "entity_id": ent_id,
                     "share_pct": pct_val,
                     "share_pct_provenance": "qloo_api_demographic_field" if pct_val is not None else "not_provided_by_qloo_api",
                     "qloo_affinity": score_val,
@@ -580,7 +613,8 @@ def compute_audience_personas_from_qloo(
                     "source": "qloo_live_api",
                 }
             )
-        return personas
+        if personas:
+            return personas
 
     top_book = seed_books[0] if seed_books else {"name": "Seed Book", "entity_id": "urn:entity:book:0", "match": None, "score_field_source": "missing_in_qloo_payload"}
     top_film = films[0] if films else {"name": "Top Film", "entity_id": "urn:entity:movie:0", "affinity_score": None, "score_field_source": "missing_in_qloo_payload"}
@@ -588,33 +622,36 @@ def compute_audience_personas_from_qloo(
 
     return [
         {
-            "segment": f"Literary Cohort anchored on {top_book['name']}",
+            "segment": f"Editorial Literary Cohort Proposal anchored on {top_book['name']}",
             "anchor_entity_id": top_book["entity_id"],
             "share_pct": None,
             "share_pct_provenance": "not_provided_by_qloo_api",
             "qloo_affinity": top_book.get("match"),
             "qloo_score_field_source": top_book.get("score_field_source", "missing_in_qloo_payload"),
             "channels": ["BookTok", "Goodreads", "Babelio"] if slug == "le-horla-maupassant" else ["Amazon KDP", "Babelio Imaginaire", "Reddit r/PrintSF"],
+            "channel_provenance": "editorial_proposal_not_qloo_clustering",
             "source": "qloo_live_entity_affinity_only",
         },
         {
-            "segment": f"Cinema Cohort anchored on {top_film['name']}",
+            "segment": f"Editorial Cinema Cohort Proposal anchored on {top_film['name']}",
             "anchor_entity_id": top_film["entity_id"],
             "share_pct": None,
             "share_pct_provenance": "not_provided_by_qloo_api",
             "qloo_affinity": top_film.get("affinity_score"),
             "qloo_score_field_source": top_film.get("score_field_source", "missing_in_qloo_payload"),
             "channels": ["Letterboxd", "MUBI", "YouTube Film Essays"],
+            "channel_provenance": "editorial_proposal_not_qloo_clustering",
             "source": "qloo_live_entity_affinity_only",
         },
         {
-            "segment": f"Sonic Cohort anchored on {top_comp['name']}",
+            "segment": f"Editorial Sonic Cohort Proposal anchored on {top_comp['name']}",
             "anchor_entity_id": top_comp["entity_id"],
             "share_pct": None,
             "share_pct_provenance": "not_provided_by_qloo_api",
             "qloo_affinity": top_comp.get("affinity_score"),
             "qloo_score_field_source": top_comp.get("score_field_source", "missing_in_qloo_payload"),
             "channels": ["Spotify Soundtrack Curators", "Bandcamp", "YouTube Shorts Audio"],
+            "channel_provenance": "editorial_proposal_not_qloo_clustering",
             "source": "qloo_live_entity_affinity_only",
         },
     ]
@@ -734,7 +771,7 @@ def run_agent(
         seed_queries: list[str] = profile.get("seed_queries") or [profile["title"]]
         live_seed_books: list[dict[str, Any]] = []
         seen_book_ids: set[str] = set()
-        for q_idx, seed_q in enumerate(seed_queries):
+        for seed_q in seed_queries:
             hits = query_qloo_live(
                 clean_key,
                 seed_q,
@@ -744,25 +781,29 @@ def run_agent(
             )
             if hits:
                 raw_responses_digest_material.append({"step": "seed_book_search", "query": seed_q, "hits": hits[:2]})
-                top_hit = hits[0]
-                ent_id = _extract_entity_id(top_hit, "urn:entity:book", q_idx)
-                if ent_id not in seen_book_ids:
-                    seen_book_ids.add(ent_id)
-                    score_val, score_src = _extract_score_with_provenance(top_hit)
-                    live_seed_books.append(
-                        {
-                            "name": str(top_hit.get("name") or seed_q),
-                            "entity_id": ent_id,
-                            "match": score_val,
-                            "score_field_source": score_src,
-                            "source": "qloo_live_api",
-                        }
-                    )
+                for hit in hits:
+                    ent_id = _extract_entity_id(hit, "urn:entity:book")
+                    if not ent_id:
+                        api_errors.append(f"Book search hit for {seed_q!r} missing entity_id in Qloo payload")
+                        continue
+                    if ent_id not in seen_book_ids:
+                        seen_book_ids.add(ent_id)
+                        score_val, score_src = _extract_score_with_provenance(hit)
+                        live_seed_books.append(
+                            {
+                                "name": str(hit.get("name") or seed_q),
+                                "entity_id": ent_id,
+                                "match": score_val,
+                                "score_field_source": score_src,
+                                "source": "qloo_live_api",
+                            }
+                        )
+                        break
 
         seed_entity_ids = [b["entity_id"] for b in live_seed_books]
         theme_fallback_query = " ".join(profile["literary_dna"]["primary_themes"][:2])
 
-        # Step 2: Fetch cross-domain movie affinities from Qloo `/v2/insights` (or `/search` fallback)
+        # Step 2: Fetch cross-domain movie affinities from Qloo `/v2/insights`
         movie_hits, movie_endpoint_used, movie_payloads = query_qloo_insights_live(
             api_key=clean_key,
             seed_entity_ids=seed_entity_ids,
@@ -770,13 +811,17 @@ def run_agent(
             fallback_query=theme_fallback_query,
             http_get_json=http_get_json,
             errors_out=api_errors,
+            strict_live=strict_live,
         )
         if movie_payloads:
             raw_responses_digest_material.append({"step": "movie_insights", "payloads": movie_payloads})
 
         live_films: list[dict[str, Any]] = []
         for idx, m_hit in enumerate(movie_hits[:3]):
-            ent_id = _extract_entity_id(m_hit, "urn:entity:movie", idx)
+            ent_id = _extract_entity_id(m_hit, "urn:entity:movie")
+            if not ent_id:
+                api_errors.append(f"Movie hit #{idx + 1} missing entity_id in Qloo payload")
+                continue
             score_val, score_src = _extract_score_with_provenance(m_hit)
             tags_summary = _extract_tags_summary(m_hit)
             live_films.append(
@@ -794,7 +839,7 @@ def run_agent(
                 }
             )
 
-        # Step 3: Fetch cross-domain composer/artist affinities from Qloo `/v2/insights` (or `/search` fallback)
+        # Step 3: Fetch cross-domain composer/artist affinities from Qloo `/v2/insights`
         artist_hits, artist_endpoint_used, artist_payloads = query_qloo_insights_live(
             api_key=clean_key,
             seed_entity_ids=seed_entity_ids,
@@ -802,13 +847,17 @@ def run_agent(
             fallback_query=f"soundtrack composer {profile['title']}",
             http_get_json=http_get_json,
             errors_out=api_errors,
+            strict_live=strict_live,
         )
         if artist_payloads:
             raw_responses_digest_material.append({"step": "artist_insights", "payloads": artist_payloads})
 
         live_composers: list[dict[str, Any]] = []
         for idx, a_hit in enumerate(artist_hits[:3]):
-            ent_id = _extract_entity_id(a_hit, "urn:entity:artist", idx)
+            ent_id = _extract_entity_id(a_hit, "urn:entity:artist")
+            if not ent_id:
+                api_errors.append(f"Artist hit #{idx + 1} missing entity_id in Qloo payload")
+                continue
             score_val, score_src = _extract_score_with_provenance(a_hit)
             tags_summary = _extract_tags_summary(a_hit)
             live_composers.append(
@@ -825,9 +874,12 @@ def run_agent(
                 }
             )
 
-        # Strict qualification: only mark `qloo_api_verified = True` if all 3 live domains returned data
-        # and actually replaced the precomputed profile outputs.
-        if live_seed_books and live_films and live_composers:
+        # Strict qualification: only mark `qloo_api_verified = True` if all 3 live domains returned
+        # entities with valid IDs AND both movie and artist came from `/v2/insights`.
+        insights_verified = (
+            movie_endpoint_used == "qloo_v2_insights" and artist_endpoint_used == "qloo_v2_insights"
+        )
+        if live_seed_books and live_films and live_composers and insights_verified:
             profile["qloo_seed_books"] = live_seed_books
             profile["qloo_cross_domain_graph"]["films_and_visual_aesthetic"] = live_films
             profile["qloo_cross_domain_graph"]["soundtrack_and_composers"] = live_composers
@@ -867,10 +919,10 @@ def run_agent(
                     "trailer_shots[*].visual_prompt",
                 ],
                 "steps_completed": [
-                    "1_manuscript_dna_extraction",
+                    "1_profile_seed_selection",
                     "2_qloo_live_seed_entity_resolution",
                     "3_qloo_live_cross_domain_affinity_matrix",
-                    "4_qloo_live_audience_persona_clustering",
+                    "4_editorial_cohort_mapping_from_entity_affinities",
                     "5_qloo_live_ltx25_shot_brief_synthesis",
                 ],
             }
@@ -878,12 +930,15 @@ def run_agent(
             if strict_live:
                 raise RuntimeError(
                     f"Live Qloo API verification failed (seed_books={len(live_seed_books)}, "
-                    f"films={len(live_films)}, composers={len(live_composers)}). Errors: {api_errors}"
+                    f"films={len(live_films)} via {movie_endpoint_used}, "
+                    f"composers={len(live_composers)} via {artist_endpoint_used}). Errors: {api_errors}"
                 )
             profile["agent_execution"] = {
                 "mode": "live_qloo_api_failed_fallback_to_demo",
                 "qloo_api_verified": False,
                 "data_provenance": "precomputed_reference_fixture_after_api_error",
+                "movie_endpoint_used": movie_endpoint_used,
+                "artist_endpoint_used": artist_endpoint_used,
                 "live_qloo_probe_results": len(live_seed_books) + len(live_films) + len(live_composers),
                 "api_errors": api_errors[:10],
                 "steps_completed": [
@@ -891,8 +946,8 @@ def run_agent(
                     "offline_fixture_fallback_loaded",
                 ],
                 "verification_note": (
-                    "A Qloo API key was provided, but live endpoints did not return complete cross-domain "
-                    "entities. Falling back to static offline demo fixtures (`qloo_api_verified = False`)."
+                    "A Qloo API key was provided, but live /v2/insights endpoints did not return complete "
+                    "cross-domain entities with valid IDs. Falling back to static offline demo fixtures (`qloo_api_verified = False`)."
                 ),
             }
 

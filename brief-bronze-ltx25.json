@@ -6,25 +6,30 @@
     "height": 1024,
     "fps": 24
   },
+  "qloo_api_verified": false,
+  "data_provenance": "precomputed_reference_fixture",
   "qloo_cultural_positioning": {
     "films_and_visual_aesthetic": [
       {
         "name": "Dune: Part Two (Denis Villeneuve, 2024)",
         "entity_id": "urn:entity:movie:dune_part_two",
         "affinity_score": 0.96,
-        "rationale": "Readers combining literary antiquity with hard SF over-index 5.2x on Villeneuve's monolithic brutalist framing and bronze/ochre dust palettes."
+        "rationale": "[Offline Reference Fixture] Readers combining literary antiquity with hard SF over-index on Villeneuve's monolithic brutalist framing and bronze/ochre dust palettes.",
+        "source": "precomputed_fixture"
       },
       {
         "name": "Blade Runner 2049 (Denis Villeneuve, 2017)",
         "entity_id": "urn:entity:movie:blade_runner_2049",
         "affinity_score": 0.92,
-        "rationale": "High affinity on tactile relic examination scenes, museum-like silence, and amber-lit shadow geometry."
+        "rationale": "[Offline Reference Fixture] High affinity on tactile relic examination scenes, museum-like silence, and amber-lit shadow geometry.",
+        "source": "precomputed_fixture"
       },
       {
         "name": "Rome (HBO Series, Bruno Heller)",
         "entity_id": "urn:entity:tv:rome_hbo",
         "affinity_score": 0.89,
-        "rationale": "Strong overlap on oil-lamp antiquity textures, military insignia, and political stoicism."
+        "rationale": "[Offline Reference Fixture] Strong overlap on oil-lamp antiquity textures, military insignia, and political stoicism.",
+        "source": "precomputed_fixture"
       }
     ],
     "soundtrack_and_composers": [
@@ -32,19 +37,22 @@
         "name": "Jóhann Jóhannsson",
         "entity_id": "urn:entity:artist:johann_johannsson",
         "affinity_score": 0.95,
-        "rationale": "Brass-and-organ slow-burn motifs bridging ancient liturgy and futuristic minimalism."
+        "rationale": "[Offline Reference Fixture] Brass-and-organ slow-burn motifs bridging ancient liturgy and futuristic minimalism.",
+        "source": "precomputed_fixture"
       },
       {
         "name": "Max Richter",
         "entity_id": "urn:entity:artist:max_richter",
         "affinity_score": 0.92,
-        "rationale": "Elegiac strings ('On the Nature of Daylight' cohort) matching the philosophical weight of Memoirs of Hadrian readers."
+        "rationale": "[Offline Reference Fixture] Elegiac strings ('On the Nature of Daylight' cohort) matching the philosophical weight of Memoirs of Hadrian readers.",
+        "source": "precomputed_fixture"
       },
       {
         "name": "Wardruna / Einar Selvik",
         "entity_id": "urn:entity:artist:wardruna",
         "affinity_score": 0.86,
-        "rationale": "Bronze horn and ritual percussion textures over-indexed by historical-mythological SF readers."
+        "rationale": "[Offline Reference Fixture] Bronze horn and ritual percussion textures over-indexed by historical-mythological SF readers.",
+        "source": "precomputed_fixture"
       }
     ],
     "audience_personas": [
@@ -55,7 +63,8 @@
           "Amazon KDP SF Historique",
           "Babelio Imaginaire",
           "Reddit r/PrintSF & r/SciFi"
-        ]
+        ],
+        "source": "precomputed_fixture"
       },
       {
         "segment": "Antiquity & Civilizational History Enthusiasts",
@@ -64,7 +73,8 @@
           "YouTube Histoire/Archéologie",
           "Podcasts Antiquité",
           "Twitter/X Histoire"
-        ]
+        ],
+        "source": "precomputed_fixture"
       },
       {
         "segment": "Cinematic Speculative Fiction & Worldbuilding Fans",
@@ -73,7 +83,8 @@
           "BookTok #SFFR",
           "Instagram Reels Lecture",
           "Substack Essais"
-        ]
+        ],
+        "source": "precomputed_fixture"
       }
     ]
   },
@@ -84,7 +95,10 @@
       "prompt": "Macro cinematic shot of an ancient verdigris bronze Roman oil lamp resting on dark volcanic ash; a warm flame flickers as fine ash particles drift upward in slow motion.",
       "voiceover_fr": "En 2287, on croyait les empires éteints. Il ne restait que le bronze… et la cendre.",
       "voiceover_en": "In 2287, they believed empires were extinct. Only bronze remained... and ash.",
-      "qloo_anchor": "Blade Runner 2049 relic lighting × Rome oil-lamp texture"
+      "sonic_cue": "Jóhannsson-style low bronze horn resonance + soft ash wind",
+      "qloo_anchor": "Blade Runner 2049 relic lighting × Rome oil-lamp texture",
+      "qloo_live_derived": false,
+      "qloo_source_entity_ids": []
     },
     {
       "id": "bronze-p2-medaillon",
@@ -92,7 +106,10 @@
       "prompt": "Close-up of gloved archivist hands brushing grey ash off a fractured bronze military medallion bearing an imperial eagle and Latin-futuristic coordinates.",
       "voiceover_fr": "Sous la poussière des archives orbitales, un serment vieux de deux millénaires refait surface.",
       "voiceover_en": "Beneath the dust of orbital archives, a two-thousand-year-old oath resurfaces.",
-      "qloo_anchor": "Hyperion / Dune archaeological mystery motif"
+      "sonic_cue": "Tactile stone/metal brush + sub-bass pulse",
+      "qloo_anchor": "Hyperion / Dune archaeological mystery motif",
+      "qloo_live_derived": false,
+      "qloo_source_entity_ids": []
     },
     {
       "id": "bronze-p3-voute",
@@ -100,7 +117,10 @@
       "prompt": "Wide low-angle shot inside a monumental brutalist vault in 2287 where shafts of amber light cut through cold slate shadow onto a solitary silhouette examining a holographic stele.",
       "voiceover_fr": "Car les machines changent de siècle, mais la mécanique du pouvoir garde le même visage.",
       "voiceover_en": "For machines change centuries, yet the machinery of power keeps the very same face.",
-      "qloo_anchor": "Dune: Part Two monolithic architectural scale"
+      "sonic_cue": "Max Richter elegiac cello motif enters (74 BPM)",
+      "qloo_anchor": "Dune: Part Two monolithic architectural scale",
+      "qloo_live_derived": false,
+      "qloo_source_entity_ids": []
     },
     {
       "id": "bronze-p4-legion",
@@ -108,7 +128,10 @@
       "prompt": "Medium shot of a commander in weathered bronze-and-carbon armor standing at the threshold of a wind-swept stone terrace at dusk, embers drifting past his motionless profile.",
       "voiceover_fr": "Quand la Légion d'Airain réclame son dû, nul ne choisit impunément son camp.",
       "voiceover_en": "When the Brazen Legion claims its debt, no one chooses a side with impunity.",
-      "qloo_anchor": "Memoirs of Hadrian stoic portrait × Villeneuve palette"
+      "sonic_cue": "Deep ritual drum impact + rising brass chord",
+      "qloo_anchor": "Memoirs of Hadrian stoic portrait × Villeneuve palette",
+      "qloo_live_derived": false,
+      "qloo_source_entity_ids": []
     },
     {
       "id": "bronze-p5-regard",
@@ -116,7 +139,10 @@
       "prompt": "Extreme close-up on the protagonist's eyes reflecting a warm amber flame in the darkness, slow push-in as the flame steadies.",
       "voiceover_fr": "Que reste-t-il d'un homme lorsque l'Histoire efface jusqu'à son nom ?",
       "voiceover_en": "What remains of a man when History erases even his name?",
-      "qloo_anchor": "High-retention BookTok emotional close-up"
+      "sonic_cue": "High string harmonic suspended over silence",
+      "qloo_anchor": "High-retention BookTok emotional close-up",
+      "qloo_live_derived": false,
+      "qloo_source_entity_ids": []
     },
     {
       "id": "bronze-p6-carton",
@@ -124,7 +150,10 @@
       "prompt": "Exact typographic end-card on #0C0F1A midnight background with #D8B982 antique gold serif typography: YANN ABADIE — LE BRONZE ET LA CENDRE.",
       "voiceover_fr": "Le Bronze et la Cendre. Un roman de Yann Abadie.",
       "voiceover_en": "Bronze and Ash. A novel by Yann Abadie.",
-      "qloo_anchor": "Direct-to-Reader Edition & KDP Launch Card"
+      "sonic_cue": "Full orchestral brass & cello resolve",
+      "qloo_anchor": "Direct-to-Reader Edition & KDP Launch Card",
+      "qloo_live_derived": false,
+      "qloo_source_entity_ids": []
     }
   ]
 }

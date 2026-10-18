@@ -5,8 +5,9 @@ ok
 test_live_api_responses_genuinely_determine_scores_and_brief (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_live_api_responses_genuinely_determine_scores_and_brief) ... ok
 test_no_score_clamping_and_no_rank_fallback_when_score_missing (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_no_score_clamping_and_no_rank_fallback_when_score_missing) ... ok
 test_offline_demo_mode_is_explicitly_unverified (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_offline_demo_mode_is_explicitly_unverified) ... ok
+test_search_only_and_missing_ids_are_rejected_in_strict_live (test_taste_matched_trailer_agent.TasteMatchedTrailerAgentTests.test_search_only_and_missing_ids_are_rejected_in_strict_live) ... ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 0.002s
+Ran 6 tests in 0.002s
 
 OK

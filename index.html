@@ -430,7 +430,7 @@
     </div>
 
     <section class="panel" style="margin-top: 1.25rem;">
-      <h2>Audience Personas &amp; High-Conversion Distribution Channels (Qloo Cohort Clustering)</h2>
+      <h2>Editorial Audience Cohort Proposals &amp; Distribution Channels (Anchored on Qloo Entities)</h2>
       <div class="grid-3" id="personasRow" style="margin-top: 0.5rem;"></div>
     </section>
 
@@ -441,7 +441,7 @@
   </main>
 
   <script>
-    const QLOO_BASES = ["https://hackathon.api.qloo.com", "https://api.qloo.com"];
+    const QLOO_BASES = ["https://hackathon.api.qloo.com"];
     const PROFILES = {
       "le-bronze-et-la-cendre": {
         title: "Le Bronze et la Cendre",
@@ -468,19 +468,19 @@
           color_palette: ["#0C0F1A", "#D8B982", "#8C583A", "#2C3545"]
         },
         qloo_seed_books: [
-          { name: "Hyperion (Dan Simmons)", entity_id: "urn:entity:book:hyperion_simmons", match: 0.95, rationale: "[Offline Reference Fixture] Literary speculative fiction combining classical history with deep-future tragedy." },
-          { name: "Memoirs of Hadrian (Marguerite Yourcenar)", entity_id: "urn:entity:book:memoires_d_hadrien", match: 0.93, rationale: "[Offline Reference Fixture] Francophone gold standard for stoic imperial reflection and bronze-age memory." },
-          { name: "Dune (Frank Herbert)", entity_id: "urn:entity:book:dune_herbert", match: 0.91, rationale: "[Offline Reference Fixture] Feudal-imperial power structures across millennia." }
+          { name: "Hyperion (Dan Simmons)", entity_id: "urn:entity:book:hyperion_simmons", match: 0.95, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Literary speculative fiction combining classical history with deep-future tragedy." },
+          { name: "Memoirs of Hadrian (Marguerite Yourcenar)", entity_id: "urn:entity:book:memoires_d_hadrien", match: 0.93, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Francophone gold standard for stoic imperial reflection and bronze-age memory." },
+          { name: "Dune (Frank Herbert)", entity_id: "urn:entity:book:dune_herbert", match: 0.91, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Feudal-imperial power structures across millennia." }
         ],
         films: [
-          { name: "Dune: Part Two (Denis Villeneuve, 2024)", entity_id: "urn:entity:movie:dune_part_two", affinity_score: 0.96, rationale: "[Offline Reference Fixture] Readers combining literary antiquity with hard SF over-index on Villeneuve's monolithic brutalist framing and bronze/ochre palettes." },
-          { name: "Blade Runner 2049 (Denis Villeneuve, 2017)", entity_id: "urn:entity:movie:blade_runner_2049", affinity_score: 0.92, rationale: "[Offline Reference Fixture] High affinity on tactile relic examination scenes and amber-lit shadow geometry." },
-          { name: "Rome (HBO Series, Bruno Heller)", entity_id: "urn:entity:tv:rome_hbo", affinity_score: 0.89, rationale: "[Offline Reference Fixture] Strong overlap on oil-lamp antiquity textures, legion insignia, and political stoicism." }
+          { name: "Dune: Part Two (Denis Villeneuve, 2024)", entity_id: "urn:entity:movie:dune_part_two", affinity_score: 0.96, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Readers combining literary antiquity with hard SF over-index on Villeneuve's monolithic brutalist framing and bronze/ochre palettes." },
+          { name: "Blade Runner 2049 (Denis Villeneuve, 2017)", entity_id: "urn:entity:movie:blade_runner_2049", affinity_score: 0.92, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] High affinity on tactile relic examination scenes and amber-lit shadow geometry." },
+          { name: "Rome (HBO Series, Bruno Heller)", entity_id: "urn:entity:tv:rome_hbo", affinity_score: 0.89, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Strong overlap on oil-lamp antiquity textures, legion insignia, and political stoicism." }
         ],
         music: [
-          { name: "Jóhann Jóhannsson", entity_id: "urn:entity:artist:johann_johannsson", affinity_score: 0.95, rationale: "[Offline Reference Fixture] Brass-and-organ slow-burn motifs bridging ancient liturgy and futuristic minimalism." },
-          { name: "Max Richter", entity_id: "urn:entity:artist:max_richter", affinity_score: 0.92, rationale: "[Offline Reference Fixture] Elegiac strings matching the philosophical weight of Memoirs of Hadrian readers." },
-          { name: "Wardruna / Einar Selvik", entity_id: "urn:entity:artist:wardruna", affinity_score: 0.86, rationale: "[Offline Reference Fixture] Bronze horn and ritual percussion textures over-indexed by mythological SF readers." }
+          { name: "Jóhann Jóhannsson", entity_id: "urn:entity:artist:johann_johannsson", affinity_score: 0.95, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Brass-and-organ slow-burn motifs bridging ancient liturgy and futuristic minimalism." },
+          { name: "Max Richter", entity_id: "urn:entity:artist:max_richter", affinity_score: 0.92, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Elegiac strings matching the philosophical weight of Memoirs of Hadrian readers." },
+          { name: "Wardruna / Einar Selvik", entity_id: "urn:entity:artist:wardruna", affinity_score: 0.86, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Bronze horn and ritual percussion textures over-indexed by mythological SF readers." }
         ],
         personas: [
           { segment: "Literary & Philosophical Sci-Fi Readers (Hyperion / Dune / Yourcenar)", share_pct: 48, channels: ["Amazon KDP SF Historique", "Babelio Imaginaire", "Reddit r/PrintSF"] },
@@ -521,19 +521,19 @@
           color_palette: ["#0C0F1A", "#D8B982", "#4A5D6E", "#8B261D"]
         },
         qloo_seed_books: [
-          { name: "The Turn of the Screw (Henry James)", entity_id: "urn:entity:book:turn_of_the_screw", match: 0.96, rationale: "[Offline Reference Fixture] Primary anchor for ambiguous domestic haunting & first-person unreliable dread." },
-          { name: "The Fall of the House of Usher (E.A. Poe)", entity_id: "urn:entity:book:house_of_usher", match: 0.94, rationale: "[Offline Reference Fixture] High co-reading affinity on architectural claustrophobia & sensory hypersensitivity." },
-          { name: "Rebecca (Daphne du Maurier)", entity_id: "urn:entity:book:rebecca_du_maurier", match: 0.89, rationale: "[Offline Reference Fixture] Shared estate atmosphere and oppressive psychological presence." }
+          { name: "The Turn of the Screw (Henry James)", entity_id: "urn:entity:book:turn_of_the_screw", match: 0.96, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Primary anchor for ambiguous domestic haunting & first-person unreliable dread." },
+          { name: "The Fall of the House of Usher (E.A. Poe)", entity_id: "urn:entity:book:house_of_usher", match: 0.94, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] High co-reading affinity on architectural claustrophobia & sensory hypersensitivity." },
+          { name: "Rebecca (Daphne du Maurier)", entity_id: "urn:entity:book:rebecca_du_maurier", match: 0.89, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Shared estate atmosphere and oppressive psychological presence." }
         ],
         films: [
-          { name: "The Lighthouse (Robert Eggers, 2019)", entity_id: "urn:entity:movie:the_lighthouse_2019", affinity_score: 0.95, rationale: "[Offline Reference Fixture] Over-indexes among readers of 19th-century gothic; dictates chiaroscuro lighting & tight portrait framing." },
-          { name: "The Others (Alejandro Amenábar, 2001)", entity_id: "urn:entity:movie:the_others_2001", affinity_score: 0.93, rationale: "[Offline Reference Fixture] Shared audience affinity for fog-bound manor architecture and candlelit rooms." },
-          { name: "Nosferatu (Robert Eggers, 2024)", entity_id: "urn:entity:movie:nosferatu_2024", affinity_score: 0.91, rationale: "[Offline Reference Fixture] Strong visual overlap on nocturnal blue-slate dusk and tactile 19th-century textures." }
+          { name: "The Lighthouse (Robert Eggers, 2019)", entity_id: "urn:entity:movie:the_lighthouse_2019", affinity_score: 0.95, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Over-indexes among readers of 19th-century gothic; dictates chiaroscuro lighting & tight portrait framing." },
+          { name: "The Others (Alejandro Amenábar, 2001)", entity_id: "urn:entity:movie:the_others_2001", affinity_score: 0.93, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Shared audience affinity for fog-bound manor architecture and candlelit rooms." },
+          { name: "Nosferatu (Robert Eggers, 2024)", entity_id: "urn:entity:movie:nosferatu_2024", affinity_score: 0.91, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Strong visual overlap on nocturnal blue-slate dusk and tactile 19th-century textures." }
         ],
         music: [
-          { name: "Hildur Guðnadóttir", entity_id: "urn:entity:artist:hildur_gudnadottir", affinity_score: 0.94, rationale: "[Offline Reference Fixture] Solo cello sub-bass drones and resonant acoustic tension preferred by this literary cohort." },
-          { name: "Colin Stetson", entity_id: "urn:entity:artist:colin_stetson", affinity_score: 0.90, rationale: "[Offline Reference Fixture] Breath-driven low woodwind pulses matching the nocturnal suffocation motif." },
-          { name: "Camille Saint-Saëns", entity_id: "urn:entity:artist:camille_saint_saens", affinity_score: 0.88, rationale: "[Offline Reference Fixture] Period-authentic French late-Romantic harmonic tension." }
+          { name: "Hildur Guðnadóttir", entity_id: "urn:entity:artist:hildur_gudnadottir", affinity_score: 0.94, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Solo cello sub-bass drones and resonant acoustic tension preferred by this literary cohort." },
+          { name: "Colin Stetson", entity_id: "urn:entity:artist:colin_stetson", affinity_score: 0.90, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Breath-driven low woodwind pulses matching the nocturnal suffocation motif." },
+          { name: "Camille Saint-Saëns", entity_id: "urn:entity:artist:camille_saint_saens", affinity_score: 0.88, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Period-authentic French late-Romantic harmonic tension." }
         ],
         personas: [
           { segment: "Gothic & Literary Horror Collectors (#DarkAcademia)", share_pct: 46, channels: ["TikTok #DarkAcademia", "Letterboxd Gothic Lists", "Goodreads Weird Fiction"] },
@@ -554,6 +554,16 @@
     let currentSlug = "le-bronze-et-la-cendre";
     let currentRatio = "16x9";
     let activeRenderedProfile = null;
+    let latestRunId = 0;
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
 
     function extractEntities(payload) {
       if (!payload || typeof payload !== "object") return [];
@@ -568,15 +578,27 @@
       return [];
     }
 
-    function extractScore(entity) {
-      const q = entity.query || {};
-      const candidates = [q.affinity, q.score, entity.affinity_score, entity.affinity, entity.match, entity.score, entity.popularity];
-      for (const c of candidates) {
+    function extractEntityId(entity) {
+      const raw = entity && (entity.entity_id || entity.id);
+      if (typeof raw !== "string" && typeof raw !== "number") return null;
+      const trimmed = String(raw).trim();
+      return trimmed ? trimmed : null;
+    }
+
+    function extractScoreWithProvenance(entity) {
+      const q = (entity && entity.query) || {};
+      const candidates = [
+        ["query.affinity", q.affinity],
+        ["affinity_score", entity && entity.affinity_score],
+        ["affinity", entity && entity.affinity],
+        ["match", entity && entity.match]
+      ];
+      for (const [src, c] of candidates) {
         if (typeof c === "number" && !Number.isNaN(c)) {
-          return c;
+          return { score: c, source: src };
         }
       }
-      return null;
+      return { score: null, source: "missing_in_qloo_payload" };
     }
 
     function formatScorePill(val, suffix) {
@@ -601,6 +623,7 @@
           const data = await resp.json();
           const ents = extractEntities(data);
           if (ents.length > 0) return { entities: ents, error: null };
+          errors.push(`${base} -> HTTP 200 (0 entities returned)`);
         } catch (err) {
           errors.push(`${base} -> ${err.message || "fetch error"}`);
         }
@@ -647,10 +670,51 @@
       document.getElementById("download9x16Link").setAttribute("href", v.mp4_9x16);
     }
 
-    async function renderProfile(slug) {
+    function buildLtxBriefFromProfile(p, slug) {
+      const verified = !!(p.agent_execution && p.agent_execution.qloo_api_verified);
+      const provenance = (p.agent_execution && p.agent_execution.data_provenance) || "precomputed_reference_fixture";
+      return {
+        id: `qloo-taste-trailer-${slug}`,
+        title: `${p.title} — Qloo Taste-Matched Trailer (${p.author})`,
+        format: { width: 576, height: 1024, fps: 24 },
+        qloo_api_verified: verified,
+        data_provenance: provenance,
+        agent_execution: p.agent_execution,
+        qloo_seed_books: p.qloo_seed_books,
+        qloo_cultural_positioning: {
+          films_and_visual_aesthetic: p.films,
+          soundtrack_and_composers: p.music,
+          audience_personas: p.personas
+        },
+        shots: p.shots.map(s => ({
+          id: s.shot_id || s.id,
+          duration_s: s.duration_s,
+          prompt: s.visual_prompt || s.prompt,
+          voiceover_fr: s.voiceover_fr,
+          voiceover_en: s.voiceover_en,
+          sonic_cue: s.sonic_cue,
+          qloo_anchor: s.qloo_anchor,
+          qloo_live_derived: !!s.qloo_live_derived,
+          qloo_source_entity_ids: s.qloo_source_entity_ids || []
+        }))
+      };
+    }
+
+    async function renderProfile(slug, options = {}) {
+      const runId = ++latestRunId;
       currentSlug = slug;
       const baseProfile = JSON.parse(JSON.stringify(PROFILES[slug]));
-      document.getElementById("synopsisInput").value = baseProfile.synopsis;
+      const synopsisEl = document.getElementById("synopsisInput");
+      const defaultSynopses = Object.values(PROFILES).map(pr => pr.synopsis);
+      const currentSynopsisVal = (synopsisEl.value || "").trim();
+      const isCustomSynopsis = Boolean(currentSynopsisVal && !defaultSynopses.includes(currentSynopsisVal));
+
+      if (options.resetSynopsis || !isCustomSynopsis) {
+        synopsisEl.value = baseProfile.synopsis;
+      } else {
+        baseProfile.synopsis = currentSynopsisVal;
+      }
+
       const apiKey = document.getElementById("apiKeyInput").value.trim();
       const modeBadge = document.getElementById("modeBadge");
 
@@ -673,46 +737,68 @@
         ];
       } else {
         modeBadge.textContent = "Querying Live Qloo API...";
-        const bookRes = await fetchQlooJson(`/search?query=${encodeURIComponent(baseProfile.seed_queries[0])}&types=urn:entity:book&take=3`, apiKey);
-        const seedIds = bookRes.entities.map((e, i) => e.entity_id || e.id || `urn:entity:book:${i}`);
+        const bookSearchQuery = isCustomSynopsis
+          ? `${baseProfile.seed_queries[0]} ${baseProfile.synopsis.slice(0, 80)}`
+          : baseProfile.seed_queries[0];
+        const bookRes = await fetchQlooJson(`/search?query=${encodeURIComponent(bookSearchQuery)}&types=urn:entity:book&take=3`, apiKey);
+        const validBooks = bookRes.entities.filter(e => extractEntityId(e) !== null);
+        const seedIds = validBooks.map(e => extractEntityId(e));
         const seedParam = encodeURIComponent(seedIds.join(","));
 
-        let filmRes = await fetchQlooJson(`/v2/insights?filter.type=urn:entity:movie&signal.interests.entities=${seedParam}&take=3`, apiKey);
-        if (filmRes.entities.length === 0) {
-          filmRes = await fetchQlooJson(`/search?query=${encodeURIComponent(baseProfile.literary_dna.primary_themes[0])}&types=urn:entity:movie&take=3`, apiKey);
+        let filmRes = { entities: [], error: "Skipped /v2/insights: no valid seed book entity IDs" };
+        let musicRes = { entities: [], error: "Skipped /v2/insights: no valid seed book entity IDs" };
+
+        if (seedIds.length > 0) {
+          filmRes = await fetchQlooJson(`/v2/insights?filter.type=urn:entity:movie&signal.interests.entities=${seedParam}&take=3`, apiKey);
+          musicRes = await fetchQlooJson(`/v2/insights?filter.type=urn:entity:artist&signal.interests.entities=${seedParam}&take=3`, apiKey);
         }
 
-        let musicRes = await fetchQlooJson(`/v2/insights?filter.type=urn:entity:artist&signal.interests.entities=${seedParam}&take=3`, apiKey);
-        if (musicRes.entities.length === 0) {
-          musicRes = await fetchQlooJson(`/search?query=${encodeURIComponent("soundtrack " + baseProfile.title)}&types=urn:entity:artist&take=3`, apiKey);
-        }
+        if (runId !== latestRunId) return;
 
-        if (bookRes.entities.length > 0 && filmRes.entities.length > 0 && musicRes.entities.length > 0) {
-          p.qloo_seed_books = bookRes.entities.slice(0, 3).map((e, i) => ({
-            name: e.name || `Qloo Book #${i + 1}`,
-            entity_id: String(e.entity_id || e.id || `urn:entity:book:live_${i + 1}`),
-            match: extractScore(e),
-            rationale: `Live Qloo API verified seed entity (${e.entity_id || e.id}).`
-          }));
-          p.films = filmRes.entities.slice(0, 3).map((e, i) => ({
-            name: e.name || `Qloo Film #${i + 1}`,
-            entity_id: String(e.entity_id || e.id || `urn:entity:movie:live_${i + 1}`),
-            affinity_score: extractScore(e),
-            rationale: `Live Qloo API cross-domain film match (${formatScorePill(extractScore(e), "affinity")}).`
-          }));
-          p.music = musicRes.entities.slice(0, 3).map((e, i) => ({
-            name: e.name || `Qloo Composer #${i + 1}`,
-            entity_id: String(e.entity_id || e.id || `urn:entity:artist:live_${i + 1}`),
-            affinity_score: extractScore(e),
-            rationale: `Live Qloo API sonic affinity match (${formatScorePill(extractScore(e), "affinity")}).`
-          }));
+        const validFilms = filmRes.entities.filter(e => extractEntityId(e) !== null);
+        const validMusic = musicRes.entities.filter(e => extractEntityId(e) !== null);
+
+        if (validBooks.length > 0 && validFilms.length > 0 && validMusic.length > 0) {
+          p.qloo_seed_books = validBooks.slice(0, 3).map((e, i) => {
+            const sc = extractScoreWithProvenance(e);
+            const eid = extractEntityId(e);
+            return {
+              name: String(e.name || `Qloo Book #${i + 1}`),
+              entity_id: eid,
+              match: sc.score,
+              score_field_source: sc.source,
+              rationale: `Live Qloo API verified seed entity (${eid}, ${sc.source}).`
+            };
+          });
+          p.films = validFilms.slice(0, 3).map((e, i) => {
+            const sc = extractScoreWithProvenance(e);
+            const eid = extractEntityId(e);
+            return {
+              name: String(e.name || `Qloo Film #${i + 1}`),
+              entity_id: eid,
+              affinity_score: sc.score,
+              score_field_source: sc.source,
+              rationale: `Live Qloo API /v2/insights film match (${formatScorePill(sc.score, sc.source)}).`
+            };
+          });
+          p.music = validMusic.slice(0, 3).map((e, i) => {
+            const sc = extractScoreWithProvenance(e);
+            const eid = extractEntityId(e);
+            return {
+              name: String(e.name || `Qloo Composer #${i + 1}`),
+              entity_id: eid,
+              affinity_score: sc.score,
+              score_field_source: sc.source,
+              rationale: `Live Qloo API /v2/insights sonic affinity match (${formatScorePill(sc.score, sc.source)}).`
+            };
+          });
           const f0 = p.films[0], f1 = p.films[1] || f0;
           const c0 = p.music[0], c1 = p.music[1] || c0;
           const b0 = p.qloo_seed_books[0];
           p.personas = [
-            { segment: `Literary Cohort anchored on ${b0.name}`, share_pct: null, qloo_affinity: b0.match, channels: ["BookTok", "Goodreads", "Babelio"] },
-            { segment: `Cinema Cohort anchored on ${f0.name}`, share_pct: null, qloo_affinity: f0.affinity_score, channels: ["Letterboxd", "MUBI", "YouTube Film Essays"] },
-            { segment: `Sonic Cohort anchored on ${c0.name}`, share_pct: null, qloo_affinity: c0.affinity_score, channels: ["Spotify Soundtrack Curators", "Bandcamp"] }
+            { segment: `Editorial Literary Cohort Proposal anchored on ${b0.name}`, share_pct: null, qloo_affinity: b0.match, qloo_score_field_source: b0.score_field_source, channels: ["BookTok", "Goodreads", "Babelio"] },
+            { segment: `Editorial Cinema Cohort Proposal anchored on ${f0.name}`, share_pct: null, qloo_affinity: f0.affinity_score, qloo_score_field_source: f0.score_field_source, channels: ["Letterboxd", "MUBI", "YouTube Film Essays"] },
+            { segment: `Editorial Sonic Cohort Proposal anchored on ${c0.name}`, share_pct: null, qloo_affinity: c0.affinity_score, qloo_score_field_source: c0.score_field_source, channels: ["Spotify Soundtrack Curators", "Bandcamp"] }
           ];
           p.shots = p.shots.map((s, idx) => ({
             ...s,
@@ -720,13 +806,17 @@
               ? `${f0.name} (${formatScorePill(f0.affinity_score, "live Qloo")}) × ${b0.name}`
               : `${f1.name} framing × ${c0.name} sonic profile`,
             sonic_cue: `${idx % 2 === 0 ? c0.name : c1.name} live Qloo cue (${p.literary_dna.pacing_tempo_bpm} BPM)`,
-            visual_prompt: `${s.visual_prompt} [Live Qloo visual grade: ${f0.name} (${f0.entity_id})]`
+            visual_prompt: `${s.visual_prompt} [Live Qloo visual grade: ${f0.name} (${f0.entity_id})]`,
+            qloo_live_derived: true,
+            qloo_source_entity_ids: [b0.entity_id, f0.entity_id, c0.entity_id]
           }));
           p.agent_execution = {
             mode: "live_qloo_api_verified",
             qloo_api_verified: true,
             data_provenance: "qloo_live_api_responses",
-            score_handling: "verbatim_from_qloo_payload_no_clamping_or_rank_fallback"
+            score_handling: "verbatim_from_qloo_payload_no_clamping_or_rank_fallback",
+            movie_endpoint_used: "qloo_v2_insights",
+            artist_endpoint_used: "qloo_v2_insights"
           };
           modeBadge.textContent = "Live Qloo API Verified (qloo_api_verified: true)";
           steps = [
@@ -737,11 +827,12 @@
             ["Verification Status", `qloo_api_verified = true`]
           ];
         } else {
+          const reason = bookRes.error || filmRes.error || musicRes.error || "Missing required /v2/insights entities or entity IDs";
           p.agent_execution = {
             mode: "live_qloo_api_failed_fallback_to_demo",
             qloo_api_verified: false,
             data_provenance: "precomputed_reference_fixture_after_api_error",
-            api_error: bookRes.error || filmRes.error || musicRes.error
+            api_error: reason
           };
           modeBadge.textContent = "Live API Failed — Offline Fixture (qloo_api_verified: false)";
           steps = [
@@ -752,44 +843,46 @@
         }
       }
 
+      if (runId !== latestRunId) return;
+
       activeRenderedProfile = p;
       document.getElementById("pipelineTrace").innerHTML = steps.map(([label, st]) =>
-        `<div class="step-item"><span>${label}</span><span class="status">${st}</span></div>`
+        `<div class="step-item"><span>${escapeHtml(label)}</span><span class="status">${escapeHtml(st)}</span></div>`
       ).join("");
 
       document.getElementById("dnaThemes").textContent = p.literary_dna.primary_themes.join(" · ");
       document.getElementById("paletteSwatches").innerHTML = p.literary_dna.color_palette.map(c =>
-        `<div class="swatch" style="background:${c}" title="${c}"></div>`
+        `<div class="swatch" style="background:${escapeHtml(c)}" title="${escapeHtml(c)}"></div>`
       ).join("");
 
       document.getElementById("seedBooksCol").innerHTML = p.qloo_seed_books.map(b => `
         <div class="entity-card">
-          <div class="entity-header"><span>${b.name}</span><span class="score-pill">${formatScorePill(b.match, "match")}</span></div>
-          <div class="urn">${b.entity_id}</div>
-          <div class="rationale">${b.rationale}</div>
+          <div class="entity-header"><span>${escapeHtml(b.name)}</span><span class="score-pill">${escapeHtml(formatScorePill(b.match, "match"))}</span></div>
+          <div class="urn">${escapeHtml(b.entity_id)}</div>
+          <div class="rationale">${escapeHtml(b.rationale)}</div>
         </div>
       `).join("");
 
       document.getElementById("filmsCol").innerHTML = p.films.map(f => `
         <div class="entity-card">
-          <div class="entity-header"><span>${f.name}</span><span class="score-pill">${formatScorePill(f.affinity_score, "affinity")}</span></div>
-          <div class="urn">${f.entity_id}</div>
-          <div class="rationale">${f.rationale}</div>
+          <div class="entity-header"><span>${escapeHtml(f.name)}</span><span class="score-pill">${escapeHtml(formatScorePill(f.affinity_score, "affinity"))}</span></div>
+          <div class="urn">${escapeHtml(f.entity_id)}</div>
+          <div class="rationale">${escapeHtml(f.rationale)}</div>
         </div>
       `).join("");
 
       document.getElementById("musicCol").innerHTML = p.music.map(m => `
         <div class="entity-card">
-          <div class="entity-header"><span>${m.name}</span><span class="score-pill">${formatScorePill(m.affinity_score, "affinity")}</span></div>
-          <div class="urn">${m.entity_id}</div>
-          <div class="rationale">${m.rationale}</div>
+          <div class="entity-header"><span>${escapeHtml(m.name)}</span><span class="score-pill">${escapeHtml(formatScorePill(m.affinity_score, "affinity"))}</span></div>
+          <div class="urn">${escapeHtml(m.entity_id)}</div>
+          <div class="rationale">${escapeHtml(m.rationale)}</div>
         </div>
       `).join("");
 
       document.getElementById("personasRow").innerHTML = p.personas.map(per => `
         <div class="entity-card">
-          <div class="entity-header"><span>${per.segment}</span><span class="score-pill">${per.share_pct !== null && per.share_pct !== undefined ? per.share_pct + "% audience" : formatScorePill(per.qloo_affinity, "Qloo affinity (no % in API)")}</span></div>
-          <div class="rationale" style="margin-top:0.35rem;"><strong>Target Channels:</strong> ${per.channels.join(" · ")}</div>
+          <div class="entity-header"><span>${escapeHtml(per.segment)}</span><span class="score-pill">${escapeHtml(per.share_pct !== null && per.share_pct !== undefined ? per.share_pct + "% audience" : formatScorePill(per.qloo_affinity, "Qloo affinity (no % in API)"))}</span></div>
+          <div class="rationale" style="margin-top:0.35rem;"><strong>Target Channels:</strong> ${escapeHtml(per.channels.join(" · "))}</div>
         </div>
       `).join("");
 
@@ -798,17 +891,17 @@
 
       document.getElementById("shotsGrid").innerHTML = p.shots.map(s => `
         <div class="shot-card">
-          <div class="shot-top"><span>${s.shot_id}</span><span>${s.duration_s.toFixed(1)}s</span></div>
-          <div class="shot-prompt"><strong>LTX-2.5 Visual Prompt:</strong> ${s.visual_prompt}</div>
-          <div class="shot-vo">“${s.voiceover_en}”<br/><small style="color:var(--muted);">FR: « ${s.voiceover_fr} »</small></div>
-          <div class="shot-meta">🎵 <strong>Sonic Cue:</strong> ${s.sonic_cue}<br/>🧭 <strong>Qloo Taste Anchor:</strong> ${s.qloo_anchor}</div>
+          <div class="shot-top"><span>${escapeHtml(s.shot_id)}</span><span>${s.duration_s.toFixed(1)}s</span></div>
+          <div class="shot-prompt"><strong>LTX-2.5 Visual Prompt:</strong> ${escapeHtml(s.visual_prompt)}</div>
+          <div class="shot-vo">“${escapeHtml(s.voiceover_en)}”<br/><small style="color:var(--muted);">FR: « ${escapeHtml(s.voiceover_fr)} »</small></div>
+          <div class="shot-meta">🎵 <strong>Sonic Cue:</strong> ${escapeHtml(s.sonic_cue)}<br/>🧭 <strong>Qloo Taste Anchor:</strong> ${escapeHtml(s.qloo_anchor)}</div>
         </div>
       `).join("");
 
       updateVideoPlayer();
     }
 
-    document.getElementById("presetSelect").addEventListener("change", (e) => renderProfile(e.target.value));
+    document.getElementById("presetSelect").addEventListener("change", (e) => renderProfile(e.target.value, { resetSynopsis: true }));
     document.getElementById("runAgentBtn").addEventListener("click", () => renderProfile(document.getElementById("presetSelect").value));
     document.getElementById("btnRatio16x9").addEventListener("click", () => {
       currentRatio = "16x9";
@@ -820,7 +913,8 @@
     });
     document.getElementById("exportJsonBtn").addEventListener("click", () => {
       const p = activeRenderedProfile || PROFILES[currentSlug];
-      const blob = new Blob([JSON.stringify(p, null, 2)], { type: "application/json" });
+      const briefObj = buildLtxBriefFromProfile(p, currentSlug);
+      const blob = new Blob([JSON.stringify(briefObj, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
