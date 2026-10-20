@@ -21,10 +21,16 @@
     "errors": 0,
     "real_controlled_restart": true,
     "new_component_health_received": true,
-    "public_ready_reception": "pending at source publication; requires the matching public pointer revision",
+    "public_ready_reception": "received",
     "qloo_calls": 0,
     "model_calls": 0,
-    "authoritative_budget_ledger_unchanged": true
+    "authoritative_budget_ledger_unchanged": true,
+    "public_ready_received_at_utc": "2026-10-20T21:21:20.501749+00:00",
+    "public_pointer_revision": "runtime-eb818b024d234d56b521de6bff15b4fd",
+    "public_gateway_http": 200,
+    "admission_open_received": true,
+    "lease_not_beyond_pointer": true,
+    "published_sources_match_runtime": true
   },
   "limits": [
     "No future renewal, uptime or new end-to-end API run is claimed.",
