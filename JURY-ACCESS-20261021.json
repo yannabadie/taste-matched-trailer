@@ -1,0 +1,23 @@
+{
+  "application_engine": "2.6.3",
+  "scope": "Frontend recorded reader moves from live Mac gateway to Sites; native workflow and original execution unchanged",
+  "source_frontend_before_sha256": "75544e425be55f2e71e2cc592d7a350346f6e19fc42975102b49ddd886cc1e7d",
+  "source_frontend_after_sha256": "3d26952f42b03b62dc7212a7a3fda407e7a234eb9690b92521886130820af3c4",
+  "reader_url": "https://qloo-jury-evidence.russetpig129.chatgpt.site/",
+  "reader_source_commit": "f3f202d751b46bee132da995f76535a312939722",
+  "read_requests": "Two fixed GET requests with credentials omit, no fallback to Mac",
+  "data_in_repository": false,
+  "original_export_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d",
+  "validation": {
+    "unchanged_candidate_prior_targeted_offline_checks": 11,
+    "native_Sites_reader_visible": true,
+    "GitHub_cross_origin_browser_reception": "pending immediately after publication",
+    "new_Qloo_or_model_calls": 0
+  },
+  "limits": [
+    "Dated recording, not a new live analysis",
+    "French original plus separately attributed English editorial aid",
+    "Live remains dependent on Mac/services/allowance",
+    "Mac power-off not tested"
+  ]
+}

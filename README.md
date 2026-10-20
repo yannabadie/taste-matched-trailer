@@ -4,7 +4,7 @@
 
 Start with the [jury guide](JURY-GUIDE.md). To request fresh evidence, use the default **Your own brief** example with **The Turn of the Screw (book)** and choose **Run a new live analysis**. New analyses use the real Qloo API. No key is entered in the browser. The original eight evaluation cases remain unchanged and expose real edge cases and coverage limits.
 
-The separate **View recorded result** action reads one dated, authentic positive control from the operator's private local cache. It makes no new API or model call. The interface preserves the original input, provenance and export; a separate English editorial translation helps read the original French creative text. This cache needs the Mac gateway to be online, even when new live analysis is paused.
+The separate **View recorded result** action reads one dated, authentic positive control from the [hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/). It makes no new API or model call. The interface preserves the original input, provenance and export; a separate English editorial translation helps read the original French creative text. This recorded read path uses Sites server storage and does not call the live Mac gateway. A new live analysis still needs the Mac, Qloo and the native model route.
 
 ## Current workflow
 
@@ -62,11 +62,11 @@ The static site does not run Python or MLX. Local reproduction requires Node 22.
 
 ## Availability and limits
 
-The native backend and recorded-result cache depend on the originating Mac and its network. A dedicated user service supervises the Qloo backend, application gateway and HTTPS tunnel. The stable GitHub Pages URL reads a narrowly updated `director-config.json` pointer when the tunnel changes. User-service startup can resume after login; it does not bypass FileVault, unlock the keychain or keep a session alive after logout. No uninterrupted availability through the end of judging is guaranteed.
+The native backend depends on the originating Mac and its network. The fixed recorded example is also served independently through Sites; it does not use the live configuration pointer. Its deployment and expiry still limit availability, and no physical Mac-power-off test is claimed. A dedicated user service supervises the Qloo backend, application gateway and HTTPS tunnel. The stable GitHub Pages URL reads a narrowly updated `director-config.json` pointer when the tunnel changes. User-service startup can resume after login; it does not bypass FileVault, unlock the keychain or keep a session alive after logout. No uninterrupted availability through the end of judging is guaranteed.
 
 Runtime **1.1.3** renews the public pointer from its actual expiry, including after a restart that needs no immediate publication. Admission closes on invalid or expired metadata, and its short lease cannot extend beyond the pointer. Six targeted pure checks and a controlled service restart cover this correction without a new Qloo or model run. See [the runtime delta and its limits](RUNTIME-UPDATE-20261020.json) and [current source pins](runtime/SOURCE-PINS.json). `RELEASE-MANIFEST.json` remains the historical 2.6.2 snapshot.
 
-The gateway serves only its fixed application routes. Its two recorded-result GET routes load the expected safe export and manifest from protected local files, verify their hashes and expiry, and perform no Qloo or model work. They remain independent of live admission and backend health. A missing or invalid cache produces an explicit error. The public source contains neither the response cache nor private runtime files.
+The gateway serves only its fixed application routes. Its original recorded-result GET routes remain available for the operator, but the public frontend now reads the fixed example through the separate Sites reader. Sites verifies the server-stored bytes and expiry and performs no Qloo or model work. A missing or invalid recording produces an explicit error. The public source contains neither the response cache nor private runtime files.
 
 Live admission can be paused before reserving a run family, for example during Studio rendering. A guard-health response alone never proves that future compute is available. Known jobs survive a tab reload through GET-only recovery at their original gateway; an unknown submission outcome blocks duplicate submission. Dead process locks are reconciled conservatively, while an uncertain in-flight outcome is fenced rather than replayed.
 

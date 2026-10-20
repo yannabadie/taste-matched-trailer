@@ -4,6 +4,8 @@ Open the application at **https://yannabadie.github.io/taste-matched-trailer/**.
 No Qloo key, local installation or personal account is required in the public
 application.
 
+For the dated result, open the **[hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/)** directly or choose **View recorded result** in the application. Recorded reading makes no new API or model call.
+
 ## What this application produces
 
 Cultural Launch Director turns a creative brief and a cultural reference into
@@ -43,11 +45,13 @@ example also preserves those exact original bytes for download.
 The earlier 2.6.2 positive control and its [original browser receipt](PUBLIC-BROWSER-RECEPTION.json)
 remain historical evidence and have not been rewritten.
 
-A displayed recording of this result is historical evidence, served from the
-operator's private local cache through the application gateway. The original
+A displayed recording of this result is historical evidence, served from
+protected Sites server storage through the separate jury reader. The original
 response data is not included in the public source checkout. Viewing it does
 not make a new Qloo request, run a model, or establish that new live analysis is
 currently available. Its execution date, version and provenance are retained.
+The Mac-cache wording in the preserved manifest describes the original capture;
+the current read path uses Sites. The original bytes have not been rewritten.
 
 ## Try a new live analysis
 
@@ -82,9 +86,11 @@ See [EVALUATION_RESULTS.json](EVALUATION_RESULTS.json) and
 ## Availability
 
 The public page, guide and aggregate reception statistics are served by
-GitHub Pages. Reading the saved example depends on the operator's Mac and
-public gateway being online. A new native analysis additionally depends on
-protected Qloo access, the backend and available local compute.
+GitHub Pages. Reading the saved example uses the separate Sites reader and
+does not call the Mac service. That path still depends on Sites availability
+and expires on17November2026 at04:45UTC. No physical Mac-power-off test has
+been performed. A new native analysis depends on the operator's Mac, network,
+protected Qloo access, backend and available local compute.
 
 The demonstration has persistent request and model allowances. Restarting a
 service does not replenish them. A visible status check is not an end-to-end
