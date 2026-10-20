@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://capability-yourself-designated-open.trycloudflare.com",
+  "api_base_url": "https://filed-postcard-nail-guy.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.2",
-  "revision": "runtime-62071c3e8ef24aab91a2ba7b3bc8e0f3",
+  "revision": "runtime-a47d483edd544fcf922aff60225d2b46",
   "runtime_status": "offline",
-  "updated_at": "2026-10-20T12:11:51.889573Z",
-  "expires_at": "2026-10-21T12:11:51.889573Z"
+  "updated_at": "2026-10-20T12:23:57.950075Z",
+  "expires_at": "2026-10-21T12:23:57.950075Z"
 }
