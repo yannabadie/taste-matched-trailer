@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-20T13:09:34.655546+00:00",
+  "generated_at": "2026-10-20T13:54:07.504931+00:00",
   "release": "2.6.3",
-  "runtime": "1.1.1",
-  "scope": "adopted semantic correction2.6.3, no new live qualification",
+  "runtime": "1.1.2",
+  "scope": "same2.6.3 sources; fixed recorded example928 with unchanged original and attributed English reading aid",
   "sha256": {
-    "taste-matched-trailer/public_gateway.mjs": "ca75c5db0ee6140b683475540dd98649e363bad94620debe22be1dfcc9a439fa",
+    "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
     "taste-matched-trailer/cultural_launch_director.py": "3e85c1d7e725d97fa6d9a9df567a9da4542442a61f42f856d340c0cc9848c5ed",
@@ -17,6 +17,14 @@
     "runtime/qloo_runtime.py": "451f2c43fa6a3302667404a1b99d68917593fa4232fb348e6be0ab484c5a3ccb",
     "runtime/publish_pointer.py": "c68b025faf2ae8a2e8b0baa23a35dda6210078c71956faae5b89f5a099e318d5"
   },
-  "previous_source_pins_sha256": "31a1166d5bb0582e2f6378210f8925d51f3015ede8a670a76dd080b9ea35f4ca",
-  "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c"
+  "previous_source_pins_sha256": "b4d242be02434a9a8b8a964f054ccba707341c86660a7ce8df7f2b5eff1aa378",
+  "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
+  "recorded_capture": {
+    "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
+    "source_run_created_at": "2026-10-20T13:32:32+00:00",
+    "captured_at": "2026-10-20T13:41:27.818113+00:00",
+    "manifest_sha256": "612bda9a303ef4c9e435959d86db6d41ba0aaa6f00dc6e8313973324fd1d55d2",
+    "archive_sha256": "2cb4293e46b7018b35c9bf96a10c4076301fd4428dc9d2e4fc74dc96361bfe9c",
+    "original_export_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d"
+  }
 }

@@ -15,7 +15,9 @@ shot's actual claim: a purely editorial shot can have no Qloo reference; a
 shot claiming measured Qloo support still requires a valid evidence lineage.
 The verifier can still require revision or block a result. Such observations
 are displayed without presenting the rejected plans or enabling their export.
-Creative language follows the brief rather than internal French labels.
+The native writer can still return French creative text for an English brief.
+The dated example provides a separately attributed English editorial
+translation; language compliance is not claimed for every new live run.
 
 The official Qloo MCP harness resolves public titles and ranks an explicit movie shortlist. The backend also reads the physical HTTP warning channel, because the harness can omit an upstream `not_found` warning. Every supplied seed must be usable for ranking, and every selected item must have a finite measured affinity. Partial coverage or missing scores stop the workflow before native generation.
 
@@ -30,7 +32,21 @@ presence, and the verifier also objected to a deliberately editorial final
 shot. Version 2.6.3 clarifies these contracts and preserves the original
 failure, its consumption and the unchanged eight-case inputs.
 Its private regressions, portable synthetic controls and independent
-counterexamples are distinct from a new native end-to-end run.
+counterexamples are distinct from the next native end-to-end run.
+
+A subsequent public run on 20 October, `run-public-928b9561-7216-4dac-b091-2a660f0f3a1d`,
+completed on version 2.6.3: seven real Qloo requests, three native role calls,
+95,282 ms of active time and four complete shots. The verifier accepted the
+result and structural checks passed. The downloaded browser document equals
+the server public export. Creative fields were nevertheless returned in
+French despite an English synopsis; that limitation remains explicit.
+The previous failure and its consumption have not been reclassified.
+
+The primary new-analysis action now sends the current complete brief with a
+new idempotency key and no former parent. Only an explicit clarification
+continuation retains the original parent, choices and gateway. Ten targeted
+local counterexamples cover these distinctions without additional API or
+model calls.
 
 See [EVALUATION_RESULTS.json](EVALUATION_RESULTS.json) and [PHYSICAL-COVERAGE-RECEPTION.json](PHYSICAL-COVERAGE-RECEPTION.json). The earlier 2.6.1 full qualifications are withdrawn, with original outcomes preserved historically: Qloo resolves Dune and Rebecca metadata but reports their IDs as `not_found` at the ranking endpoint. C01 and C02 therefore have partial coverage. C06 has no usable ranking signal and no affinity; input order must not be presented as a measured cultural ranking.
 

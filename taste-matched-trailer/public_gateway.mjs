@@ -6,14 +6,15 @@ import http from "node:http";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
 
-export const GATEWAY_VERSION = "1.1.1-private-recording-20261020";
+export const GATEWAY_VERSION = "1.1.2-recorded-2.6.3-20261020";
 export const RECORDED_CAPTURE = Object.freeze({
-  runId: "run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
-  capturedAt: "2026-10-20T00:38:37+00:00", expiresAt: "2026-11-17T04:45:00Z",
+  runId: "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
+  capturedAt: "2026-10-20T13:41:27.818113+00:00", sourceCreatedAt: "2026-10-20T13:32:32+00:00", expiresAt: "2026-11-17T04:45:00Z",
   manifest: "recorded-demo-manifest.json",
-  manifestSha256: "e765221e2a1d302b977ac3aa7eb9eba2ea1f052bc49fec848dbfab40142fabfa",
-  archive: "clean-turn-of-the-screw-2.6.2-recorded.json",
-  archiveSha256: "b6b948a1abbf0268aee715f78a87cff47b0080c85d4b251886192c4fd511d58c",
+  manifestSha256: "612bda9a303ef4c9e435959d86db6d41ba0aaa6f00dc6e8313973324fd1d55d2",
+  archive: "qualified-2.6.3-928b9561-recorded.json",
+  archiveSha256: "2cb4293e46b7018b35c9bf96a10c4076301fd4428dc9d2e4fc74dc96361bfe9c",
+  originalSha256: "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d", originalBytes: 11701, originalOffset: 341,
 });
 export const POLICY = Object.freeze({ families: 10, physical: 140, models: 30,
   familyPhysical: 14, familyModels: 3, activeMs: 120000, queued: 4, perIpHour: 4 });
@@ -179,10 +180,14 @@ function readRecordedPair(directory, now) {
     const saved = archive.document;
     if (info.original_run_id !== RECORDED_CAPTURE.runId || info.kind !== "single_recorded_demonstration" ||
         info.display_mode !== "recorded_live" || info.captured_at !== RECORDED_CAPTURE.capturedAt ||
+        info.source_run_created_at !== RECORDED_CAPTURE.sourceCreatedAt || saved.original_run_created_at !== RECORDED_CAPTURE.sourceCreatedAt ||
         info.archive?.sha256 !== RECORDED_CAPTURE.archiveSha256 || info.archive?.file !== RECORDED_CAPTURE.archive ||
         info.archive?.bytes !== archive.bytes.length || saved.kind !== "recorded_export_of_clean_positive_control" ||
         saved.not_a_new_live_request !== true || saved.captured_at !== RECORDED_CAPTURE.capturedAt ||
         saved.document?.run_id !== RECORDED_CAPTURE.runId || canonical(publicProjection(saved.document)) !== canonical(saved.document)) throw new Error("CAPTURE_PROVENANCE_INVALID");
+    if (info.original_export?.sha256 !== RECORDED_CAPTURE.originalSha256 || info.original_export?.bytes !== RECORDED_CAPTURE.originalBytes ||
+        info.original_export?.byte_offset_in_archive !== RECORDED_CAPTURE.originalOffset ||
+        hash(archive.bytes.subarray(RECORDED_CAPTURE.originalOffset, RECORDED_CAPTURE.originalOffset + RECORDED_CAPTURE.originalBytes)) !== RECORDED_CAPTURE.originalSha256) throw new Error("ORIGINAL_EXPORT_BYTES_CHANGED");
     if (Date.parse(RECORDED_CAPTURE.capturedAt) > now()) throw new Error("CAPTURE_DATE_IN_FUTURE");
     return { manifest: manifest.bytes, archive: archive.bytes };
   } catch { throw fail(503, "RECORDED_CAPTURE_UNAVAILABLE_OR_INVALID"); }
@@ -503,7 +508,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     backendOrigin: process.env.DIRECTOR_PUBLIC_BACKEND_ORIGIN, stateDirectory: process.env.DIRECTOR_PUBLIC_STATE_DIR,
     trustedProxy: process.env.DIRECTOR_PUBLIC_TRUST_PROXY || null,
     admissionFile: process.env.DIRECTOR_PUBLIC_ADMISSION_FILE || null,
-    recordedDirectory: process.env.DIRECTOR_PUBLIC_RECORDED_DIR || path.resolve(process.env.DIRECTOR_PUBLIC_STATE_DIR, "../../jury-runtime-20261020/recorded-c481") });
+    recordedDirectory: process.env.DIRECTOR_PUBLIC_RECORDED_DIR || path.resolve(process.env.DIRECTOR_PUBLIC_STATE_DIR, "../../jury-runtime-20261020/recorded-928b9561") });
   const server = http.createServer(gateway.handle);
   const port = Number(process.env.DIRECTOR_PUBLIC_PORT || 0);
   server.listen(port, "127.0.0.1", () => process.stdout.write(JSON.stringify({ event: "public_gateway_ready", version: GATEWAY_VERSION, port: server.address().port }) + "\n"));

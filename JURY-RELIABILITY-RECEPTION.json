@@ -1,14 +1,15 @@
 {
   "release": "2.6.3-jury-reliability-20261020",
-  "received_at": "2026-10-20T12:31:03.056200+00:00",
-  "status": "semantic_correction_and_runtime_adoption_received_new_live_e2e_pending",
+  "received_at": "2026-10-20T13:55:37.891003+00:00",
+  "status": "live_2_6_3_and_fixed_cache_received_browser_publication_pending",
   "source_sha256": {
-    "index.html": "c3f72728ff8b1b1895420f555a7dc317ae62c21eb765377567fa215f1de9e467",
-    "taste-matched-trailer/public_gateway.mjs": "ca75c5db0ee6140b683475540dd98649e363bad94620debe22be1dfcc9a439fa",
+    "index.html": "75544e425be55f2e71e2cc592d7a350346f6e19fc42975102b49ddd886cc1e7d",
+    "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
     "taste-matched-trailer/cultural_launch_director.py": "3e85c1d7e725d97fa6d9a9df567a9da4542442a61f42f856d340c0cc9848c5ed",
     "runtime/qloo_runtime.py": "451f2c43fa6a3302667404a1b99d68917593fa4232fb348e6be0ab484c5a3ccb",
     "runtime/publish_pointer.py": "c68b025faf2ae8a2e8b0baa23a35dda6210078c71956faae5b89f5a099e318d5",
-    "taste-matched-trailer/guarded_qwen_runner.py": "8e37963a6e1915e23f1b9b0cc7aec1cbd0c7c31d68e5cda11ba2f51da8284736"
+    "taste-matched-trailer/guarded_qwen_runner.py": "8e37963a6e1915e23f1b9b0cc7aec1cbd0c7c31d68e5cda11ba2f51da8284736",
+    "runtime/SOURCE-PINS.json": "eb24f24a95a46e6608dfce773de4b4484ead2104204e611dd78ede38ac820479"
   },
   "verified_behaviour": [
     "Dedicated user service restarts its gateway and conservatively reconciles dead locks",
@@ -89,11 +90,76 @@
       "unseen phenomenon stays off-screen; ordinary narrator allowed",
       "evidence depends on claim labels, not shot ordinal",
       "verifier revise/block remain binding",
-      "needs_revision hides plans/ranking and blocks export; observations remain attributed",
-      "creative language follows the brief"
+      "needs_revision hides plans/ranking and blocks export; observations remain attributed"
     ],
     "ledger_preserved_during_adoption": true,
     "ledger_sha256_after_adoption": "38fcc651c74f8faa55bf51ff8220aaef9f251dd5e6dc4f9ae28be6c9e478a2d1",
-    "recorded_positive_control_version_unchanged": "2.6.2"
+    "recorded_positive_control_version_unchanged": "2.6.2",
+    "language_limitation": "Writer returned French creative fields despite the English synopsis and explicit language instruction. No automatic language compliance claimed."
+  },
+  "second_new_live_attempt": {
+    "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
+    "workflow_status": "completed",
+    "version": "2.6.3",
+    "qloo_requests": 7,
+    "native_calls": 3,
+    "active_time_ms": 95282,
+    "deterministic_checks": "pass",
+    "model_verification": "accept",
+    "actual_creative_language": "fr",
+    "english_synopsis": true,
+    "english_output_qualified": false,
+    "browser_received_four_shots": true,
+    "native_download_bytes": 11701,
+    "native_download_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d",
+    "browser_download_equals_server_public_export": true,
+    "native_session_released": true,
+    "configurations_unchanged": true,
+    "first_failure_preserved": true,
+    "no_frozen_case_rewritten": true,
+    "independent_reception_sha256": "95900732c6825dc767d7e226c20fbcd5568ba0db158a793baf2d49ee3f59f1ee"
+  },
+  "public_pool_after_second_live_attempt": {
+    "families_reserved": 4,
+    "families_limit": 10,
+    "physical_requests_consumed": 31,
+    "model_calls_consumed": 12,
+    "automatic_refill": false
+  },
+  "frontend_new_analysis_fix": {
+    "sha256": "2764d3b9ac72871c0e6eb49fe590a89ba1e212e01083c8ec5b2595510dbe8d20",
+    "targeted_synthetic_checks": 10,
+    "new_native_calls": 0,
+    "new_api_calls": 0,
+    "explicit_new_request_distinct_from_clarification": true,
+    "publication_reception": "pending"
+  },
+  "recorded_example_2_6_3": {
+    "original_run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
+    "original_run_created_at": "2026-10-20T13:32:32+00:00",
+    "browser_captured_at": "2026-10-20T13:41:27.818113+00:00",
+    "manifest_sha256": "612bda9a303ef4c9e435959d86db6d41ba0aaa6f00dc6e8313973324fd1d55d2",
+    "archive_sha256": "2cb4293e46b7018b35c9bf96a10c4076301fd4428dc9d2e4fc74dc96361bfe9c",
+    "original_export_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d",
+    "english_editorial_translation_author": "Codex",
+    "native_creative_language": "fr",
+    "translation_is_new_model_output": false,
+    "original_bytes_preserved": true,
+    "old_positive_control_preserved_privately": true,
+    "cache_storage": "private Mac only",
+    "live_readback": {
+      "manifest_http_status": 200,
+      "archive_http_status": 200,
+      "manifest_bytes": 5687,
+      "archive_bytes": 12045,
+      "cache_control": "no-store",
+      "original_bytes": 11701,
+      "original_archive_offset": 341,
+      "ledger_unchanged": true,
+      "new_api_calls": 0,
+      "new_model_calls": 0,
+      "gateway_only_reloaded": true,
+      "source_pins_sha256": "eb24f24a95a46e6608dfce773de4b4484ead2104204e611dd78ede38ac820479"
+    }
   }
 }

@@ -20,19 +20,28 @@ The current live engine is version 2.6.3. Its writer and verifier distinguish
 an intentionally editorial shot from a claim of Qloo-backed evidence, and
 keep the unseen phenomenon off-screen. A requested revision remains visible
 as an unqualified result. The saved example below retains its original
-version 2.6.2 and date.
+version 2.6.3, execution date and French native creative text. A separate
+English editorial translation helps inspect it; automatic English output
+is not guaranteed for new live runs.
 
 ## Inspect the received result
 
 The independently received example uses **The Turn of the Screw (book)**.
-Its original execution took place on 20 October 2026. It made seven successful
-Qloo HTTP requests and three native role calls, received three finite measured
-affinities, and produced four complete shots with verifier acceptance.
+Its original execution completed on 20 October 2026 at approximately 13:32 UTC.
+It made seven successful Qloo HTTP requests and three native role calls,
+received three finite measured affinities, and produced four complete shots
+with verifier acceptance and structural checks passing. Active time was
+95,282 ms. The English synopsis nevertheless produced French creative text.
+The English reading aid is an attributed editorial translation, not another
+model output or fresh API response.
 
-The receipt is [PUBLIC-BROWSER-RECEPTION.json](PUBLIC-BROWSER-RECEPTION.json).
+The aggregate receipt is [JURY-RELIABILITY-RECEPTION.json](JURY-RELIABILITY-RECEPTION.json).
 Its run identifier is
-`run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f`.
-The browser download was compared with the server's public export.
+`run-public-928b9561-7216-4dac-b091-2a660f0f3a1d`.
+The browser download was compared with the server's public export. The saved
+example also preserves those exact original bytes for download.
+The earlier 2.6.2 positive control and its [original browser receipt](PUBLIC-BROWSER-RECEPTION.json)
+remain historical evidence and have not been rewritten.
 
 A displayed recording of this result is historical evidence, served from the
 operator's private local cache through the application gateway. The original
