@@ -91,3 +91,7 @@ MIT. Preserve the repository’s LICENSE and rights for bundled assets.
 The current source is in `taste-matched-trailer/`, with its adjacent frozen `campagne-hackathon-2026-10-19/` contracts. Earlier root agent files and dated media remain historical. The root index and configuration serve GitHub Pages. Private credentials, native receipts, runtime jobs, machine logs and raw Qloo responses are excluded. `evidence/*-recorded.json` contains explicitly dated exports, never automatic LIVE fallbacks.
 
 The Mac hosts the private backend and native model; the public gateway exposes only application jobs. Its first public allowance is 10 families / 140 physical requests / 30 native calls, with no automatic refill. It requires the Mac and tunnel to remain online. There is no reboot autostart or guaranteed availability through the 17 November 2026, 05:45 Paris end of judging. The page remains at its stable GitHub Pages URL if the temporary tunnel stops.
+
+## Public browser reception
+
+On 20 October 2026, the published GitHub Pages interface completed a fresh C02 request through the HTTPS gateway: 10 authenticated Qloo HTTP responses, 3 native role calls, 4 complete plans and verifier acceptance. The downloaded public JSON exactly matched the server export. See PUBLIC-BROWSER-RECEPTION.json. The Devpost description, pitch and links were updated and read back on the public page; the existing submission remains submitted.

@@ -199,5 +199,14 @@
   "same_model_baseline_run": false,
   "measured_quality_or_sales_improvement": false,
   "coverage": "8 cases examined; 3 complete authentic workflows after corrections/attributed choices; 5 honest clarification branches, including3without usable references and0API",
-  "public_browser_smoke": "pending"
+  "public_browser_smoke": {
+    "status": "passed",
+    "run_id": "run-public-08815bd9-a4c9-4207-b3cc-e19f9c735f90",
+    "physical_http": 10,
+    "native_calls": 3,
+    "complete_shots": 4,
+    "verifier": "accept",
+    "download_matches_server_export": true,
+    "receipt": "PUBLIC-BROWSER-RECEPTION.json"
+  }
 }
