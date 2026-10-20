@@ -192,7 +192,7 @@ function publicGateReasons(b){
   const raw=b&&b.gate_reasons;if(raw===undefined||raw===null||(typeof raw==='object'&&!Array.isArray(raw)&&Object.keys(raw).length===0))return[];
   return(Array.isArray(raw)?raw:[raw]).map(value=>typeof value==='string'?value:JSON.stringify(value)).filter(value=>typeof value==='string'&&value.trim());
 }
-function exportable(){return current()&&!['error','failed','blocked','degraded','empty','invalid_contract','cancelled'].includes(state.bundle.workflow_status)&&publicGateReasons(state.bundle).length===0;}
+function exportable(){return current()&&!['error','failed','blocked','degraded','empty','needs_revision','invalid_contract','cancelled'].includes(state.bundle.workflow_status)&&publicGateReasons(state.bundle).length===0;}
 function status(message,kind=''){ $('statusNotice').textContent=message;$('statusNotice').className='status '+kind; }
 function buttons(){ const unknown=state.unresolved&&state.unresolved.resumeOnly&&!state.unresolved.jobId;$('runServerBtn').disabled=state.busy||state.actionChecking||unknown||(!state.unresolved&&!state.configurationReady);$('runServerBtn').textContent=unknown?'Earlier request needs verification':state.unresolved?'Check pending request':'Run a new live analysis';$('viewRecordingBtn').disabled=state.busy||state.actionChecking;$('exportJsonBtn').disabled=state.busy||!exportable();$('exportJsonBtn').textContent=state.displayKind==='recorded'?'Download recorded result (.json)':'Download received document';$('pendingNotice').hidden=!state.unresolved;$('pendingNotice').textContent=unknown?'An earlier submission has no known job identifier. This page will not submit it again or start a duplicate. The operator must verify the earlier outcome. The static guide remains available.':state.unresolved?'An earlier request is still being tracked. Check pending request follows that same operation; it does not start another analysis.':''; }
 function clearResults(){
@@ -282,10 +282,12 @@ function renderBundle(){
   $('verifierBadge').textContent='Writer review: '+(v.llm_status||'not supplied');
   const budget=b.run_budget||{},count=(used,limit)=>(used??'not supplied')+' / '+(limit??'not supplied');
   const gates=publicGateReasons(b),limitations=[...new Set([...list(b.limitations),...list(b.brief.limitations)].map(value=>typeof value==='string'?value:JSON.stringify(value)).filter(Boolean))];
-  if(gates.length||limitations.length){$('publicLimitations').hidden=false;$('publicLimitations').innerHTML='<h3>Coverage and limitations</h3><ul>'+[...gates,...limitations].map(value=>'<li>'+esc(value)+'</li>').join('')+'</ul>';}
+  const reviewClaims=list(v.unresolved_claims).map(value=>typeof value==='string'?value:JSON.stringify(value)).filter(value=>typeof value==='string'&&value.trim());
+  if(gates.length||limitations.length||s==='needs_revision'){$('publicLimitations').hidden=false;$('publicLimitations').innerHTML=(s==='needs_revision'?'<h3>Revision requested</h3><p>These are the received verifier observations, not independently established findings:</p>'+(reviewClaims.length?'<ul>'+reviewClaims.map(value=>'<li>'+esc(value)+'</li>').join('')+'</ul>':'<p>The verifier requested changes but supplied no specific reasons.</p>'):'')+(gates.length||limitations.length?'<h3>Coverage and limitations</h3><ul>'+[...gates,...limitations].map(value=>'<li>'+esc(value)+'</li>').join('')+'</ul>':'');}
   $('budgetSummary').textContent=(recorded?'Original execution · ':'')+'Qloo attempts: '+count(budget.qloo_network_attempts_used,budget.qloo_network_attempt_limit)+' · Model calls: '+count(budget.llm_calls_used,budget.llm_call_limit)+' · Active time: '+(typeof budget.active_time_used_ms==='number'?budget.active_time_used_ms+' ms':'not supplied');
   $('redactedProofBox').textContent=JSON.stringify({display_context:recorded?{kind:'recorded',captured_at:state.recording.manifest.captured_at,not_a_new_live_request:true,archive_sha256:state.recording.manifest.archive.sha256}:undefined,public_export_version:b.schema_version,director_version:b.director_version,run_id:b.run_id,mode,workflow_status:s,verification:v,run_budget:budget,constraint_fidelity:b.constraint_fidelity,gate_reasons:gates,limitations:b.limitations||b.brief.limitations||[],candidate_resolution:b.candidate_resolution||null},null,2);
   $('evidenceCards').innerHTML=list(b.evidence_sources).map(e=>'<details><summary>'+esc(e.tool||e.id)+' · '+esc(e.status)+' · '+esc(e.mode)+'</summary><pre>'+esc(JSON.stringify(e,null,2))+'</pre></details>').join('');
+  if(s==='needs_revision'){status('Revision requested. Review the verifier observations below. No qualified ranking or brief is displayed.','warn');$('verifierBadge').textContent='Revision requested — not qualified';$('verifierBadge').className='pill warn';buttons();return;}
   if(['error','failed','blocked','degraded','empty','invalid_contract','cancelled'].includes(s)||(gates.length&&s!=='needs_input')){status('No qualified ranking or brief is available. Review the coverage reasons and limitations below.','bad');$('verifierBadge').textContent='No qualified brief — review required';$('verifierBadge').className='pill warn';buttons();return;}
   if(recorded){
     const m=state.recording.manifest,measure=m.original_reception;
@@ -372,7 +374,7 @@ async function pollJob(pending,signal){
       return{bundle:job.bundle,jobId:job.job_id,jobStatus:job.status};
     }
     if(job.status==='failed'){
-      if(job.bundle){if(!['error','failed','blocked','degraded','empty','invalid_contract'].includes(job.bundle.workflow_status))throw requestError('The failed job and its document disagree.',job);return{bundle:job.bundle,jobId:job.job_id,jobStatus:job.status};}
+      if(job.bundle){if(!['error','failed','blocked','degraded','empty','needs_revision','invalid_contract'].includes(job.bundle.workflow_status))throw requestError('The failed job and its document disagree.',job);return{bundle:job.bundle,jobId:job.job_id,jobStatus:job.status};}
       const error=requestError('The run failed. No previous cards or plans will be kept.',job);error.jobSettled=true;throw error;
     }
     if(!['queued','running'].includes(job.status))throw requestError('The server returned an unknown job state.',job);

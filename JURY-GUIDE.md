@@ -16,6 +16,12 @@ The output is a creative brief, not a rendered trailer. Timing, framing, sound
 and captions are editorial choices; the current profile measures movie
 affinities, not music affinities or audience demographics.
 
+The current live engine is version 2.6.3. Its writer and verifier distinguish
+an intentionally editorial shot from a claim of Qloo-backed evidence, and
+keep the unseen phenomenon off-screen. A requested revision remains visible
+as an unqualified result. The saved example below retains its original
+version 2.6.2 and date.
+
 ## Inspect the received result
 
 The independently received example uses **The Turn of the Screw (book)**.

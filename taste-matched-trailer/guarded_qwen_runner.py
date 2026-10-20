@@ -152,13 +152,16 @@ def build_messages(role: str, payload: dict[str, Any], context: dict[str, Any] |
         system += (" Exact Role2 contract: directions contains1 or2 objects, each exactly title and angle, each1..200 characters. "
                    "shot_overrides has exactly shot_01,shot_02,shot_03,shot_04. Every shot object has exactly visual_prompt,voiceover,sonic_direction,on_screen_text. "
                    "visual_prompt1..240 characters; voiceover0..140; sonic_direction0..160; on_screen_text1..90. "
-                   "Write distinct coherent French scenes and a readable caption for every shot; use the entire synopsis and supplied shot_plan. "
+                   "Write distinct coherent scenes and a readable caption for every shot. Use the requested language (user_constraints.language/output_language or the brief); otherwise use the synopsis language, not internal planning labels. "
                    "Respect exact duration, aspect, tone and allowed assets. If sound_off is true, voiceover and sonic_direction must both be empty strings, story must work through images and captions. "
-                   "For objects+typography show only objects and text, no people/hands/faces. For no_visible_monster keep presence indirect without depicting a creature. "
+                   "For objects+typography show only objects and text, no people/hands/faces. If no_visible_monster is true, the phenomenon stays strictly invisible: no silhouette, humanoid outline, body or face of that phenomenon, even blurred, peripheral, reflected or uncertain. "
+                   "Use indirect material, light or sound changes. The ordinary narrator's face is allowed unless other constraints forbid people. Preserve the supplied shot_plan bindings; an independent editorial shot must not claim invented Qloo proof. "
                    "Do not return an incomplete subset or generic numbered templates. Entire output must fit1200 tokens.")
     if role == "role_3_verifier":
         system += (" Check all four complete shots, duration sum, aspect ratio, constraints including no visible monster, sound_off, objects+typography, and retained-reference lineage. "
-                   "Treat cultural interpretation as editorial, never sales evidence. Return at most4 concise unresolved_claims within300 output tokens; accept only if no unresolved claim.")
+                   "Check lineage per shot, not by shot number: a qloo_result claim requires valid decision/evidence/retained-reference links. A user_constraint/editorial_inference shot with no Qloo claim may legitimately have empty decision_refs, evidence_refs and retained_entity_refs. Never demand or invent links merely to continue earlier shots. "
+                   "For no_visible_monster, reject a depicted silhouette or humanoid form of the phenomenon even if blurred/peripheral/uncertain; an ordinary narrator face and indirect object/light/sound traces are allowed unless another constraint forbids them. "
+                   "Check creative text against the requested language, otherwise the synopsis language; internal planning labels do not set it. Treat cultural interpretation as editorial, never sales evidence. Return at most4 concise unresolved_claims within300 output tokens; accept only if no unresolved claim.")
     user = canonical({"role": role, "payload": payload, "context": context})
     if len(user.encode("utf-8")) > 24000 or SECRET.search(user):
         raise AdapterContractError("Input exceeds byte limit or contains protected material")

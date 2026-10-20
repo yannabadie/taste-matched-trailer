@@ -40,11 +40,12 @@ import json
 import math
 import re
 import time
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.2-measured-rank-http-warnings-20261020"
+DIRECTOR_VERSION = "2.6.3-invisible-presence-editorial-contract-20261020"
 RULE_VERSION = "det-select-v1.5"
 REQUIRED_NODE_MIN = "22.19.0"
 REQUIRED_HARNESS_MIN = "0.1.26"
@@ -1391,6 +1392,28 @@ def _shot_plan(constraints: dict[str, Any], bindings: list[dict[str, Any]]) -> l
     return plans
 
 
+def _visible_phenomenon_form(visual: str) -> bool:
+    """Catch explicit apparition shapes; ordinary narrator faces and object traces remain allowed.
+
+    This is a narrow lexical guard, not a replacement for the semantic verifier.
+    It never exempts a whole shot merely because the narrator is mentioned.
+    """
+    text="".join(c for c in unicodedata.normalize("NFKD",visual.casefold()) if not unicodedata.combining(c)).replace("’", "'")
+    noun=r"(?:silhouettes?|figures?|contours?|outlines?|formes?|shapes?|ombres?|shadows?)"
+    modifier=r"(?:visible|flou\w*|blur\w*|humain\w*|human\w*|humanoid\w*|human-shaped|ghostly|spectral|shadowy)"
+    # Remove only explicitly negated shape phrases, including a negative list.
+    shape=r"(?:"+modifier+r"\s+){0,2}"+noun+r"(?:\s+"+modifier+r"){0,2}"
+    negative=r"\b(?:sans|aucune?|without|no|pas de|ni|nor)\s+(?:(?:any|aucune?)\s+)?"
+    text=re.sub(negative+shape+r"(?:\s*(?:,|or|nor|ou|ni)\s+"+shape+r")*","",text)
+    actor=r"(?:narrateur|narratrice|narrator|protagoniste|protagonist)"
+    # An explicitly attributed ordinary actor shape is not the unseen phenomenon.
+    text=re.sub(noun+r"(?:\s+"+modifier+r")?\s+(?:du|de la|of the|of)\s+"+actor+r"\b","",text)
+    text=re.sub(r"\b(?:the\s+)?"+actor+r"'s\s+(?:"+modifier+r"\s+)?"+noun+r"\b","",text)
+    if re.search(r"\b(?:humanoid|humanoide|human|human-shaped|humanlike|ghostly|spectral)\s+"+noun+r"\b|\b"+noun+r"\s+(?:humain\w*|humanoide\w*)\b",text):return True
+    if re.search(r"\b(?:blurry|blurred|shadowy)\s+(?:silhouette|figure)\b|\b(?:silhouette|figure)\s+(?:flou\w*|fantomatique\w*)\b",text):return True
+    appearance=r"(?:apparait|disparait|surgit|se dessine|traverse|appears?|emerges?|vanishes?|lurks?|materiali[sz]es?)"
+    return bool(re.search(r"\b(?:silhouette|figure)\b[^.!?;\n]{0,75}\b"+appearance+r"\b|\b"+appearance+r"\b[^.!?;\n]{0,75}\b(?:silhouette|figure)\b",text))
+
 def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
     if brief.get("completeness")!="complete": return []
     constraints=brief.get("user_constraints") or {}; errors=[]; shots=brief.get("shots") or []
@@ -1414,6 +1437,8 @@ def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
         text=re.sub(r"(?:sans|aucun[e]?|no|without|pas de)\s+(?:visible\s+)?(?:créature|creature|monstre|monster|sang|blood|violence)(?:\s+(?:visible|graphique|graphic))?","",text)
         if constraints.get("no_visible_monster") and re.search(r"\b(?:monstr\w*|monster\w*|créature\w*|creature\w*)\b",text):
             errors.append(f"{label}: explicit creature conflicts with no_visible_monster")
+        if constraints.get("no_visible_monster") and _visible_phenomenon_form(visual):
+            errors.append(f"{label}: visible apparition shape conflicts with an invisible phenomenon")
         if constraints.get("no_graphic_violence") and re.search(r"\b(?:sang|blood|gore|démembr|dismember)",text):
             errors.append(f"{label}: explicit graphic violence conflicts with constraint")
         if set(constraints.get("assets") or [])=={"objects","typography"} and re.search(r"\b(?:personne|personnage|acteur|actrice|visage|mains|hands|face|actor|woman|man|people)\b",text):
@@ -1443,7 +1468,7 @@ def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[s
         out=llm_runner("role_2_creative_redactor",{"run_id":run_id,"mode":mode,
             "synopsis":validated_brief["synopsis"],"themes":analysis.get("themes") or [],
             "retained_references":bindings,"user_constraints":constraints,"shot_plan":plans,
-            "creative_contract":"Write all four complete, distinct shots. Interpret the supplied ranked references artistically; no copying, sales or audience prediction. Last shot is independent of cultural references."})
+            "creative_contract":"Write all four complete, distinct shots. Interpret ranked references artistically; no copying, sales or audience prediction. Preserve supplied bindings. An independent editorial shot has no Qloo lineage; never invent it. Keep the phenomenon strictly invisible when requested; an ordinary narrator face remains allowed unless assets forbid people. Follow the requested delivery language, otherwise the synopsis language, not internal planning labels."})
         if not isinstance(out,dict): raise ValueError("Role2 output must be an object")
         overrides=out.get("shot_overrides")
         if not isinstance(overrides,dict) or set(overrides)!={p["shot_id"] for p in plans}:

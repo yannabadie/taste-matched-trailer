@@ -236,7 +236,7 @@ class Supervisor:
         self.gateway_ready = False
 
     def save(self):
-        data = {"release": "2.6.2", "supervisor_pid": os.getpid(), "managed_by": LABEL,
+        data = {"release": "2.6.3", "supervisor_pid": os.getpid(), "managed_by": LABEL,
                 "components": self.roles, "backend_origin": HOSTS["backend"], "gateway_origin": HOSTS["gateway"],
                 "tunnel_url": self.url, "application_only": True, "autostart_after_user_login": True,
                 "available_before_login_or_filevault_unlock": False, "api_calls_on_start": 0, "model_calls_on_start": 0}

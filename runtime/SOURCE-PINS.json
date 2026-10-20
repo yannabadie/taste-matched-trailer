@@ -1,20 +1,22 @@
 {
-  "generated_at": "2026-10-20T12:23:49.514955+00:00",
-  "release": "2.6.2",
+  "generated_at": "2026-10-20T13:09:34.655546+00:00",
+  "release": "2.6.3",
   "runtime": "1.1.1",
-  "scope": "runtime and fixed private recorded GETs; no new API/model qualification",
+  "scope": "adopted semantic correction2.6.3, no new live qualification",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "ca75c5db0ee6140b683475540dd98649e363bad94620debe22be1dfcc9a439fa",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/cultural_launch_director.py": "ddaef071073444c2bc9510513ceca7e01585670b7b3f37f0e619dfedd06ed02c",
-    "taste-matched-trailer/guarded_qwen_runner.py": "113cdcd361c068754173f0fd8138c316aafff325d07f7ebee8024aedc2c31f13",
+    "taste-matched-trailer/cultural_launch_director.py": "3e85c1d7e725d97fa6d9a9df567a9da4542442a61f42f856d340c0cc9848c5ed",
+    "taste-matched-trailer/guarded_qwen_runner.py": "8e37963a6e1915e23f1b9b0cc7aec1cbd0c7c31d68e5cda11ba2f51da8284736",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
     "taste-matched-trailer/bridge/cpu_counter.py": "bcda630e2d17904b6969f9820efc7481858db5a8c6f266cd1e6291c2e0d737c7",
     "campagne-hackathon-2026-10-19/conception/CONTRATS.schema.json": "cd995049bd30e8f1c9f617df99780139dd8fa01c5d900553b48c93a545263408",
     "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
-    "runtime/qloo_runtime.py": "390572331b5a127fdb6bc9d7684b9f482b4b169c5fd794ec0a1d24e3b8713fe2",
-    "runtime/publish_pointer.py": "fbc766c8bde7aa652e7c5a20ddc2cbb773982631266e195991c1fd02cd56f9c9"
-  }
+    "runtime/qloo_runtime.py": "451f2c43fa6a3302667404a1b99d68917593fa4232fb348e6be0ab484c5a3ccb",
+    "runtime/publish_pointer.py": "c68b025faf2ae8a2e8b0baa23a35dda6210078c71956faae5b89f5a099e318d5"
+  },
+  "previous_source_pins_sha256": "31a1166d5bb0582e2f6378210f8925d51f3015ede8a670a76dd080b9ea35f4ca",
+  "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c"
 }

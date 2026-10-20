@@ -1,13 +1,14 @@
 {
-  "release": "2.6.2-jury-reliability-20261020",
+  "release": "2.6.3-jury-reliability-20261020",
   "received_at": "2026-10-20T12:31:03.056200+00:00",
-  "status": "runtime_recovery_and_private_cache_received_public_browser_pending",
+  "status": "semantic_correction_and_runtime_adoption_received_new_live_e2e_pending",
   "source_sha256": {
-    "index.html": "8296efc99220579e039fad12dad0d477f3bf5cfdce572d10fca6abc8722ed98f",
+    "index.html": "c3f72728ff8b1b1895420f555a7dc317ae62c21eb765377567fa215f1de9e467",
     "taste-matched-trailer/public_gateway.mjs": "ca75c5db0ee6140b683475540dd98649e363bad94620debe22be1dfcc9a439fa",
-    "taste-matched-trailer/cultural_launch_director.py": "ddaef071073444c2bc9510513ceca7e01585670b7b3f37f0e619dfedd06ed02c",
-    "runtime/qloo_runtime.py": "390572331b5a127fdb6bc9d7684b9f482b4b169c5fd794ec0a1d24e3b8713fe2",
-    "runtime/publish_pointer.py": "fbc766c8bde7aa652e7c5a20ddc2cbb773982631266e195991c1fd02cd56f9c9"
+    "taste-matched-trailer/cultural_launch_director.py": "3e85c1d7e725d97fa6d9a9df567a9da4542442a61f42f856d340c0cc9848c5ed",
+    "runtime/qloo_runtime.py": "451f2c43fa6a3302667404a1b99d68917593fa4232fb348e6be0ab484c5a3ccb",
+    "runtime/publish_pointer.py": "c68b025faf2ae8a2e8b0baa23a35dda6210078c71956faae5b89f5a099e318d5",
+    "taste-matched-trailer/guarded_qwen_runner.py": "8e37963a6e1915e23f1b9b0cc7aec1cbd0c7c31d68e5cda11ba2f51da8284736"
   },
   "verified_behaviour": [
     "Dedicated user service restarts its gateway and conservatively reconciles dead locks",
@@ -48,5 +49,51 @@
     "No new end-to-end API/model qualification is claimed by restart or health checks",
     "The 20 October recorded positive control does not qualify all eight frozen cases",
     "The older global Hermes memory closure remains separate"
-  ]
+  ],
+  "browser_reception": {
+    "at": "2026-10-20T12:43:28.903481+00:00",
+    "public_url": "https://yannabadie.github.io/taste-matched-trailer/",
+    "published_code_commit": "2dee8d9caba053e7e9fc9719068c8ea6a1c8687a",
+    "pages_build": "built",
+    "public_index_sha256": "8296efc99220579e039fad12dad0d477f3bf5cfdce572d10fca6abc8722ed98f",
+    "recorded_label_visible": true,
+    "live_action_disabled_while_paused": true,
+    "recorded_four_shots_visible": true,
+    "editorial_english_translation_separate": true,
+    "native_chrome_download_received": true,
+    "download_sha256": "b6b948a1abbf0268aee715f78a87cff47b0080c85d4b251886192c4fd511d58c",
+    "download_bytes": 13453,
+    "job_ledger_sha256_after_read": "14f71cf1e9c66e11b4d44268760718eb1e3c8e5ffec30fd359b996cac3c97387",
+    "new_qloo_calls": 0,
+    "new_model_calls": 0,
+    "new_live_e2e": false
+  },
+  "semantic_correction": {
+    "version": "2.6.3",
+    "private_regression_checks": 17,
+    "portable_synthetic_checks": 11,
+    "independent_groups": 7,
+    "new_native_model_calls_for_these_checks": 0,
+    "first_new_live_attempt": {
+      "run_id": "run-public-d2d02bf5-b81c-4341-91ea-28e8112274ae",
+      "status": "needs_revision",
+      "qloo_requests": 7,
+      "native_calls": 3,
+      "active_time_ms": 100816,
+      "outcome_known": true,
+      "native_session_released": true,
+      "configurations_unchanged": true,
+      "reclassified_as_success": false
+    },
+    "corrected_contracts": [
+      "unseen phenomenon stays off-screen; ordinary narrator allowed",
+      "evidence depends on claim labels, not shot ordinal",
+      "verifier revise/block remain binding",
+      "needs_revision hides plans/ranking and blocks export; observations remain attributed",
+      "creative language follows the brief"
+    ],
+    "ledger_preserved_during_adoption": true,
+    "ledger_sha256_after_adoption": "38fcc651c74f8faa55bf51ff8220aaef9f251dd5e6dc4f9ae28be6c9e478a2d1",
+    "recorded_positive_control_version_unchanged": "2.6.2"
+  }
 }

@@ -91,7 +91,7 @@ def publish(private_directory, api_base, runtime_status, acquire_lock):
         if instant >= DEADLINE:
             runtime_status = "offline"
         expiry = min(DEADLINE, instant + dt.timedelta(hours=24))
-        if current.get("api_base_url") == api_base and current.get("runtime_status") == runtime_status and current.get("release") == "2.6.2" and dt.datetime.fromisoformat(current.get("expires_at", "1970-01-01T00:00:00Z").replace("Z", "+00:00")) > instant + dt.timedelta(hours=6):
+        if current.get("api_base_url") == api_base and current.get("runtime_status") == runtime_status and current.get("release") == "2.6.3" and dt.datetime.fromisoformat(current.get("expires_at", "1970-01-01T00:00:00Z").replace("Z", "+00:00")) > instant + dt.timedelta(hours=6):
             return {"changed": False, "config": current, "config_sha256": digest(remote_bytes)}
         # Refuse unrelated local commits; only our one pending config commit may rebase.
         ahead = git(checkout, "rev-list", "--count", "origin/main..HEAD").decode().strip()
@@ -102,7 +102,7 @@ def publish(private_directory, api_base, runtime_status, acquire_lock):
             git(checkout, "rebase", "origin/main")
         else:
             git(checkout, "merge", "--ff-only", "origin/main")
-        document = {"api_base_url": api_base, "supported_modes": ["live"], "release": "2.6.2",
+        document = {"api_base_url": api_base, "supported_modes": ["live"], "release": "2.6.3",
                     "revision": "runtime-" + uuid.uuid4().hex, "runtime_status": runtime_status,
                     "updated_at": instant.isoformat().replace("+00:00", "Z"),
                     "expires_at": expiry.isoformat().replace("+00:00", "Z")}
