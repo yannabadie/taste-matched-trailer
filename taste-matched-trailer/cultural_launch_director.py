@@ -44,8 +44,8 @@ from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.1-issues-sonic-contract-20261020"
-RULE_VERSION = "det-select-v1.4"
+DIRECTOR_VERSION = "2.6.2-measured-rank-http-warnings-20261020"
+RULE_VERSION = "det-select-v1.5"
 REQUIRED_NODE_MIN = "22.19.0"
 REQUIRED_HARNESS_MIN = "0.1.26"
 QLOO_CONTRACT_VERSION = "1.0.0"
@@ -982,6 +982,20 @@ def _extract_valid_score(entity: dict[str, Any]) -> tuple[str | None, float | No
     return None,None
 
 
+def _ignored_signal_ids(warnings: list[Any]) -> list[str]:
+    ignored=[]
+    for warning in warnings:
+        if not isinstance(warning,dict) or warning.get("type")!="not_found": continue
+        ids=warning.get("signal.interests.entities")
+        if ids is None:
+            signal=warning.get("signal") or {}; interests=signal.get("interests") or {} if isinstance(signal,dict) else {}
+            ids=interests.get("entities") if isinstance(interests,dict) else None
+        if not isinstance(ids,list): continue
+        for value in ids:
+            if isinstance(value,str) and value.strip() and value not in ignored: ignored.append(value)
+    return ignored
+
+
 def build_evidence_from_envelope(
     evidence_id: str,
     run_id: str,
@@ -1003,7 +1017,12 @@ def build_evidence_from_envelope(
     received_at=envelope.get("received_at",received_at)
     source_doc = sc
 
-    raw_status = str(source_doc.get("status") or envelope.get("status") or "")
+    # A backend downgrade based on physical HTTP must survive an inner harness status=ok.
+    outer_status=str(envelope.get("status") or "")
+    inner_status=str(source_doc.get("status") or "")
+    severity={"ok":0,"empty":1,"partial":2,"degraded":3,"needs_input":4,"error":5,"invalid_contract":6}
+    candidates_status=[v for v in (inner_status,outer_status) if v]
+    raw_status=max(candidates_status,key=lambda value:severity.get(value,6)) if candidates_status else ""
     if raw_status not in ("ok", "empty", "needs_input", "partial", "degraded", "error"):
         norm_status = "invalid_contract"
     else:
@@ -1041,21 +1060,38 @@ def build_evidence_from_envelope(
                 }
             )
 
-    # Preserve MCP `warnings` alongside `limitations`
-    raw_warnings = source_doc.get("warnings") if isinstance(source_doc.get("warnings"), list) else (
-        envelope.get("warnings") if isinstance(envelope.get("warnings"), list) else []
-    )
-    warnings_list: list[str] = [str(w).strip() for w in raw_warnings if str(w).strip()]
-
-    # `ok` with 0 valid items is not a recommendation proof (`ARCHITECTURE.txt` §6)
-    limitations: list[str] = list(source_doc.get("limitations") or envelope.get("limitations") or [])
-    for w_msg in warnings_list:
-        w_note = f"MCP warning: {w_msg}"
-        if w_note not in limitations:
-            limitations.append(w_note)
-    if norm_status == "ok" and not used_items:
-        norm_status = "empty"
-        limitations.append("Status 'ok' returned 0 valid items; treated as empty recommendation requiring reformulation.")
+    # Merge inner/outer warnings: harness0.1.26 may omit physical /v2/insights warnings.
+    all_warnings=[]; warning_keys=set()
+    for document in (source_doc,envelope):
+        for key in ("warnings","physical_http_warnings"):
+            for warning in document.get(key,[]) if isinstance(document.get(key),list) else []:
+                marker=sha256_canonical(warning)
+                if marker not in warning_keys: warning_keys.add(marker); all_warnings.append(copy.deepcopy(warning))
+    warnings_list=[canonical_json_bytes(w).decode() if isinstance(w,(dict,list)) else str(w).strip() for w in all_warnings]
+    limitations=[]
+    for document in (source_doc,envelope):
+        for item in document.get("limitations",[]) if isinstance(document.get("limitations"),list) else []:
+            text=redact_sensitive_text(item)
+            if text and text not in limitations: limitations.append(text)
+    for warning in warnings_list:
+        note=f"Qloo warning: {warning}"
+        if note not in limitations: limitations.append(note)
+    ignored_ids=_ignored_signal_ids(all_warnings)
+    measured_count=sum(1 for item in used_items if item["score_value"] is not None)
+    if tool=="qloo_rank":
+        if used_items and measured_count==0:
+            if norm_status=="ok": norm_status="empty"
+            limitations.append("No finite measured affinity score was returned. Response/input order is not a qualified ranking; every candidate is non-evaluable.")
+        elif measured_count<len(used_items):
+            if norm_status=="ok": norm_status="partial"
+            limitations.append("Some candidates have no finite measured affinity score; ranking is partial and cannot start the creative model.")
+        if ignored_ids and norm_status in ("ok","empty","partial","degraded"):
+            all_signals_ignored=bool(confirmed_entity_ids) and {x.casefold() for x in confirmed_entity_ids}<={x.casefold() for x in ignored_ids}
+            norm_status="empty" if all_signals_ignored else "degraded"
+            limitations.append("Qloo ignored signal.interests.entities IDs: "+", ".join(ignored_ids)+". The requested taste signal set was not fully evaluated.")
+    if norm_status=="ok" and not used_items:
+        norm_status="empty"
+        limitations.append("Status ok returned0 valid items; no qualified recommendation.")
 
     env_source_type = str(envelope.get("source_type") or "").strip()
     env_mode = str(envelope.get("mode") or "").strip()
@@ -1118,8 +1154,12 @@ def build_evidence_from_envelope(
         "status": norm_status,
         "results": results_payload,
         "warnings": warnings_list,
+        "physical_http_warnings":copy.deepcopy(envelope.get("physical_http_warnings") or []),
+        "ignored_signal_ids":ignored_ids,
+        "measured_score_count":measured_count,
+        "ranking_evaluable":tool=="qloo_rank" and norm_status=="ok" and measured_count>0,
         "error": err_obj,
-        "degradation_summary": source_doc.get("degradation_summary") or envelope.get("degradation_summary"),
+        "degradation_summary": envelope.get("degradation_summary") or source_doc.get("degradation_summary"),
     }
     payload_sha = sha256_canonical(payload_redacted)
 
@@ -1214,7 +1254,7 @@ def select_from_valid_results(
         ent_type = _normalize_entity_type_urn(raw_ent_type) if raw_ent_type else ""
         score_field, score_val = _extract_valid_score(ent)
         raw_order = ent.get("returned_order", idx if ent_id else None)
-        returned_order = int(raw_order) if isinstance(raw_order, int) and raw_order >= 0 and ent_id else None
+        returned_order = int(raw_order) if isinstance(raw_order, int) and not isinstance(raw_order,bool) and raw_order >= 0 and ent_id and score_val is not None else None
         is_tie = bool((returned_order is not None and order_counts.get(returned_order, 0) > 1) or (score_val is not None and score_counts.get(score_val,0)>1))
 
         if not ent_id:
@@ -1223,9 +1263,12 @@ def select_from_valid_results(
         elif ent_id in seen_ids:
             qual_state = "non_évaluable"
             excl_reason = "duplicate_entity_id"
-        elif evidence["status"] not in ("ok","partial","degraded"):
+        elif evidence["status"] != "ok":
             qual_state = "non_évaluable"
             excl_reason = "non_usable_evidence_status"
+        elif score_val is None:
+            qual_state = "non_évaluable"
+            excl_reason = "missing_finite_measured_affinity"
         elif not ent_type or ent_type=="urn:entity":
             qual_state = "non_évaluable"
             excl_reason = "missing_specific_entity_type"
@@ -2121,6 +2164,8 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
             "model_failure":model_error,"automatic_model_retries":0,"automatic_transport_retries":0,"llm_only_comparison":{"status":"not_run","allocated_calls":0},
             "constraint_fidelity":{"status":"not_evaluable" if brief.get("completeness")!="complete" else ("fail" if validate_constraint_fidelity(brief) else "pass"),
                 "errors":validate_constraint_fidelity(brief),"scope":"duration_sum_aspect_screen_text_assets_and_explicit_forbidden_visuals; semantic_review_is_role3"},
+            "ranking_steps":[{"evidence_id":e["id"],"status":e["status"],"ranking_evaluable":e["payload_redacted"].get("ranking_evaluable",False),
+                "measured_score_count":e["payload_redacted"].get("measured_score_count",0),"ignored_signal_ids":e["payload_redacted"].get("ignored_signal_ids",[]),"limitations":e.get("limitations",[])} for e in evidences],
             "model_verification":"not_run" if zero_model else brief["verification"]["llm_status"],
             "physical_api_qualification":"requires_matching_parent_counter_and_receipts"}
         for key in ("case_id","frozen_case_sha256","frozen_cases_file_sha256"):
@@ -2174,14 +2219,20 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
         decisions.append(select_from_valid_results(f"dec-{run_id}-{idx:02d}-{domain}",run_id,f"select_{domain}_references",ev,f"urn:entity:{domain}",validated["constraints_origin"]))
         if ev["status"]!="ok":
             workflow_status=ev["status"]
+            reasons.append("ranking_step:"+domain+":"+ev["status"])
+            for limitation in ev.get("limitations",[]):
+                if limitation not in reasons: reasons.append(limitation)
             break  # No automatic retry, secondary domain or model after an API failure.
     usable=bool(decisions) and all(d["selected_entity_ids"] for d in decisions)
     if workflow_status!="ok" or not usable:
+        if workflow_status=="ok": workflow_status="empty"
         reasons.append("ranking_not_usable:"+workflow_status)
         return finish(workflow_status if workflow_status!="ok" else "empty",_unproduced_brief(run_id,mode,validated,"not_generated",reasons))
     qloo_verified=mode=="live" and budget["qloo_network_attempts_used"]>0 and all(
         e["run_id"]==run_id and e["source_type"]=="qloo_response" and e["mode"]=="live" and e["status"]=="ok"
         and e["authentication_state"]=="authenticated" and e["used_items"]
+        and all(isinstance(item.get("score_value"),(int,float)) and not isinstance(item.get("score_value"),bool) and math.isfinite(item["score_value"]) for item in e["used_items"])
+        and not e["payload_redacted"].get("ignored_signal_ids")
         and isinstance(e.get("source_payload_sha256"),str) and re.fullmatch(r"[0-9a-f]{64}",e["source_payload_sha256"])
         for e in evidences)
     if mode!="fixture" and not qloo_verified and mode!="recorded_live":
@@ -2339,9 +2390,10 @@ def build_public_export(bundle: dict[str,Any]) -> dict[str,Any]:
         "directions":[take(x,("direction_id","title","angle","origin")) for x in bundle.get("directions",[])],
         "decisions":public_decisions,"candidate_resolution":{"gate_status":resolution.get("gate_status"),"resolved_groups":groups,"confirmed_entity_ids":resolution.get("confirmed_entity_ids",[])},
         "clarification_questions":list(dict.fromkeys(questions)),
+        "gate_reasons":copy.deepcopy(((bundle.get("audit") or {}).get("pre_qloo_gate") or {}).get("gate_reasons") or []),
         "run_budget":take(bundle.get("run_budget") or {},("qloo_network_attempt_limit","qloo_network_attempts_used","llm_call_limit","llm_calls_used","active_time_limit_ms","active_time_used_ms")),
         "constraint_fidelity":copy.deepcopy((bundle.get("audit") or {}).get("constraint_fidelity") or {"status":"not_evaluable","errors":[]}),
-        "evidence_sources":[take(e,("id","mode","tool","status","authentication_state","source_payload_sha256","used_items")) for e in bundle.get("evidences",[])],
+        "evidence_sources":[take(e,("id","mode","tool","status","authentication_state","source_payload_sha256","used_items","limitations")) for e in bundle.get("evidences",[])],
         "limitations":copy.deepcopy(brief.get("limitations") or [PRODUCT_PROMISE_STATEMENT])}
     def clean(value):
         if isinstance(value,str):

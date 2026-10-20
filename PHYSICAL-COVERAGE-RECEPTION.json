@@ -1,0 +1,56 @@
+{
+  "kind": "offline_reception_of_genuine_archived_HTTP",
+  "new_http": 0,
+  "new_models": 0,
+  "rows": [
+    {
+      "run": "run-eval-20261020-dfc8667c-c01-q",
+      "status": "degraded",
+      "missing_signals": [
+        "9BA85467-2189-46DC-BB98-4B25EE182A9D"
+      ],
+      "limitations": [
+        "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution.",
+        "Qloo ranking ignored or warned about part of the supplied input. No complete result is qualified.",
+        "Ranking endpoint did not recognize: Dune (Dune, #1) (9BA85467-2189-46DC-BB98-4B25EE182A9D). Use a different public reference in a separate brief; no supplied reference was silently removed."
+      ]
+    },
+    {
+      "run": "run-eval-20261020-3f2038b2-c02-q",
+      "status": "degraded",
+      "missing_signals": [
+        "3224800A-A757-48CC-8489-BD377F5A43BF"
+      ],
+      "limitations": [
+        "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution.",
+        "Qloo ranking ignored or warned about part of the supplied input. No complete result is qualified.",
+        "Ranking endpoint did not recognize: Rebecca (3224800A-A757-48CC-8489-BD377F5A43BF). Use a different public reference in a separate brief; no supplied reference was silently removed."
+      ]
+    },
+    {
+      "run": "run-eval-20261020-dfc8667c-c06-q",
+      "status": "empty",
+      "missing_signals": [
+        "9BA85467-2189-46DC-BB98-4B25EE182A9D"
+      ],
+      "limitations": [
+        "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution.",
+        "Qloo ranking ignored every supplied seed. No cultural ranking is qualified.",
+        "Ranking endpoint did not recognize: Dune (Dune, #1) (9BA85467-2189-46DC-BB98-4B25EE182A9D). Use a different public reference in a separate brief; no supplied reference was silently removed.",
+        "Measured affinity is missing. Returned or input order is not a qualified cultural ranking."
+      ]
+    },
+    {
+      "run": "run-public-08815bd9-a4c9-4207-b3cc-e19f9c735f90",
+      "status": "degraded",
+      "missing_signals": [
+        "3224800A-A757-48CC-8489-BD377F5A43BF"
+      ],
+      "limitations": [
+        "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution.",
+        "Qloo ranking ignored or warned about part of the supplied input. No complete result is qualified.",
+        "Ranking endpoint did not recognize: Rebecca (3224800A-A757-48CC-8489-BD377F5A43BF). Use a different public reference in a separate brief; no supplied reference was silently removed."
+      ]
+    }
+  ]
+}

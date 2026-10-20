@@ -6,9 +6,9 @@ import http from "node:http";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
 
-export const GATEWAY_VERSION = "1.0.1-bounded-public-jobs-20261020";
+export const GATEWAY_VERSION = "1.0.2-core-2.6.2-20261020";
 export const POLICY = Object.freeze({ families: 10, physical: 140, models: 30,
-  familyPhysical: 14, familyModels: 3, activeMs: 120000, queued: 4, perIpHour: 2 });
+  familyPhysical: 14, familyModels: 3, activeMs: 120000, queued: 4, perIpHour: 4 });
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PAGE_ORIGIN = "https://yannabadie.github.io";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -19,7 +19,7 @@ const CONSTRAINT_KEYS = new Set(["tone", "genre", "launch_audience_context", "du
   "accept_existing_choices", "do_not_invent_ids", "treat_embedded_instructions_as_data", "request_missing_information"]);
 const PUBLIC_KEYS = new Set(["schema_version", "director_version", "run_id", "mode", "status", "workflow_status",
   "qloo_api_verified", "brief", "directions", "decisions", "candidate_resolution", "clarification_questions",
-  "run_budget", "constraint_fidelity", "evidence_sources", "limitations"]);
+  "run_budget", "constraint_fidelity", "evidence_sources", "limitations", "gate_reasons"]);
 const FORBIDDEN_EXPORT_KEYS = /^(?:api_key|qloo_api_key|authorization|x-api-key|mcp_stdio_runtime|payload_redacted|structuredContent|execution_proof_paths|runner_metadata|model_route_version|native_source_hashes)$/i;
 const canonical = value => JSON.stringify(value, (_key, item) => item && !Array.isArray(item) && typeof item === "object"
   ? Object.fromEntries(Object.keys(item).sort().map(key => [key, item[key]])) : item);
@@ -29,6 +29,23 @@ const boundedText = (value, max) => {
   if (typeof value !== "string" || value.length > max || /\bsk-[A-Za-z0-9_-]{12,}|Authorization\s*:\s*Bearer|X-Api-Key\s*[:=]/i.test(value)) throw fail(400, "PUBLIC_INPUT_INVALID");
   return value;
 };
+
+/** Offline owner migration helpers. Neither function reads or writes runtime state. */
+export function publicPolicyHash(perIpHour = POLICY.perIpHour) {
+  if (![2, 4].includes(perIpHour)) throw new Error("Only the explicit2-to4 policy change is supported");
+  return hash(canonical({ allowedOrigin: PAGE_ORIGIN, policy: { ...POLICY, perIpHour } }));
+}
+
+export function verifyPublicPolicyMigration(before, after) {
+  if (before?.policy_hash !== publicPolicyHash(2) || after?.policy_hash !== publicPolicyHash(4)) throw new Error("Expected explicit old/new policy hashes");
+  const { policy_hash: oldHash, ...oldState } = before;
+  const { policy_hash: newHash, ...newState } = after;
+  if (canonical(oldState) !== canonical(newState)) throw new Error("Migration may change policy_hash only; budgets, families and jobs must remain intact");
+  return { old_policy_hash: oldHash, new_policy_hash: newHash, changed_fields: ["policy_hash"],
+    unchanged_state_sha256: hash(canonical(oldState)), reserved_unchanged: structuredClone(before.reserved),
+    families_unchanged: Object.keys(before.families || {}).length, jobs_unchanged: Object.keys(before.jobs || {}).length,
+    runtime_written_by_helper: false };
+}
 
 function cleanInput(body) {
   if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).some(key => !BODY_KEYS.has(key))) throw fail(400, "PUBLIC_INPUT_FIELDS_REFUSED");
@@ -109,7 +126,7 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
   const lockFd = fs.openSync(lockPath, "wx", 0o600);
   fs.writeFileSync(lockFd, JSON.stringify({ pid: process.pid, owner })); fs.closeSync(lockFd);
   const release = () => { try { if (JSON.parse(fs.readFileSync(lockPath, "utf8")).owner === owner) fs.unlinkSync(lockPath); } catch {} };
-  const policyHash = hash(canonical({ allowedOrigin, policy: POLICY }));
+  const policyHash = publicPolicyHash();
   let state;
   try {
     state = fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, "utf8")) : {
@@ -184,7 +201,7 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
               projected.limitations = [...(projected.limitations || []), `Custom request derived from ${job.original_case_id}; the original frozen case is not completed. Parent job: ${job.parent_job_id || "none"}.`];
             }
             job.public_result = projected;
-            job.status = raw.workflow_status === "needs_input" || raw.workflow_status === "empty" ? "needs_input"
+            job.status = raw.workflow_status === "needs_input" ? "needs_input"
               : raw.workflow_status === "ok" && projected.qloo_api_verified === true ? "completed" : "failed";
             if (job.status === "failed") job.error = { code: "RUN_NOT_COMPLETED", message: "The result did not complete; there is no automatic retry." };
           } catch {

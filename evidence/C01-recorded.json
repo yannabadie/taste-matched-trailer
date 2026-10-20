@@ -379,5 +379,7 @@
       "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
       "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
     ]
-  }
+  },
+  "qualification_state": "withdrawn_after_raw_HTTP_coverage_review",
+  "qualification_reason": "At least one supplied book signal was ignored by ranking. Original document retained as history; not a current qualified example."
 }

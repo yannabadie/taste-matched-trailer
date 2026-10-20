@@ -1,51 +1,5 @@
 {
-  "at": "2026-10-20T00:16:36+00:00",
-  "url": "https://yannabadie.github.io/taste-matched-trailer/",
-  "commit": "ef016f291e65a43dc07162a8426e4fe1073e23bf",
-  "run_id": "run-public-08815bd9-a4c9-4207-b3cc-e19f9c735f90",
-  "case": "C02",
-  "physical_http": 10,
-  "native_calls": 3,
-  "all_responses_received": true,
-  "unknown_outcomes": 0,
-  "complete_shots": 4,
-  "verifier": {
-    "deterministic_status": "pass",
-    "llm_status": "accept",
-    "unresolved_claims": []
-  },
-  "source_sha256": {
-    "campagne-hackathon-2026-10-19/conception/CONTRATS.schema.json": "cd995049bd30e8f1c9f617df99780139dd8fa01c5d900553b48c93a545263408",
-    "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
-    "taste-matched-trailer/bridge/cpu_counter.py": "bcda630e2d17904b6969f9820efc7481858db5a8c6f266cd1e6291c2e0d737c7",
-    "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
-    "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
-    "taste-matched-trailer/cultural_launch_director.py": "21139c67f693d4ad956631aac5bbbb75aa101c77aa02ac7495299b20e910c642",
-    "taste-matched-trailer/guarded_qwen_runner.py": "113cdcd361c068754173f0fd8138c316aafff325d07f7ebee8024aedc2c31f13",
-    "taste-matched-trailer/index.html": "d6e4612137fcb6f3c11a402424f421e167a9b8e34ba5431240ec979ba483f052",
-    "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/qloo_mcp_backend.mjs": "9fab93d0cb4f2e38721bd1209c81c114c3977f8801e4b10f564a1852e19388ad",
-    "taste-matched-trailer/public_gateway.mjs": "57039ec8314955fc2a86e6ecdb46024c821a5b58b703f05795c1d6a121c15a5f"
-  },
-  "public_export_sha256": "217489a33244b9c4135c606487dc40a1dd91a7b214c210ac7eeac3e441e66468",
-  "browser_ui_seen": true,
-  "browser_download_equals_server_public_export": true,
-  "native_session_released": true,
-  "configuration_unchanged": true,
-  "private_backend_not_public": true,
-  "download_status": "Verified downloaded JSON equals server public_export",
-  "download_sha256": "c686b3270850ceb69093ed42a630ee07d471d970fe0ff23152db308010685537",
-  "screenshot_file": "demo-publique-qloo-20261020.png",
-  "screenshot_sha256": "782440ec681efce6bcf36e0f79b4cef26123955c18820e4633ed1d2f758618ed",
-  "devpost": {
-    "project_url": "https://devpost.com/software/the-taste-matched-trailer-qloo-cultural-director-agent",
-    "submission_id": "1245437",
-    "status_observed": "SUBMITTED;5/5stepsdone;Project submitted disabled",
-    "description_and_pitch_updated": true,
-    "new_story_and_pitch_read_on_public_page": true,
-    "unverified_multiplier_and_audience_shares_removed": true,
-    "try_it_out_points_to_current_pages": true,
-    "new_terms_accepted": false,
-    "project_start_date_preserved": "October15,2026"
-  }
+  "release": "2.6.2",
+  "status": "awaiting_new_clean_positive_control",
+  "prior": "PUBLIC-BROWSER-RECEPTION-2.6.1-HISTORICAL.json"
 }

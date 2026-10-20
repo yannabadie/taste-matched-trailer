@@ -1,5 +1,5 @@
 {
-  "release": "2.6.1",
+  "release": "2.6.2",
   "at": "2026-10-20T00:12:54.049368+00:00",
   "cases": [
     {
@@ -11,14 +11,13 @@
         "native_calls": 0
       },
       "original_inputs_unchanged": true,
-      "final_status": "ok",
-      "current_version": "2.6.1-issues-sonic-contract-20261020",
-      "actual_api_verified": true,
+      "final_status": "degraded",
+      "current_version": "2.6.2",
+      "actual_api_verified": false,
       "physical_http_added": 7,
       "native_calls_added": 3,
       "operator_confirmation": "Codex selected the canonical first novel from genuine candidates; this was not a click or approval by Yann",
       "original_resolution_reused": true,
-      "complete_shots": 4,
       "total_duration_seconds": 40,
       "verifier": "accept",
       "constraints": "pass",
@@ -35,7 +34,16 @@
           "name": "Blade Runner 2049",
           "affinity": 0.783513153057703
         }
-      ]
+      ],
+      "previous_qualification": {
+        "status": "ok",
+        "api_verified": true,
+        "retained_as_history": true
+      },
+      "coverage_reason": "Dune not recognized by ranking",
+      "current_policy": "No model generation, selection or qualified export after this warning",
+      "correction_validation": "Offline replay of the genuine physical responses under2.6.2; no new API call",
+      "complete_shots_historical": 4
     },
     {
       "case": "C02",
@@ -46,13 +54,12 @@
         "native_calls": 2
       },
       "original_inputs_unchanged": true,
-      "final_status": "ok",
-      "current_version": "2.6.1-issues-sonic-contract-20261020",
-      "actual_api_verified": true,
+      "final_status": "degraded",
+      "current_version": "2.6.2",
+      "actual_api_verified": false,
       "physical_http_added": 10,
       "native_calls_added": 3,
       "corrective_change": "Sound direction field bound100->160; original failure retained; writer1200-token ceiling unchanged",
-      "complete_shots": 4,
       "total_duration_seconds": 38.0,
       "verifier": "accept",
       "constraints": "pass",
@@ -69,7 +76,16 @@
           "name": "Blade Runner 2049",
           "affinity": 0.7344022616073991
         }
-      ]
+      ],
+      "previous_qualification": {
+        "status": "ok",
+        "api_verified": true,
+        "retained_as_history": true
+      },
+      "coverage_reason": "Rebecca not recognized by ranking",
+      "current_policy": "No model generation, selection or qualified export after this warning",
+      "correction_validation": "Offline replay of the genuine physical responses under2.6.2; no new API call",
+      "complete_shots_historical": 4
     },
     {
       "case": "C03",
@@ -133,14 +149,13 @@
         "native_calls": 0
       },
       "original_inputs_unchanged": true,
-      "final_status": "ok",
-      "current_version": "2.6.1-issues-sonic-contract-20261020",
-      "actual_api_verified": true,
+      "final_status": "empty",
+      "current_version": "2.6.2",
+      "actual_api_verified": false,
       "physical_http_added": 5,
       "native_calls_added": 3,
       "operator_confirmation": "Codex selected the canonical first novel from genuine candidates; this was not a click or approval by Yann",
       "original_resolution_reused": true,
-      "complete_shots": 4,
       "total_duration_seconds": 38.0,
       "verifier": "accept",
       "constraints": "pass",
@@ -157,7 +172,16 @@
           "name": "Solaris",
           "affinity": null
         }
-      ]
+      ],
+      "previous_qualification": {
+        "status": "ok",
+        "api_verified": true,
+        "retained_as_history": true
+      },
+      "coverage_reason": "Dune not recognized by ranking",
+      "current_policy": "No model generation, selection or qualified export after this warning",
+      "correction_validation": "Offline replay of the genuine physical responses under2.6.2; no new API call",
+      "complete_shots_historical": 4
     },
     {
       "case": "C07",
@@ -198,15 +222,19 @@
   "initial_errors_retained": true,
   "same_model_baseline_run": false,
   "measured_quality_or_sales_improvement": false,
-  "coverage": "8 cases examined; 3 complete authentic workflows after corrections/attributed choices; 5 honest clarification branches, including3without usable references and0API",
+  "coverage": "Eight cases examined against actual provider behavior:3ranking coverage failures (2partial,1no usable signal),5clarifications. Historical generations are not currently qualified.",
   "public_browser_smoke": {
-    "status": "passed",
+    "status": "degraded",
     "run_id": "run-public-08815bd9-a4c9-4207-b3cc-e19f9c735f90",
     "physical_http": 10,
     "native_calls": 3,
     "complete_shots": 4,
     "verifier": "accept",
     "download_matches_server_export": true,
-    "receipt": "PUBLIC-BROWSER-RECEPTION.json"
-  }
+    "receipt": "PUBLIC-BROWSER-RECEPTION.json",
+    "qualification": "withdrawn: Rebecca ignored by ranking"
+  },
+  "qualification_revision": "Raw HTTP warnings override former harness/core success flags",
+  "previous_full_qualifications_withdrawn": true,
+  "positive_control_2_6_2": "pending"
 }

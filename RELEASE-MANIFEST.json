@@ -1,20 +1,22 @@
 {
-  "release": "2.6.1-public",
-  "created_at": "2026-10-20T00:11:18.650000+00:00",
+  "release": "2.6.2-physical-signal-coverage",
+  "created_at": "2026-10-20T00:34:16.725990+00:00",
   "source_sha256": {
     "campagne-hackathon-2026-10-19/conception/CONTRATS.schema.json": "cd995049bd30e8f1c9f617df99780139dd8fa01c5d900553b48c93a545263408",
     "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
     "taste-matched-trailer/bridge/cpu_counter.py": "bcda630e2d17904b6969f9820efc7481858db5a8c6f266cd1e6291c2e0d737c7",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
-    "taste-matched-trailer/cultural_launch_director.py": "21139c67f693d4ad956631aac5bbbb75aa101c77aa02ac7495299b20e910c642",
+    "taste-matched-trailer/cultural_launch_director.py": "ddaef071073444c2bc9510513ceca7e01585670b7b3f37f0e619dfedd06ed02c",
     "taste-matched-trailer/guarded_qwen_runner.py": "113cdcd361c068754173f0fd8138c316aafff325d07f7ebee8024aedc2c31f13",
-    "taste-matched-trailer/index.html": "d6e4612137fcb6f3c11a402424f421e167a9b8e34ba5431240ec979ba483f052",
+    "taste-matched-trailer/index.html": "cef0afb821202f118ed4c33cdc09fecc2cc92e4e0d7df8519e4b8ce411d6382d",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/qloo_mcp_backend.mjs": "9fab93d0cb4f2e38721bd1209c81c114c3977f8801e4b10f564a1852e19388ad",
-    "taste-matched-trailer/public_gateway.mjs": "57039ec8314955fc2a86e6ecdb46024c821a5b58b703f05795c1d6a121c15a5f"
+    "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
+    "taste-matched-trailer/public_gateway.mjs": "e2271704b0950ecb697772519ab175c9372fb5ceb3be7b295221b30722cc1ea2"
   },
   "initial_evaluation_plan": "preparation-v3",
   "corrective_plan": "preparation-v4",
-  "frontend_after_evaluation_delta": "Live-only mode declarations; external browser reception remains to run"
+  "frontend_after_evaluation_delta": "Live-only mode declarations; external browser reception remains to run",
+  "coverage_fix": "Preserve raw HTTP warnings; reject ignored seeds and rankings without measured affinity before native models",
+  "public_positive_control": "pending"
 }

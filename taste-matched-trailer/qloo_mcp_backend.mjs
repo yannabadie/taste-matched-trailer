@@ -32,7 +32,7 @@ import { initialiseGuardRun, readPhysicalCounter } from "./qloo_fetch_budget_pre
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const BACKEND_ADAPTER_VERSION = "2.6.0-eight-cases-public-20261020";
+export const BACKEND_ADAPTER_VERSION = "2.6.2-physical-signal-coverage-20261020";
 export const FETCH_BUDGET_PRELOAD_PATH = path.join(__dirname, "qloo_fetch_budget_preload.mjs");
 export const FETCH_BUDGET_PRELOAD_URL = pathToFileURL(FETCH_BUDGET_PRELOAD_PATH).href;
 export const INSTALLED_HARNESS_ROOT =
@@ -653,6 +653,38 @@ export function invokePythonDirector(cliFlag, payloadObj, sourceEnv = process.en
 }
 
 
+/** Read the actual HTTP warning channel: the upstream MCP harness can omit it. */
+export function enrichRankWithPhysicalEvidence(envelope, rawEnvelope, physicalEvents, guardDirectory, requestedSignals) {
+  const warnings=[]; const references=[];
+  for (const event of physicalEvents.filter(e=>e.path==="/v2/insights" && e.status===200)) {
+    const bytes=fs.readFileSync(path.join(guardDirectory,`http-${String(event.attempt).padStart(2,"0")}-response.txt`));
+    if (crypto.createHash("sha256").update(bytes).digest("hex")!==event.redacted_response_sha256) throw new Error("PHYSICAL_PROVENANCE_MISMATCH");
+    const body=JSON.parse(bytes.toString("utf8"));
+    if (Array.isArray(body.warnings)) warnings.push(...body.warnings);
+    references.push({attempt:event.attempt,response_sha256:event.response_sha256,redacted_response_sha256:event.redacted_response_sha256});
+  }
+  envelope.physical_http_warnings=warnings;
+  envelope.physical_http_warning_refs=references;
+  const absent=new Set(warnings.flatMap(w=>w && typeof w==="object" && w.type==="not_found" && Array.isArray(w["signal.interests.entities"])?w["signal.interests.entities"]:[]));
+  const allAbsent=requestedSignals.length>0 && requestedSignals.every(id=>absent.has(id));
+  const items=Array.isArray(envelope.results)?envelope.results:envelope.results?.entities || [];
+  const measured=item=>[item.affinity,item.query?.affinity].some(v=>typeof v==="number" && Number.isFinite(v));
+  if (warnings.length) {
+    envelope.status=allAbsent?"empty":"degraded";
+    envelope.limitations.push(allAbsent?"Qloo ranking ignored every supplied seed. No cultural ranking is qualified.":"Qloo ranking ignored or warned about part of the supplied input. No complete result is qualified.");
+    if (absent.size) {
+      const signals=rawEnvelope?.structuredContent?.interpretation?.signals || [];
+      const labels=[...absent].map(id=>{const item=signals.find(x=>x.entityId===id);return item?.name?`${item.name} (${id})`:id;});
+      envelope.limitations.push("Ranking endpoint did not recognize: "+labels.join(", ")+". Use a different public reference in a separate brief; no supplied reference was silently removed.");
+    }
+  }
+  if (items.length && !items.every(measured) && ["ok","partial","degraded","empty"].includes(envelope.status)) {
+    envelope.status=items.some(measured)?"degraded":"empty";
+    envelope.limitations.push("Measured affinity is missing. Returned or input order is not a qualified cultural ranking.");
+  }
+  return envelope;
+}
+
 /** Owner-only execution surface. The public gateway applies a stricter input whitelist. */
 export async function executeDirectorRequest(body, activeEnv = process.env) {
   const fields = ["case_id", "synopsis", "suggested_public_references", "user_constraints", "confirmed_entity_ids",
@@ -715,7 +747,7 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
     Object.assign(result,{source_payload_sha256:entry.source_payload_sha256,run_id:runId,input_hash:pre.input_hash,
       requested_at:entry.requested_at,received_at:entry.received_at,network_attempt_made:fresh.length>0});
     fs.writeFileSync(path.join(guardDirectory,`mcp-${runId}-${String(session.toolCalls.length).padStart(2,"0")}.json`),JSON.stringify(raw,null,2).split(activeEnv.QLOO_API_KEY || "__NO_SECRET__").join("[REDACTED]")+"\n",{flag:"wx",mode:0o600});
-    return result;
+    return entry.tool==="qloo_rank"?enrichRankWithPhysicalEvidence(result,raw,fresh,guardDirectory,entry.arguments.signals || []):result;
   };
   try {
     if (payload.mode==="live" && (pre.allow_resolution_http || pre.allow_rank_http)) {
