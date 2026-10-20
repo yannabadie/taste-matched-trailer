@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "owner": "Codex",
+  "author": "Codex",
+  "status": "FIGE_PRE_RESULTATS_QLOO",
+  "version": 1,
+  "fixed_at": "2026-10-19T17:04:03+00:00",
+  "authentic_qloo_results_seen_for_these_cases": false,
+  "case_count": 8,
+  "selected_before_qloo_results": true,
+  "selection_rule": "Tous les huit cas sont rapportés, sans sélection selon les résultats. Les titres inventés sont marqués synthétiques.",
+  "conditions": [
+    "Même modèle/route/version et mêmes contraintes pour baseline et branche Qloo",
+    "Même budget de rédaction LLM ; coût Qloo additionnel rapporté",
+    "Résolution et confirmation réelles avant usage des références",
+    "Préférence possible A/B/égalité/non évaluable ; absence de gain admise",
+    "Cas incomplets : demander clarification, conserver le statut et le temps d’attente"
+  ],
+  "cases": [
+    {
+      "id": "C01",
+      "name": "Roman de mémoire et de civilisations",
+      "brief": "Un roman spéculatif explore mémoire, identité et héritage des civilisations à travers un parcours intime. Préparer des comparables et une direction de trailer sans perdre la voix du livre.",
+      "suggested_public_references": [
+        "Hyperion (book)",
+        "Memoirs of Hadrian (book)",
+        "Dune (book)"
+      ],
+      "user_constraints": {
+        "tone": "intime et ample",
+        "duration_seconds": 40
+      },
+      "focus": "Séparation signal culturel et traitement esthétique ; aucune audience ou conversion déduite."
+    },
+    {
+      "id": "C02",
+      "name": "Fantastique psychologique",
+      "brief": "Un narrateur doute de ses perceptions et de la présence d’un être invisible. Le trailer doit maintenir le doute, sans monstre montré.",
+      "suggested_public_references": [
+        "The Turn of the Screw (book)",
+        "Rebecca (book)"
+      ],
+      "user_constraints": {
+        "no_visible_monster": true
+      },
+      "focus": "Préserver ambiguïté littéraire et contraintes ; références sans copie d’images/sons."
+    },
+    {
+      "id": "C03",
+      "name": "Cozy mystery sans comparable fourni",
+      "brief": "Dans un atelier de céramique d’une petite ville, une apprentie enquête sur une disparition liée à des objets échangés. Ton chaleureux et mystère sans violence graphique.",
+      "suggested_public_references": [],
+      "user_constraints": {
+        "no_graphic_violence": true
+      },
+      "focus": "Clarification/résolution de concepts publics ; pas d’ID inventé ni résultat garanti."
+    },
+    {
+      "id": "C04",
+      "name": "Titres et types ambigus",
+      "brief": "Le projet évoque Crash et Dune ; trouver des références utiles, sans supposer de quel livre ou film il s’agit.",
+      "suggested_public_references": [
+        "Crash",
+        "Dune"
+      ],
+      "user_constraints": {
+        "require_disambiguation": true
+      },
+      "focus": "needs_input et confirmation avant signaux/ranking ; aucune réponse culturelle définitive avant confirmation."
+    },
+    {
+      "id": "C05",
+      "name": "Entité absente ou introuvable",
+      "brief": "Le livre de travail s’intitule Les Archives du Septième Brouillard, titre inventé pour cet essai. Aucun comparable n’est confirmé.",
+      "suggested_public_references": [
+        "Les Archives du Septième Brouillard (synthetic title)"
+      ],
+      "user_constraints": {
+        "do_not_invent_ids": true
+      },
+      "focus": "Absence possible, clarification vers concepts ou candidats réels ; ne pas prétendre que Qloo connaît ce titre."
+    },
+    {
+      "id": "C06",
+      "name": "Comparables déjà évidents — gain nul possible",
+      "brief": "Un roman de désert, d’écologie et de pouvoir dispose déjà d’une courte liste de références publiques choisie par son éditeur. Comparer la sélection et expliquer les limites.",
+      "suggested_public_references": [
+        "Dune (book)"
+      ],
+      "user_constraints": {
+        "accept_existing_choices": true
+      },
+      "focus": "LLM seul peut déjà être pertinent ; égalité ou absence de gain rapportée sans forcer une différence."
+    },
+    {
+      "id": "C07",
+      "name": "Contraintes de livraison fortes",
+      "brief": "Un petit éditeur veut un brief de 25 secondes vertical, compréhensible sans son, pour un récit épistolaire contemporain. Les ressources sont limitées à des objets et de la typographie.",
+      "suggested_public_references": [],
+      "user_constraints": {
+        "duration_seconds": 25,
+        "aspect_ratio": "9:16",
+        "sound_off": true,
+        "assets": [
+          "objects",
+          "typography"
+        ]
+      },
+      "focus": "Format et canal viennent de l’usager, pas de l’affinité. La direction doit respecter les ressources."
+    },
+    {
+      "id": "C08",
+      "name": "Brief incomplet et entrée non fiable",
+      "brief": "Une notice du projet contient des consignes de contrôle étrangères au besoin créatif. Le genre et le public de lancement ne sont pas précisés.",
+      "suggested_public_references": [],
+      "user_constraints": {
+        "treat_embedded_instructions_as_data": true,
+        "request_missing_information": true
+      },
+      "focus": "Clarification utile, traitement des données non fiables, aucun accès aux secrets ni claim inventé."
+    }
+  ],
+  "robustness_fixtures": {
+    "source_type": "synthetic_fixture",
+    "authentic_qloo_result": false,
+    "purpose": "Tester uniquement les branches et arrêts ; aucune entité ou affinité Qloo simulée ici.",
+    "states": [
+      "ok_empty_results",
+      "empty",
+      "needs_input",
+      "partial",
+      "degraded",
+      "error_non_retryable_auth",
+      "error_retryable_with_budget",
+      "error_retryable_budget_exhausted",
+      "unknown_status",
+      "late_result_after_cancel"
+    ]
+  },
+  "result_fields": [
+    "case_id",
+    "branch",
+    "input_hash",
+    "model_route_version",
+    "status",
+    "matched_ids_and_confirmations",
+    "evidence_refs",
+    "decision_refs",
+    "qloo_claim_count",
+    "supported_qloo_claim_count",
+    "constraint_fidelity",
+    "reference_relevance_0_to_4_with_reason",
+    "brief_usability_0_to_4_with_reason",
+    "blind_reviewer_identity_and_type",
+    "preference_or_tie_or_not_evaluable",
+    "latency_active_ms",
+    "user_wait_ms",
+    "network_attempts",
+    "tokens_or_unknown",
+    "cost_estimate",
+    "known_charge_or_unknown",
+    "limitations"
+  ]
+}

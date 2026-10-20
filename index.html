@@ -1,928 +1,373 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Taste-Matched Trailer — Qloo Cultural Intelligence Agent</title>
-  <meta property="og:title" content="The Taste-Matched Trailer — Qloo Cultural Intelligence Agent" />
-  <meta property="og:description" content="Autonomous cultural director agent combining Qloo's Taste AI with local LTX-2.5 video & Kyutai TTS synthesis to produce audience-calibrated book trailers." />
-  <meta property="og:image" content="https://yannabadie.github.io/taste-matched-trailer/assets/couverture-illustree-1600x2560.jpg" />
-  <style>
-    :root {
-      --bg: #0C0F1A;
-      --card: #141929;
-      --card-alt: #1A2136;
-      --gold: #D8B982;
-      --gold-dim: #9E8354;
-      --text: #F2EFE9;
-      --muted: #A5AEBE;
-      --accent: #4E8EF7;
-      --green: #42C88A;
-      --border: rgba(216, 185, 130, 0.24);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, sans-serif;
-      line-height: 1.55;
-      padding-bottom: 4rem;
-    }
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 2rem 1.5rem;
-      background: radial-gradient(circle at top right, rgba(216, 185, 130, 0.12), transparent 60%);
-    }
-    .container { max-width: 1180px; margin: 0 auto; padding: 0 1rem; }
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .badge {
-      display: inline-block;
-      background: rgba(216, 185, 130, 0.16);
-      color: var(--gold);
-      border: 1px solid var(--gold);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      margin-bottom: 0.75rem;
-    }
-    .book-page-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, #D8B982 0%, #B38E52 100%);
-      color: #0C0F1A;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 0.6rem 1.1rem;
-      border-radius: 8px;
-      border: 1px solid var(--gold);
-      transition: transform 0.12s ease, opacity 0.15s ease;
-    }
-    .book-page-link:hover {
-      transform: translateY(-1px);
-      opacity: 0.94;
-    }
-    h1 {
-      font-family: Georgia, serif;
-      font-size: 2.3rem;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-    .subtitle {
-      color: var(--muted);
-      max-width: 780px;
-      font-size: 1.05rem;
-    }
-    .grid-top {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 1.25rem;
-      margin-top: 1.5rem;
-    }
-    @media (max-width: 880px) {
-      .grid-top, .grid-3, .video-showcase-grid { grid-template-columns: 1fr !important; }
-    }
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.35rem;
-    }
-    .panel h2 {
-      font-family: Georgia, serif;
-      font-size: 1.25rem;
-      color: var(--gold);
-      margin-bottom: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
-      margin-top: 0.75rem;
-    }
-    select, input, textarea {
-      width: 100%;
-      background: #090C15;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.65rem 0.8rem;
-      font-size: 0.94rem;
-    }
-    textarea { min-height: 92px; resize: vertical; }
-    .btn-row {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-    button, .btn-link {
-      background: var(--gold);
-      color: #0C0F1A;
-      border: none;
-      border-radius: 8px;
-      padding: 0.7rem 1.2rem;
-      font-weight: 700;
-      font-size: 0.94rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: transform 0.1s ease, opacity 0.15s ease;
-    }
-    button:hover, .btn-link:hover { opacity: 0.92; transform: translateY(-1px); }
-    button.secondary, .btn-link.secondary {
-      background: transparent;
-      color: var(--gold);
-      border: 1px solid var(--gold);
-    }
-    button.ratio-btn {
-      padding: 0.5rem 1rem;
-      font-size: 0.86rem;
-      background: var(--card-alt);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-    button.ratio-btn.active {
-      background: var(--gold);
-      color: #0C0F1A;
-      border-color: var(--gold);
-    }
-    .pipeline-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-    .step-item {
-      background: var(--card-alt);
-      border-left: 3px solid var(--green);
-      padding: 0.55rem 0.8rem;
-      border-radius: 6px;
-      font-size: 0.88rem;
-      display: flex;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-    .step-item span.status { color: var(--green); font-weight: 600; font-size: 0.8rem; text-align: right; }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 1.25rem;
-    }
-    .entity-card {
-      background: var(--card-alt);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
-      padding: 0.8rem;
-      margin-bottom: 0.7rem;
-    }
-    .entity-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.25rem;
-      gap: 0.5rem;
-    }
-    .score-pill {
-      background: rgba(66, 200, 138, 0.16);
-      color: var(--green);
-      padding: 0.15rem 0.6rem;
-      border-radius: 99px;
-      font-size: 0.78rem;
-      white-space: nowrap;
-    }
-    .urn {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.74rem;
-      color: var(--gold-dim);
-      margin-bottom: 0.35rem;
-    }
-    .rationale { font-size: 0.84rem; color: var(--muted); }
-    .video-showcase-grid {
-      display: grid;
-      grid-template-columns: 1.35fr 0.65fr;
-      gap: 1.35rem;
-      align-items: start;
-      margin-top: 0.5rem;
-    }
-    .video-stage {
-      background: #070910;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .video-controls-bar {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-bottom: 0.85rem;
-    }
-    .ratio-toggle-group {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    video.trailer-player {
-      width: 100%;
-      max-width: 820px;
-      border-radius: 8px;
-      border: 1px solid rgba(216, 185, 130, 0.32);
-      background: #000;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
-      transition: max-width 0.25s ease;
-    }
-    video.trailer-player.vertical-mode {
-      max-width: 340px;
-    }
-    .video-meta-box {
-      background: var(--card-alt);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-    .video-meta-box h3 {
-      font-family: Georgia, serif;
-      color: var(--gold);
-      font-size: 1.08rem;
-    }
-    .meta-list {
-      list-style: none;
-      font-size: 0.86rem;
-      color: var(--muted);
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-    }
-    .meta-list strong { color: var(--text); }
-    .shots-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-top: 0.8rem;
-    }
-    @media (max-width: 780px) { .shots-list { grid-template-columns: 1fr; } }
-    .shot-card {
-      background: var(--card-alt);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-    }
-    .shot-top {
-      display: flex;
-      justify-content: space-between;
-      color: var(--gold);
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 0.4rem;
-    }
-    .shot-vo {
-      font-family: Georgia, serif;
-      font-style: italic;
-      color: var(--text);
-      margin: 0.45rem 0;
-      padding-left: 0.65rem;
-      border-left: 2px solid var(--gold);
-    }
-    .shot-prompt { font-size: 0.83rem; color: var(--muted); margin-bottom: 0.45rem; }
-    .shot-meta { font-size: 0.78rem; color: var(--green); }
-    .palette-row { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .swatch {
-      width: 28px; height: 28px; border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cultural Launch Director — Qloo Agentic Hackathon</title>
+<meta name="description" content="Choose explainable cultural references for a book, then turn the selected references into a traceable creative brief.">
+<meta property="og:title" content="Cultural Launch Director"><meta property="og:description" content="From a book brief to cultural references you can inspect, question and use.">
+<style>
+:root{color-scheme:dark;--bg:#0c0f1a;--panel:#151b2b;--inset:#0e1422;--line:#344056;--gold:#e3c38c;--text:#f4f1e9;--muted:#b3bdce;--green:#78d5aa;--amber:#f3c57b;--red:#ffaba3}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}a{color:var(--gold)}button,input,select,textarea{font:inherit}button,select,input,textarea{border:1px solid var(--line);border-radius:9px}button{padding:.7rem 1rem;background:var(--gold);color:#141925;font-weight:650;cursor:pointer}button.secondary{background:transparent;color:var(--gold)}button:disabled{opacity:.45;cursor:not-allowed}input,select,textarea{width:100%;background:var(--inset);color:var(--text);padding:.7rem}textarea{resize:vertical;min-height:120px}input[type=checkbox],input[type=radio]{width:auto}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #97baff;outline-offset:3px}header,main,footer{max-width:1180px;margin:auto;padding:1.5rem}header{padding-top:2.2rem}h1,h2,h3{line-height:1.2}h1{font:clamp(2.1rem,5vw,3.8rem)/1.08 Georgia,serif;margin:.8rem 0}h2{font:1.45rem/1.25 Georgia,serif;margin:0 0 1rem}h3{font-size:1.05rem;margin:.1rem 0 .6rem}p{margin:.5rem 0 1rem}.eyebrow{color:var(--gold);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em}.lede{max-width:720px;font-size:1.15rem;color:var(--muted)}.topline,.row,.actions,.cardhead{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}.topline{justify-content:space-between}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1.3rem;align-items:start}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.25rem}.panel{margin-bottom:1.3rem}.card{background:var(--inset);padding:1rem;border-radius:10px;margin:.7rem 0}.cardhead{justify-content:space-between;align-items:start}.field{margin:1rem 0}label,.label{display:block;margin-bottom:.4rem;font-weight:600;font-size:.9rem}.help,.muted{color:var(--muted);font-size:.87rem}.help{margin-top:.35rem}details{border-top:1px solid var(--line);margin-top:1rem;padding-top:.7rem}summary{cursor:pointer;color:var(--gold);font-size:.88rem}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,SFMono-Regular,monospace;color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:.2rem .65rem;font-size:.76rem;font-weight:600;color:var(--muted)}.pill.good{color:var(--green);border-color:#347455}.pill.warn{color:var(--amber);border-color:#876237}.pill.bad{color:var(--red);border-color:#945249}.status{padding:.8rem 1rem;border-left:3px solid var(--line);background:var(--inset);margin:1rem 0;border-radius:5px}.status.good{border-color:var(--green)}.status.warn{border-color:var(--amber)}.status.bad{border-color:var(--red)}.smallgrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.referencegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.7rem}.referencegrid .card{margin:0}.score{font:1.3rem Georgia,serif;color:var(--gold)}.shot{border-left:3px solid var(--gold)}.shot.invalid{border-color:var(--amber);opacity:.7}.empty{color:var(--muted);padding:1rem 0}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}[hidden]{display:none!important}footer{color:var(--muted);font-size:.8rem;padding-bottom:3rem}ul{padding-left:1.2rem}.constraint{display:flex;gap:.5rem;align-items:start;font-weight:400}.constraint input{margin-top:.35rem}.confirmation-choice{display:block;padding:.5rem;border:1px solid var(--line);border-radius:5px;margin:.4rem 0;font-weight:400}.runid{font:12px ui-monospace,monospace;overflow-wrap:anywhere}.sticky{position:sticky;top:1rem}@media(max-width:850px){.grid{grid-template-columns:1fr}.sticky{position:static}header,main,footer{padding:1rem}.smallgrid{grid-template-columns:1fr}}@media(prefers-reduced-motion:no-preference){button{transition:opacity .12s}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <div class="header-top">
-        <div>
-          <div class="badge">Qloo Agentic Hackathon · Cultural Taste Intelligence</div>
-          <h1>The Taste-Matched Trailer</h1>
-          <p class="subtitle">
-            An autonomous cultural director agent for authors &amp; publishers: it extracts a manuscript's narrative DNA, queries the <strong>Qloo Cultural Taste Graph</strong> across books, cinema, and composers, and synthesizes an audience-calibrated <strong>LTX-2.5 Book-Trailer</strong> rendered locally with <strong>Kyutai TTS</strong>.
-          </p>
-        </div>
-        <a class="book-page-link" href="le-bronze-et-la-cendre.html">
-          📖 Novel Launch Page: Le Bronze et la Cendre →
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="grid-top">
-      <section class="panel">
-        <h2>1. Manuscript &amp; Qloo Agent Controls</h2>
-        <label for="presetSelect">Select Validated Manuscript Case (or enter custom synopsis below)</label>
-        <select id="presetSelect">
-          <option value="le-bronze-et-la-cendre">Case 1 — Le Bronze et la Cendre (Yann Abadie) · Imperial Antiquity × 2287 Sci-Fi</option>
-          <option value="le-horla-maupassant">Case 2 — Le Horla (Guy de Maupassant) · 19th-Century Psychological Gothic</option>
-        </select>
-
-        <label for="synopsisInput">Manuscript Synopsis / Excerpt DNA</label>
-        <textarea id="synopsisInput"></textarea>
-
-        <label for="apiKeyInput">Optional Live Qloo API Key (<code>X-Api-Key</code> for <code>hackathon.api.qloo.com</code>)</label>
-        <input id="apiKeyInput" type="password" placeholder="Leave blank for Offline Reference Fixture (qloo_api_verified=false), or paste key for Live API execution" />
-
-        <div class="btn-row">
-          <button id="runAgentBtn">Run Qloo Taste-Matching Agent</button>
-          <button id="exportJsonBtn" class="secondary">Download LTX-2.5 Studio Brief (.json)</button>
-          <a href="le-bronze-et-la-cendre.html" class="btn-link secondary">Open Book Storefront &amp; Trailer Page</a>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>2. Multi-Hop Agentic Execution Trace <span id="modeBadge" class="score-pill">Offline Demo Fixture (qloo_api_verified: false)</span></h2>
-        <div class="pipeline-steps" id="pipelineTrace"></div>
-        <div style="margin-top: 1rem;">
-          <div style="font-size: 0.85rem; color: var(--muted);">Extracted Literary DNA &amp; Chromatic Palette</div>
-          <div id="dnaThemes" style="font-size: 0.9rem; margin-top: 0.3rem; font-weight: 600;"></div>
-          <div class="palette-row" id="paletteSwatches"></div>
-        </div>
-      </section>
-    </div>
-
-    <!-- REAL RENDERED VIDEO OUTPUT SECTION -->
-    <section class="panel" style="margin-top: 1.25rem;">
-      <h2>
-        <span>🎬 Rendered Trailer Output (LTX-2.5 + Kyutai TTS)</span>
-        <span id="videoSpecBadge" class="score-pill">40.58s · 24 fps · Multimodal QC Pass</span>
-      </h2>
-      <div class="video-showcase-grid">
-        <div class="video-stage">
-          <div class="video-controls-bar">
-            <div class="ratio-toggle-group">
-              <button id="btnRatio16x9" class="ratio-btn active" type="button">16:9 Landscape</button>
-              <button id="btnRatio9x16" class="ratio-btn" type="button">9:16 Vertical BookTok</button>
-            </div>
-            <span id="activeFileLabel" style="font-size: 0.8rem; color: var(--muted); font-family: monospace;">assets/teaser-bronze-v1-16x9.mp4</span>
-          </div>
-          <video id="trailerVideo" class="trailer-player" controls preload="metadata" playsinline poster="assets/couverture-illustree-1600x2560.jpg">
-            <source id="trailerVideoSource" src="assets/teaser-bronze-v1-16x9.mp4" type="video/mp4" />
-            Your browser does not support HTML5 video playback.
-          </video>
-        </div>
-
-        <div class="video-meta-box">
-          <h3 id="renderedTitle">Le Bronze et la Cendre — Official Book Trailer</h3>
-          <p id="renderedDesc" style="font-size: 0.88rem; color: var(--muted);"></p>
-          <ul class="meta-list" id="renderedSpecsList"></ul>
-          <div class="btn-row" style="margin-top: 0.4rem;">
-            <a id="download16x9Link" class="btn-link secondary" style="font-size: 0.82rem; padding: 0.5rem 0.85rem;" href="assets/teaser-bronze-v1-16x9.mp4" download>⬇ MP4 16:9</a>
-            <a id="download9x16Link" class="btn-link secondary" style="font-size: 0.82rem; padding: 0.5rem 0.85rem;" href="assets/teaser-bronze-v1.mp4" download>⬇ MP4 9:16 (BookTok)</a>
-          </div>
-          <div id="bookCtaContainer" style="border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.25rem;">
-            <div style="font-size: 0.8rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.45rem;">
-              Live Commercial Deployment
-            </div>
-            <div class="btn-row" style="margin-top: 0;">
-              <a class="btn-link" style="font-size: 0.85rem; padding: 0.55rem 0.95rem;" href="le-bronze-et-la-cendre.html">📖 Dedicated Book Page &amp; Storefront</a>
-              <a class="btn-link secondary" style="font-size: 0.82rem; padding: 0.5rem 0.85rem;" href="Extrait_Le_Bronze_et_la_Cendre_Chapitre_1.epub" download>📥 Free Chapter 1 (.epub)</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="grid-3">
-      <section class="panel">
-        <h2>Qloo Seed Books (Anchors)</h2>
-        <div id="seedBooksCol"></div>
-      </section>
-      <section class="panel">
-        <h2>Cross-Domain: Cinema &amp; Direction</h2>
-        <div id="filmsCol"></div>
-      </section>
-      <section class="panel">
-        <h2>Cross-Domain: Sonic &amp; Composers</h2>
-        <div id="musicCol"></div>
-      </section>
-    </div>
-
-    <section class="panel" style="margin-top: 1.25rem;">
-      <h2>Editorial Audience Cohort Proposals &amp; Distribution Channels (Anchored on Qloo Entities)</h2>
-      <div class="grid-3" id="personasRow" style="margin-top: 0.5rem;"></div>
-    </section>
-
-    <section class="panel" style="margin-top: 1.25rem;">
-      <h2>Generated 6-Shot LTX-2.5 Book-Trailer Production Brief <span id="totalDurationBadge" class="score-pill"></span></h2>
-      <div class="shots-list" id="shotsGrid"></div>
-    </section>
-  </main>
-
-  <script>
-    const QLOO_BASES = ["https://hackathon.api.qloo.com"];
-    const PROFILES = {
-      "le-bronze-et-la-cendre": {
-        title: "Le Bronze et la Cendre",
-        author: "Yann Abadie",
-        seed_queries: ["Hyperion Dan Simmons", "Memoirs of Hadrian Marguerite Yourcenar", "Dune Frank Herbert"],
-        synopsis: "In the year 2287, orbital archaeologists unearth a fractured bronze medallion and a two-thousand-year-old military oath linking Imperial Antiquity to the Brazen Legion. As regimes change centuries, the machinery of power keeps the exact same face.",
-        video: {
-          title: "Le Bronze et la Cendre (Yann Abadie) — Rendered Book-Trailer v2",
-          description: "6-shot cinematic adaptation directed from cross-domain taste clusters (Dune: Part Two × Blade Runner 2049 × Jóhann Jóhannsson), synthesized locally with LTX-2.5 and narrated in French via Kyutai TTS.",
-          mp4_16x9: "assets/teaser-bronze-v1-16x9.mp4",
-          mp4_9x16: "assets/teaser-bronze-v1.mp4",
-          poster: "assets/couverture-illustree-1600x2560.jpg",
-          badge: "40.58s · 24 fps · 974 frames · QC Pass",
-          specs: [
-            "<strong>Duration &amp; Frame Rate:</strong> 40.58s (974 decoded frames @ 24.0 fps)",
-            "<strong>Resolutions:</strong> 1024×576 (16:9 Widescreen) &amp; 576×1024 (9:16 Vertical BookTok)",
-            "<strong>Audio &amp; Voiceover:</strong> Kyutai TTS French narration (-27.9 dBFS RMS, -9.0 dBFS peak)",
-            "<strong>Aesthetic Direction:</strong> Villeneuve monolithic bronze/ochre palette + slow elegiac brass drone"
-          ]
-        },
-        literary_dna: {
-          primary_themes: ["Tragic continuity of empires", "Orbital archaeology (2287)", "Military oath & betrayal", "Bronze memory vs. ash"],
-          pacing_tempo_bpm: 74,
-          color_palette: ["#0C0F1A", "#D8B982", "#8C583A", "#2C3545"]
-        },
-        qloo_seed_books: [
-          { name: "Hyperion (Dan Simmons)", entity_id: "urn:entity:book:hyperion_simmons", match: 0.95, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Literary speculative fiction combining classical history with deep-future tragedy." },
-          { name: "Memoirs of Hadrian (Marguerite Yourcenar)", entity_id: "urn:entity:book:memoires_d_hadrien", match: 0.93, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Francophone gold standard for stoic imperial reflection and bronze-age memory." },
-          { name: "Dune (Frank Herbert)", entity_id: "urn:entity:book:dune_herbert", match: 0.91, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Feudal-imperial power structures across millennia." }
-        ],
-        films: [
-          { name: "Dune: Part Two (Denis Villeneuve, 2024)", entity_id: "urn:entity:movie:dune_part_two", affinity_score: 0.96, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Readers combining literary antiquity with hard SF over-index on Villeneuve's monolithic brutalist framing and bronze/ochre palettes." },
-          { name: "Blade Runner 2049 (Denis Villeneuve, 2017)", entity_id: "urn:entity:movie:blade_runner_2049", affinity_score: 0.92, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] High affinity on tactile relic examination scenes and amber-lit shadow geometry." },
-          { name: "Rome (HBO Series, Bruno Heller)", entity_id: "urn:entity:tv:rome_hbo", affinity_score: 0.89, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Strong overlap on oil-lamp antiquity textures, legion insignia, and political stoicism." }
-        ],
-        music: [
-          { name: "Jóhann Jóhannsson", entity_id: "urn:entity:artist:johann_johannsson", affinity_score: 0.95, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Brass-and-organ slow-burn motifs bridging ancient liturgy and futuristic minimalism." },
-          { name: "Max Richter", entity_id: "urn:entity:artist:max_richter", affinity_score: 0.92, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Elegiac strings matching the philosophical weight of Memoirs of Hadrian readers." },
-          { name: "Wardruna / Einar Selvik", entity_id: "urn:entity:artist:wardruna", affinity_score: 0.86, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Bronze horn and ritual percussion textures over-indexed by mythological SF readers." }
-        ],
-        personas: [
-          { segment: "Literary & Philosophical Sci-Fi Readers (Hyperion / Dune / Yourcenar)", share_pct: 48, channels: ["Amazon KDP SF Historique", "Babelio Imaginaire", "Reddit r/PrintSF"] },
-          { segment: "Antiquity & Civilizational History Enthusiasts", share_pct: 32, channels: ["YouTube Histoire/Archéologie", "Podcasts Antiquité", "X/Twitter Histoire"] },
-          { segment: "Cinematic Speculative Fiction & Worldbuilding Fans", share_pct: 20, channels: ["BookTok #SFFR", "Instagram Reels Lecture", "Substack Essais"] }
-        ],
-        shots: [
-          { shot_id: "bronze-p1-lampe", duration_s: 6.0, visual_prompt: "Macro cinematic shot of an ancient verdigris bronze Roman oil lamp resting on dark volcanic ash; a warm flame flickers as fine ash particles drift upward in slow motion.", voiceover_fr: "En deux mille deux cent quatre-vingt-sept, on croyait les empires éteints. Il ne restait que le bronze… et la cendre.", voiceover_en: "In 2287, they believed empires were extinct. Only bronze remained... and ash.", sonic_cue: "Jóhannsson-style low bronze horn resonance + soft ash wind", qloo_anchor: "Blade Runner 2049 relic lighting × Rome oil-lamp texture" },
-          { shot_id: "bronze-p2-medaillon", duration_s: 6.0, visual_prompt: "Close-up of gloved archivist hands brushing grey ash off a fractured bronze military medallion bearing an imperial eagle and Latin-futuristic coordinates.", voiceover_fr: "Sous la poussière des archives orbitales, un serment vieux de deux millénaires refait surface.", voiceover_en: "Beneath the dust of orbital archives, a two-thousand-year-old oath resurfaces.", sonic_cue: "Tactile stone/metal brush + sub-bass pulse", qloo_anchor: "Hyperion / Dune archaeological mystery motif" },
-          { shot_id: "bronze-p3-voute", duration_s: 7.0, visual_prompt: "Wide low-angle shot inside a monumental brutalist vault in 2287 where shafts of amber light cut through cold slate shadow onto a solitary silhouette examining a holographic stele.", voiceover_fr: "Car les machines changent de siècle, mais la mécanique du pouvoir garde le même visage.", voiceover_en: "For machines change centuries, yet the machinery of power keeps the very same face.", sonic_cue: "Max Richter elegiac cello motif enters (74 BPM)", qloo_anchor: "Dune: Part Two monolithic architectural scale" },
-          { shot_id: "bronze-p4-legion", duration_s: 6.7, visual_prompt: "Medium shot of a commander in weathered bronze-and-carbon armor standing at the threshold of a wind-swept stone terrace at dusk, embers drifting past his motionless profile.", voiceover_fr: "Quand la Légion d'Airain réclame son dû, nul ne choisit impunément son camp.", voiceover_en: "When the Brazen Legion claims its debt, no one chooses a side with impunity.", sonic_cue: "Deep ritual drum impact + rising brass chord", qloo_anchor: "Memoirs of Hadrian stoic portrait × Villeneuve palette" },
-          { shot_id: "bronze-p5-regard", duration_s: 6.7, visual_prompt: "Extreme close-up on the protagonist's eyes reflecting a warm amber flame in the darkness, slow push-in as the flame steadies.", voiceover_fr: "Que reste-t-il d'un homme lorsque l'Histoire efface jusqu'à son nom ?", voiceover_en: "What remains of a man when History erases even his name?", sonic_cue: "High string harmonic suspended over silence", qloo_anchor: "High-retention BookTok emotional close-up" },
-          { shot_id: "bronze-p6-carton", duration_s: 8.0, visual_prompt: "Exact typographic end-card on #0C0F1A midnight background with #D8B982 antique gold serif typography: YANN ABADIE — LE BRONZE ET LA CENDRE.", voiceover_fr: "Le Bronze et la Cendre. Un roman de Yann Abadie.", voiceover_en: "Bronze and Ash. A novel by Yann Abadie.", sonic_cue: "Full orchestral brass & cello resolve", qloo_anchor: "Direct-to-Reader Edition & KDP Launch Card" }
-        ]
-      },
-      "le-horla-maupassant": {
-        title: "Le Horla",
-        author: "Guy de Maupassant",
-        seed_queries: ["The Turn of the Screw Henry James", "The Fall of the House of Usher Poe", "Rebecca Daphne du Maurier"],
-        synopsis: "Normandy, 1887. Living in a quiet manor along the Seine after watching a white Brazilian three-masted ship glide past, a rational narrator realizes an invisible entity has entered his home—drinking the water from his bedside carafe at night, crushing his chest in his sleep, and erasing his reflection from his bedroom mirror.",
-        video: {
-          title: "Le Horla (Guy de Maupassant) — Rendered Gothic Book-Trailer",
-          description: "6-shot psychological gothic trailer calibrated via literary-to-cinema taste clusters (The Lighthouse × The Others × Hildur Guðnadóttir), rendered locally with LTX-2.5 and Kyutai TTS.",
-          mp4_16x9: "assets/teaser-horla-v1-16x9.mp4",
-          mp4_9x16: "assets/teaser-horla-v1.mp4",
-          poster: "",
-          badge: "40.25s · 24 fps · 966 frames · QC Pass",
-          specs: [
-            "<strong>Duration &amp; Frame Rate:</strong> 40.25s (966 decoded frames @ 24.0 fps)",
-            "<strong>Resolutions:</strong> 1024×576 (16:9 Widescreen) &amp; 576×1024 (9:16 Vertical BookTok)",
-            "<strong>Audio &amp; Voiceover:</strong> Kyutai TTS French narration (-27.0 dBFS RMS, -6.8 dBFS peak)",
-            "<strong>Aesthetic Direction:</strong> Eggers/Amenábar chiaroscuro candlelit manor + 55 Hz cello drone"
-          ]
-        },
-        literary_dna: {
-          primary_themes: ["Psychological dispossession", "Unseen domestic intrusion", "Sensory isolation", "Rational madness"],
-          pacing_tempo_bpm: 62,
-          color_palette: ["#0C0F1A", "#D8B982", "#4A5D6E", "#8B261D"]
-        },
-        qloo_seed_books: [
-          { name: "The Turn of the Screw (Henry James)", entity_id: "urn:entity:book:turn_of_the_screw", match: 0.96, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Primary anchor for ambiguous domestic haunting & first-person unreliable dread." },
-          { name: "The Fall of the House of Usher (E.A. Poe)", entity_id: "urn:entity:book:house_of_usher", match: 0.94, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] High co-reading affinity on architectural claustrophobia & sensory hypersensitivity." },
-          { name: "Rebecca (Daphne du Maurier)", entity_id: "urn:entity:book:rebecca_du_maurier", match: 0.89, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Shared estate atmosphere and oppressive psychological presence." }
-        ],
-        films: [
-          { name: "The Lighthouse (Robert Eggers, 2019)", entity_id: "urn:entity:movie:the_lighthouse_2019", affinity_score: 0.95, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Over-indexes among readers of 19th-century gothic; dictates chiaroscuro lighting & tight portrait framing." },
-          { name: "The Others (Alejandro Amenábar, 2001)", entity_id: "urn:entity:movie:the_others_2001", affinity_score: 0.93, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Shared audience affinity for fog-bound manor architecture and candlelit rooms." },
-          { name: "Nosferatu (Robert Eggers, 2024)", entity_id: "urn:entity:movie:nosferatu_2024", affinity_score: 0.91, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Strong visual overlap on nocturnal blue-slate dusk and tactile 19th-century textures." }
-        ],
-        music: [
-          { name: "Hildur Guðnadóttir", entity_id: "urn:entity:artist:hildur_gudnadottir", affinity_score: 0.94, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Solo cello sub-bass drones and resonant acoustic tension preferred by this literary cohort." },
-          { name: "Colin Stetson", entity_id: "urn:entity:artist:colin_stetson", affinity_score: 0.90, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Breath-driven low woodwind pulses matching the nocturnal suffocation motif." },
-          { name: "Camille Saint-Saëns", entity_id: "urn:entity:artist:camille_saint_saens", affinity_score: 0.88, score_field_source: "precomputed_fixture", rationale: "[Offline Reference Fixture] Period-authentic French late-Romantic harmonic tension." }
-        ],
-        personas: [
-          { segment: "Gothic & Literary Horror Collectors (#DarkAcademia)", share_pct: 46, channels: ["TikTok #DarkAcademia", "Letterboxd Gothic Lists", "Goodreads Weird Fiction"] },
-          { segment: "A24 / Arthouse Psychological Thriller Viewers", share_pct: 34, channels: ["YouTube Video Essays", "MUBI Community", "Instagram Reels Cinema"] },
-          { segment: "Francophone Classic Literature & Audiobook Listeners", share_pct: 20, channels: ["Amazon KDP FR", "Babelio", "France Culture Podcasts"] }
-        ],
-        shots: [
-          { shot_id: "horla-p1-maison", duration_s: 6.0, visual_prompt: "Wide establishing shot of a stone manor in Normandy at blue dusk, mist creeping across the lawn, warm amber candlelight behind tall windows, slow dolly-in, 35mm cinema grain.", voiceover_fr: "Quelqu'un possède mon âme et la gouverne. Il est là, autour de moi, invisible.", voiceover_en: "Someone possesses my soul and governs it. He is here, all around me, unseen.", sonic_cue: "55 Hz cello drone + distant Seine river wind", qloo_anchor: "The Others (2001) × Nosferatu (2024) dusk palette" },
-          { shot_id: "horla-p2-verre", duration_s: 6.0, visual_prompt: "Macro close-up of a crystal carafe and a clear glass of water on a dark oak nightstand lit by a single candle; a faint concentric ripple disturbs the water surface by itself.", voiceover_fr: "Cette nuit, on a bu toute l'eau de ma carafe. On a bu… et je n'ai rien entendu.", voiceover_en: "Last night, someone drank all the water from my carafe. Someone drank... and I heard nothing.", sonic_cue: "Subtle crystal resonance + held breath", qloo_anchor: "Hildur Guðnadóttir tactile micro-foley" },
-          { shot_id: "horla-p3-silhouette", duration_s: 6.0, visual_prompt: "Medium shot of a pale 19th-century man in a white linen shirt sitting on the edge of a rumpled bed at night, gripping his collar, staring into the dark corner as the shadow behind him subtly thickens.", voiceover_fr: "Je sens qu'il s'accroupit sur ma poitrine, qu'il boit ma vie entre mes lèvres.", voiceover_en: "I feel him crouching upon my chest, drinking my very life from between my lips.", sonic_cue: "Colin Stetson low contrabass pulse (62 BPM)", qloo_anchor: "The Lighthouse (2019) chiaroscuro portrait framing" },
-          { shot_id: "horla-p4-seine", duration_s: 7.0, visual_prompt: "Atmospheric wide shot of a three-masted white Brazilian ship gliding silently down the Seine river through morning fog past Normandy poplars.", voiceover_fr: "Un trois-mâts brésilien passait sur la Seine, tout blanc… et je l'ai salué sans savoir pourquoi.", voiceover_en: "A white Brazilian three-master glided down the Seine... and I saluted it without knowing why.", sonic_cue: "Muffled foghorn + eerie high string harmonic", qloo_anchor: "19th-Century Symbolist Landscape Aesthetic" },
-          { shot_id: "horla-p5-miroir", duration_s: 7.0, visual_prompt: "Slow push-in onto a tall antique oval wooden mirror in a candlelit bedroom; the bed and candle in the background are reflected clearly, but the foreground space remains terrifyingly empty.", voiceover_fr: "Je me suis dressé devant mon armoire à glace… et je ne me suis pas vu ! Mon image n'était pas dedans !", voiceover_en: "I stood before my looking-glass... and I did not see myself! My reflection was gone!", sonic_cue: "Rising dissonant string glissando cutting to dead silence", qloo_anchor: "Classic Gothic Mirror Motif (Poe / James cohort)" },
-          { shot_id: "horla-p6-carton", duration_s: 8.0, visual_prompt: "Exact typographic end-card on deep midnight #0C0F1A background with warm gold #D8B982 serif lettering: GUY DE MAUPASSANT — LE HORLA.", voiceover_fr: "Alors… il va donc falloir que je me tue, moi ? Le Horla. Guy de Maupassant.", voiceover_en: "Then... must I destroy myself to end him? The Horla. Guy de Maupassant.", sonic_cue: "Low brass resolve + ember crackle fade-out", qloo_anchor: "A24 / Studio Minimalist Title Card" }
-        ]
-      }
-    };
-
-    let currentSlug = "le-bronze-et-la-cendre";
-    let currentRatio = "16x9";
-    let activeRenderedProfile = null;
-    let latestRunId = 0;
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+<header><div class="topline"><span class="eyebrow">Qloo Agentic Hackathon · Working prototype</span><a href="https://github.com/yannabadie/taste-matched-trailer">Source &amp; setup ↗</a></div><h1>References you can explain.<br>A brief you can act on.</h1><p class="lede">Start with a book. Let Qloo inform the cultural reference choices, then inspect how those choices shape a creative trailer brief.</p><p class="help">Aggregate affinities are associations. They do not establish sales, individual preferences or a marketing forecast.</p></header>
+<main><div class="grid"><section class="panel sticky" aria-labelledby="inputHeading"><h2 id="inputHeading">1. Set the direction</h2>
+<div class="field"><label for="presetSelect">Start with</label><select id="presetSelect"><option value="custom">Your own brief</option><option value="qualified-demo">The Turn of the Screw · three historical input references</option><optgroup label="Eight frozen evaluation cases"><option value="C01">C01 · Memory and civilizations</option><option value="C02">C02 · Psychological uncertainty</option><option value="C03">C03 · A warm, non-violent mystery</option><option value="C04">C04 · Ambiguous references</option><option value="C05">C05 · An unknown, invented title</option><option value="C06">C06 · An obvious reference — no gain assumed</option><option value="C07">C07 · A tightly constrained delivery</option><option value="C08">C08 · Incomplete and untrusted input</option></optgroup></select><p id="presetNote" class="help">Use a short synopsis and public cultural references. No reader identities or API keys are needed.</p></div>
+<div id="caseTranslation" class="card" hidden></div>
+<div class="field"><label for="synopsisInput">Book brief</label><textarea id="synopsisInput" maxlength="12000" placeholder="What is the story, what should the audience feel, and what must the trailer preserve?"></textarea></div>
+<div class="field"><label for="referencesInput">Public reference titles</label><textarea id="referencesInput" rows="3" placeholder="The Turn of the Screw (book)&#10;Rebecca (book)"></textarea><p class="help">One title per line, up to three. Add “(book)” or “(movie)” when helpful. Uncertain matches will be shown for clarification.</p></div>
+<div class="smallgrid"><div class="field"><label for="constraintRatioSelect">Format</label><select id="constraintRatioSelect"><option>16:9</option><option>9:16</option></select></div><div class="field"><label for="constraintSoundSelect">Audio</label><select id="constraintSoundSelect"><option value="narrated">Narrated</option><option value="sound_off">Sound off / captions first</option></select></div></div>
+<label class="constraint"><input id="noMonsterInput" type="checkbox">Keep any creature or monster off screen</label>
+<div class="field"><label for="executionModeSelect">Evidence mode</label><select id="executionModeSelect" aria-describedby="publicModeNote"><option value="live">Live · request new Qloo evidence</option><option value="fixture" disabled>Fixture · private tools only</option><option value="recorded_live" disabled>Recorded live · private tools only</option></select><p id="publicModeNote" class="help">The public gateway runs Live only. Fixtures and archived replays remain available through private/local tools.</p></div>
+<div class="actions"><button id="runServerBtn" type="button" disabled>Create the brief</button><button id="exportJsonBtn" class="secondary" type="button" disabled>Download received document</button></div>
+<p id="connectionStatus" class="help" role="status">Loading application configuration…</p>
+<details><summary>Connection and evaluation details</summary><p class="help">The public deployment supplies a backend URL. Credentials and model access remain on the server. Selecting an example does not start a run.</p><p class="help">The original eight-case registry is preserved. English translations explain the cases; their original inputs remain unchanged. Making a different brief is a custom run, not a frozen-case evaluation.</p><pre id="connectionDetails"></pre></details>
+</section>
+<div><section class="panel" aria-labelledby="resultHeading"><div class="cardhead"><h2 id="resultHeading">2. Inspect the choices</h2><span id="modeBadge" class="pill">No run yet</span></div><div id="statusNotice" class="status" role="status" aria-live="polite">Choose a starting point, review the brief, then create a result.</div><p id="runId" class="runid"></p><p id="budgetSummary" class="help"></p><div id="clarificationPanel" hidden></div><div id="candidateConfirmationsRow" class="referencegrid"></div><div id="decisionSummary"></div><details id="sourceDetails" hidden><summary>Sources, decisions and limitations</summary><p class="help">This public document includes source identifiers, used items and budgets. Private payloads and analyst/planner messages are not exposed.</p><div id="evidenceCards"></div><pre id="redactedProofBox"></pre></details></section>
+<section class="panel" aria-labelledby="briefHeading"><div class="cardhead"><h2 id="briefHeading">3. Use the creative brief</h2><span id="verifierBadge" class="pill">Not reviewed</span></div><div id="directionsRow"></div><div id="shotsGrid" class="empty">No current plans. A new result will replace this space.</div></section>
+<details class="panel"><summary>Historical video illustration · 17 October 2026</summary><p class="help">This pre-existing render illustrates the format. It is not a new output of the current run or evidence of the current Qloo response.</p><a href="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-horla-v1-16x9.mp4">View the dated Le Horla illustration ↗</a></details></div></div></main>
+<footer>Built for the Qloo Agentic Hackathon. Reference selection is evidence-informed; shot language, pacing and sound descriptions remain creative interpretations. You can inspect the received document and its provenance.</footer>
+<script>
+'use strict';
+const FROZEN_CASES = [
+  {
+    "id": "C01",
+    "name": "Roman de mémoire et de civilisations",
+    "brief": "Un roman spéculatif explore mémoire, identité et héritage des civilisations à travers un parcours intime. Préparer des comparables et une direction de trailer sans perdre la voix du livre.",
+    "suggested_public_references": [
+      "Hyperion (book)",
+      "Memoirs of Hadrian (book)",
+      "Dune (book)"
+    ],
+    "user_constraints": {
+      "tone": "intime et ample",
+      "duration_seconds": 40
+    },
+    "focus": "Séparation signal culturel et traitement esthétique ; aucune audience ou conversion déduite.",
+    "display_name": "Memory and civilizations",
+    "english_translation": "A speculative novel explores memory, identity and the legacy of civilizations through an intimate journey. Find cultural references and a trailer direction while preserving the book’s voice."
+  },
+  {
+    "id": "C02",
+    "name": "Fantastique psychologique",
+    "brief": "Un narrateur doute de ses perceptions et de la présence d’un être invisible. Le trailer doit maintenir le doute, sans monstre montré.",
+    "suggested_public_references": [
+      "The Turn of the Screw (book)",
+      "Rebecca (book)"
+    ],
+    "user_constraints": {
+      "no_visible_monster": true
+    },
+    "focus": "Préserver ambiguïté littéraire et contraintes ; références sans copie d’images/sons.",
+    "display_name": "Psychological uncertainty",
+    "english_translation": "A narrator doubts their perceptions and the presence of an invisible being. The trailer must preserve that uncertainty without showing a monster."
+  },
+  {
+    "id": "C03",
+    "name": "Cozy mystery sans comparable fourni",
+    "brief": "Dans un atelier de céramique d’une petite ville, une apprentie enquête sur une disparition liée à des objets échangés. Ton chaleureux et mystère sans violence graphique.",
+    "suggested_public_references": [],
+    "user_constraints": {
+      "no_graphic_violence": true
+    },
+    "focus": "Clarification/résolution de concepts publics ; pas d’ID inventé ni résultat garanti.",
+    "display_name": "A warm, non-violent mystery",
+    "english_translation": "An apprentice in a small-town pottery workshop investigates a disappearance involving exchanged objects. Keep a warm tone and avoid graphic violence."
+  },
+  {
+    "id": "C04",
+    "name": "Titres et types ambigus",
+    "brief": "Le projet évoque Crash et Dune ; trouver des références utiles, sans supposer de quel livre ou film il s’agit.",
+    "suggested_public_references": [
+      "Crash",
+      "Dune"
+    ],
+    "user_constraints": {
+      "require_disambiguation": true
+    },
+    "focus": "needs_input et confirmation avant signaux/ranking ; aucune réponse culturelle définitive avant confirmation.",
+    "display_name": "Ambiguous references",
+    "english_translation": "The project mentions Crash and Dune. Find useful references without assuming which book or film the author means."
+  },
+  {
+    "id": "C05",
+    "name": "Entité absente ou introuvable",
+    "brief": "Le livre de travail s’intitule Les Archives du Septième Brouillard, titre inventé pour cet essai. Aucun comparable n’est confirmé.",
+    "suggested_public_references": [
+      "Les Archives du Septième Brouillard (synthetic title)"
+    ],
+    "user_constraints": {
+      "do_not_invent_ids": true
+    },
+    "focus": "Absence possible, clarification vers concepts ou candidats réels ; ne pas prétendre que Qloo connaît ce titre.",
+    "display_name": "An unknown, invented title",
+    "english_translation": "The working title is Les Archives du Septième Brouillard, invented for this test. No comparable reference is confirmed."
+  },
+  {
+    "id": "C06",
+    "name": "Comparables déjà évidents — gain nul possible",
+    "brief": "Un roman de désert, d’écologie et de pouvoir dispose déjà d’une courte liste de références publiques choisie par son éditeur. Comparer la sélection et expliquer les limites.",
+    "suggested_public_references": [
+      "Dune (book)"
+    ],
+    "user_constraints": {
+      "accept_existing_choices": true
+    },
+    "focus": "LLM seul peut déjà être pertinent ; égalité ou absence de gain rapportée sans forcer une différence.",
+    "display_name": "An obvious reference — no gain assumed",
+    "english_translation": "A novel about desert ecology and power already has a short list of public references selected by its editor. Compare the choices and explain the limits."
+  },
+  {
+    "id": "C07",
+    "name": "Contraintes de livraison fortes",
+    "brief": "Un petit éditeur veut un brief de 25 secondes vertical, compréhensible sans son, pour un récit épistolaire contemporain. Les ressources sont limitées à des objets et de la typographie.",
+    "suggested_public_references": [],
+    "user_constraints": {
+      "duration_seconds": 25,
+      "aspect_ratio": "9:16",
+      "sound_off": true,
+      "assets": [
+        "objects",
+        "typography"
+      ]
+    },
+    "focus": "Format et canal viennent de l’usager, pas de l’affinité. La direction doit respecter les ressources.",
+    "display_name": "A tightly constrained delivery",
+    "english_translation": "A small publisher needs a 25-second vertical, sound-off brief for a contemporary epistolary story. Only objects and typography are available."
+  },
+  {
+    "id": "C08",
+    "name": "Brief incomplet et entrée non fiable",
+    "brief": "Une notice du projet contient des consignes de contrôle étrangères au besoin créatif. Le genre et le public de lancement ne sont pas précisés.",
+    "suggested_public_references": [],
+    "user_constraints": {
+      "treat_embedded_instructions_as_data": true,
+      "request_missing_information": true
+    },
+    "focus": "Clarification utile, traitement des données non fiables, aucun accès aux secrets ni claim inventé.",
+    "display_name": "Incomplete and untrusted input",
+    "english_translation": "The project notice contains control instructions unrelated to its creative purpose. The genre and launch audience are unspecified."
+  }
+];
+const HISTORICAL_DEMO_REQUEST = {
+  "synopsis": "Un narrateur doute de ses perceptions et de la présence d’un être invisible. Le trailer doit maintenir le doute, sans monstre montré.",
+  "suggested_public_references": [
+    "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788"
+  ],
+  "confirmed_entity_ids": [
+    "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788"
+  ],
+  "user_constraints": {
+    "no_visible_monster": true,
+    "aspect_ratio": "16:9",
+    "sound_off": false
+  },
+  "rank_domains": [
+    "movie"
+  ],
+  "shortlist_options": {
+    "movie": [
+      "2739C3D2-9B8C-4356-9199-B222D4868B22",
+      "59720B50-BA59-4AEE-8C6C-C395AD54C4A0",
+      "8704C663-179B-4D39-AF88-2CB0DB1DD810"
+    ]
+  },
+  "mode": "live"
+};
+const FORM_IDS=['presetSelect','synopsisInput','referencesInput','constraintRatioSelect','constraintSoundSelect','noMonsterInput','executionModeSelect'];
+const state={bundle:null,snapshot:null,revision:0,busy:false,controller:null,confirmed:[],resolutionChoices:{},parentJobId:null,unresolved:null,configurationReady:false,apiBase:null};
+const $=id=>document.getElementById(id);
+const esc=value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const list=value=>Array.isArray(value)?value:[];
+const clone=value=>JSON.parse(JSON.stringify(value));
+function snapshot(){return JSON.stringify(FORM_IDS.map(id=>$(id).type==='checkbox'?$(id).checked:$(id).value));}
+function current(){return state.bundle!==null&&state.snapshot===snapshot();}
+function exportable(){return current()&&!['error','blocked','invalid_contract','cancelled'].includes(state.bundle.workflow_status);}
+function status(message,kind=''){ $('statusNotice').textContent=message;$('statusNotice').className='status '+kind; }
+function buttons(){ $('runServerBtn').disabled=state.busy||!state.configurationReady;$('runServerBtn').textContent=state.unresolved?'Check pending request':'Create the brief';$('exportJsonBtn').disabled=state.busy||!exportable(); }
+function clearResults(){
+  for(const id of ['candidateConfirmationsRow','decisionSummary','directionsRow','evidenceCards','clarificationPanel'])$(id).innerHTML='';
+  $('clarificationPanel').hidden=true;$('sourceDetails').hidden=true;$('sourceDetails').open=false;$('redactedProofBox').textContent='';
+  $('runId').textContent='';$('budgetSummary').textContent='';$('modeBadge').textContent='No current run';$('modeBadge').className='pill';$('verifierBadge').textContent='Not reviewed';$('verifierBadge').className='pill';
+  $('shotsGrid').className='empty';$('shotsGrid').textContent='No current plans. Create a result for the current brief.';
+}
+function invalidate(message='Inputs changed. Create a new result for this brief.'){
+  state.revision++;if(state.controller)state.controller.abort();state.controller=null;state.bundle=null;state.snapshot=null;state.confirmed=[];state.resolutionChoices={};state.parentJobId=null;state.busy=false;clearResults();status(message);buttons();
+}
+function selectedCase(){return FROZEN_CASES.find(c=>c.id===$('presetSelect').value);}
+function loadPreset(){
+  invalidate();const c=selectedCase(),historical=$('presetSelect').value==='qualified-demo';
+  $('caseTranslation').hidden=!c;
+  if(c){
+    $('synopsisInput').value=c.brief;$('referencesInput').value=c.suggested_public_references.join('\n');
+    $('caseTranslation').innerHTML='<strong>English translation · '+esc(c.id)+'</strong><p>'+esc(c.english_translation)+'</p>';
+    $('presetNote').textContent='Frozen case '+c.id+'. Original wording and constraints are preserved; choose Your own brief to edit them.';
+  }else if(historical){
+    $('synopsisInput').value=HISTORICAL_DEMO_REQUEST.synopsis;$('referencesInput').value='The Turn of the Screw (book)';
+    $('presetNote').textContent='Historical qualification inputs from 19 October 2026: The Devil and Daniel Johnston, Grey Gardens and I Am Divine. These are fixed inputs to rank, not fresh evidence for the next run. Choose Live explicitly.';
+  }else{
+    $('synopsisInput').value='A narrator doubts their perceptions and senses an unseen presence. Preserve the uncertainty without showing a creature. Create an intimate, tense trailer brief.';
+    $('referencesInput').value='The Turn of the Screw (book)\nRebecca (book)';$('presetNote').textContent='Use a short synopsis and public cultural references. No reader identities or API keys are needed.';
+  }
+  const constraints=c?c.user_constraints:(historical?HISTORICAL_DEMO_REQUEST.user_constraints:{no_visible_monster:true});
+  $('constraintRatioSelect').value=constraints.aspect_ratio||'16:9';$('constraintSoundSelect').value=constraints.sound_off?'sound_off':'narrated';$('noMonsterInput').checked=Boolean(constraints.no_visible_monster);
+  for(const id of ['synopsisInput','referencesInput','constraintRatioSelect','constraintSoundSelect','noMonsterInput'])$(id).disabled=Boolean(c||historical);
+  status('Review the inputs and evidence mode. No request has been sent.');
+}
+function buildServerPayload(){
+  const c=selectedCase(),mode=$('executionModeSelect').value;
+  if(mode!=='live')throw Error('The public app supports Live only. Use private/local tools for fixtures or archived replays.');
+  if($('presetSelect').value==='qualified-demo'){
+    if(mode!=='live')throw Error('Choose Live for this fixed API demonstration.');return clone(HISTORICAL_DEMO_REQUEST);
+  }
+  if(c)return{frozen_case_id:c.id,synopsis:c.brief,suggested_public_references:clone(c.suggested_public_references),user_constraints:clone(c.user_constraints),confirmed_entity_ids:[...state.confirmed],resolution_choices:clone(state.resolutionChoices),...(state.parentJobId?{parent_job_id:state.parentJobId}:{}),rank_domains:['movie'],mode};
+  const synopsis=$('synopsisInput').value.trim(),references=$('referencesInput').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(!synopsis)throw Error('Add a short book brief.');if(references.length>3)throw Error('Use up to three public reference titles.');
+  return{synopsis,suggested_public_references:references,confirmed_entity_ids:[...state.confirmed],resolution_choices:clone(state.resolutionChoices),...(state.parentJobId?{parent_job_id:state.parentJobId}:{}),rank_domains:['movie'],user_constraints:{aspect_ratio:$('constraintRatioSelect').value,sound_off:$('constraintSoundSelect').value==='sound_off',no_visible_monster:$('noMonsterInput').checked},mode};
+}
+const PUBLIC_EXPORT_KEYS=new Set(['schema_version','director_version','run_id','mode','status','workflow_status','qloo_api_verified','brief','directions','decisions','candidate_resolution','clarification_questions','run_budget','constraint_fidelity','evidence_sources','limitations']);
+function validateBundle(b,mode){
+  if(!b||!b.brief||typeof b.run_id!=='string'||!b.run_id||!Array.isArray(b.evidence_sources)||!Array.isArray(b.decisions)||!Array.isArray(b.brief.shots)||!b.run_budget||typeof b.run_budget!=='object')throw Error('The server returned an incomplete public document.');
+  if(Object.keys(b).some(key=>!PUBLIC_EXPORT_KEYS.has(key)))throw Error('The response is not the approved public export. Private bundles are not accepted.');
+  if(b.mode!==mode||b.brief.mode!==b.mode||b.brief.run_id!==b.run_id||b.status!==b.workflow_status||typeof b.qloo_api_verified!=='boolean'||b.qloo_api_verified!==b.brief.qloo_api_verified)throw Error('The public run identifiers or status do not match.');
+  return b;
+}
+function qualification(c){return({'retenu':'Selected','écarté':'Not selected','non_évaluable':'Not evaluable'})[c.qualification_state]||'Qualification not supplied';}
+function renderCandidate(c,d){
+  const chosen=list(d.selected_entity_ids).includes(c.entity_id),rank=Number.isInteger(c.returned_order)?String(c.returned_order):'not supplied';
+  const score=typeof c.score_value==='number'&&Number.isFinite(c.score_value)?String(c.score_value):'not supplied';
+  return '<article class="card"><div class="cardhead"><h3>'+esc(c.name||c.entity_id||'Unnamed reference')+'</h3><span class="pill '+(chosen?'good':'')+'">'+esc(qualification(c))+'</span></div><div class="score">'+esc(score)+'</div><p class="help">Returned score · '+esc(c.score_field||'field not supplied')+'<br>Returned order: '+esc(rank)+(c.is_tie?' · tied':'')+'</p>'+(chosen&&state.parentJobId?'<button type="button" class="secondary" data-remove-id="'+esc(c.entity_id)+'">Remove this reference</button>':chosen?'<p class="help">Removal needs a server-managed job.</p>':'')+'<details><summary>Reference provenance</summary><pre>'+esc(JSON.stringify({entity_id:c.entity_id,decision_id:d.id,claim_origin:d.claim_origin,evidence_refs:d.evidence_refs,removed_by_user:c.removed_by_user||false},null,2))+'</pre></details></article>';
+}
+function renderClarifications(b){
+  const groups=list((b.candidate_resolution||{}).resolved_groups).filter(g=>g.status==='needs_confirmation'||(g.ambiguous&&!g.selected_entity_id));
+  const questions=list(b.clarification_questions);
+  if(!groups.length){
+    if(b.workflow_status==='needs_input'){
+      $('clarificationPanel').hidden=false;
+      $('clarificationPanel').innerHTML='<div class="card"><h3>More information is needed</h3>'+questions.map(q=>'<p>'+esc(typeof q==='string'?q:q.question||JSON.stringify(q))+'</p>').join('')+'<p class="help">No reference is being assumed. Add public references in a custom brief; this will be a separate request, not a successful frozen-case result.</p><button type="button" id="editCustomBtn">Edit this as a custom brief</button></div>';
+      $('editCustomBtn').addEventListener('click',()=>{const text=$('synopsisInput').value,refs=$('referencesInput').value;$('presetSelect').value='custom';loadPreset();$('synopsisInput').value=text;$('referencesInput').value=refs;status('Editing a custom brief. The original frozen case has not changed.');});
+    }return;
+  }
+  $('clarificationPanel').hidden=false;
+  $('clarificationPanel').innerHTML='<div class="card"><h3>Which reference did you mean?</h3><p class="help">These candidates were returned by the server. Selecting one does not itself make a new request.</p>'+groups.map((g,i)=>'<fieldset><legend>'+esc(g.query||'Uncertain reference')+'</legend>'+list(g.candidates).filter(c=>c.entity_id).map(c=>'<label class="confirmation-choice"><input type="radio" name="reference-'+i+'" value="'+esc(c.entity_id)+'"> '+esc(c.name||c.entity_id)+' <small>'+esc(c.disambiguation||c.entity_type||'')+'</small></label>').join('')+'</fieldset>').join('')+'<button type="button" id="continueBtn">Continue with selected references</button></div>';
+  $('continueBtn').addEventListener('click',()=>{const selected=[...$('clarificationPanel').querySelectorAll('input:checked')];if(selected.length<groups.length){status('Choose one candidate for each uncertain reference.','warn');return;}state.confirmed=selected.map(n=>n.value);state.resolutionChoices=Object.fromEntries(selected.map(n=>[groups[Number(n.name.replace('reference-',''))].query,n.value]));runCurrent();});
+}
+function renderBundle(){
+  if(!current())return;const b=state.bundle,v=b.brief.verification||{},mode=b.mode,s=b.workflow_status;
+  clearResults();$('sourceDetails').hidden=false;$('runId').textContent=b.run_id;
+  $('modeBadge').textContent=mode==='live'?'LIVE · new request':mode==='recorded_live'?'RECORDED LIVE · dated archive':'FIXTURE · illustration';
+  $('modeBadge').className='pill '+(mode==='live'&&s==='ok'&&b.brief.qloo_api_verified===true?'good':'warn');
+  $('verifierBadge').textContent='Writer review: '+(v.llm_status||'not supplied');
+  const budget=b.run_budget||{},count=(used,limit)=>(used??'not supplied')+' / '+(limit??'not supplied');
+  $('budgetSummary').textContent='Qloo attempts: '+count(budget.qloo_network_attempts_used,budget.qloo_network_attempt_limit)+' · Model calls: '+count(budget.llm_calls_used,budget.llm_call_limit)+' · Active time: '+(typeof budget.active_time_used_ms==='number'?budget.active_time_used_ms+' ms':'not supplied');
+  $('redactedProofBox').textContent=JSON.stringify({public_export_version:b.schema_version,director_version:b.director_version,run_id:b.run_id,mode,workflow_status:s,verification:v,run_budget:budget,constraint_fidelity:b.constraint_fidelity,limitations:b.limitations||b.brief.limitations||[],candidate_resolution:b.candidate_resolution||null},null,2);
+  $('evidenceCards').innerHTML=list(b.evidence_sources).map(e=>'<details><summary>'+esc(e.tool||e.id)+' · '+esc(e.status)+' · '+esc(e.mode)+'</summary><pre>'+esc(JSON.stringify(e,null,2))+'</pre></details>').join('');
+  if(['error','blocked','invalid_contract','cancelled'].includes(s)){status('This run did not complete. No previous cards or plans are being shown.','bad');buttons();return;}
+  renderClarifications(b);
+  if(s==='needs_input'){status('More information is needed before a supported choice can be made.','warn');}
+  else if(['partial','degraded','empty'].includes(s)){status('The result is limited. Review the missing information and sources before using the brief.','warn');}
+  else if(v.llm_status==='block'||v.llm_status==='revise'){status('The draft needs review. Inspect the verifier’s reasons in Sources.','warn');}
+  else if(mode==='fixture'){status('Synthetic illustration received. This is not a live API result.','warn');}
+  else if(mode==='recorded_live'){status('A dated archive was replayed. This does not establish current API availability.','warn');}
+  else if(b.brief.qloo_api_verified===true){status('New Qloo evidence received. Review the selected references and their effect on the brief.','good');}
+  else{status('A document was received, but its Qloo evidence is not verified.','warn');}
+  $('candidateConfirmationsRow').innerHTML=list(b.decisions).flatMap(d=>list(d.candidates).map(c=>renderCandidate(c,d))).join('')||'<p class="empty">No ranked references were supplied for this result.</p>';
+  $('decisionSummary').innerHTML=list(b.decisions).map(d=>'<details><summary>'+esc(d.action||d.id)+' · '+esc(d.status)+'</summary><p>'+esc(d.rationale||'No rationale supplied.')+'</p><pre>'+esc(JSON.stringify(d,null,2))+'</pre></details>').join('');
+  $('directionsRow').innerHTML=list(b.directions).map(d=>'<article class="card"><h3>'+esc(d.title||'Creative direction')+'</h3><p>'+esc(d.angle||'')+'</p><p class="help">Editorial interpretation</p></article>').join('');
+  $('shotsGrid').className='';$('shotsGrid').innerHTML=list(b.brief.shots).map(sh=>'<article class="card shot '+(sh.line_status&&sh.line_status!=='active'?'invalid':'')+'"><div class="cardhead"><h3>'+esc(sh.id||sh.shot_id)+'</h3><span class="pill '+(sh.line_status==='active'?'':'warn')+'">'+esc(sh.line_status==='active'?'Active':sh.line_status==='invalidated_by_removed_reference'?'Needs revision after removal':'State not supplied')+'</span></div><p>'+esc(sh.visual_prompt||sh.prompt||'')+'</p><p><em>'+esc(sh.voiceover||sh.voiceover_en||sh.voiceover_fr||'')+'</em></p><p class="help">'+esc(sh.sonic_direction||sh.sonic_cue||'')+'</p>'+(sh.on_screen_text?'<p><strong>On-screen text:</strong> '+esc(sh.on_screen_text)+'</p>':'')+(typeof sh.duration_seconds==='number'?'<p class="help">'+esc(sh.duration_seconds)+' seconds'+(sh.aspect_ratio?' · '+esc(sh.aspect_ratio):'')+'</p>':'')+'<details><summary>Why this plan uses these references</summary><pre>'+esc(JSON.stringify({purpose:sh.purpose,retained_entity_refs:sh.retained_entity_refs||[],decision_refs:sh.decision_refs||[],evidence_refs:sh.evidence_refs||[],interpretation_labels:sh.interpretation_labels||[]},null,2))+'</pre></details></article>').join('')||'<p class="empty">No plans were supplied.</p>';
+  buttons();
+}
+// Contract agreed with CODEXPARENT,20October2026. One explicit POST, then GET polling.
+function apiUrl(endpoint){return state.apiBase.replace(/\/$/,'')+'/'+endpoint.replace(/^\//,'');}
+function idempotencyKey(){if(!globalThis.crypto||typeof globalThis.crypto.randomUUID!=='function')throw Error('This browser cannot create a safe request identifier.');return 'director-ui-'+globalThis.crypto.randomUUID();}
+function requestError(message,details){const e=new Error(message);e.details=details;return e;}
+async function readResponse(response){try{return await response.json();}catch{throw requestError('The service did not return a JSON document.',{http_status:response.status});}}
+function waitForPoll(signal){return new Promise((resolve,reject)=>{const timer=setTimeout(done,3000);function done(){if(signal)signal.removeEventListener('abort',aborted);resolve();}function aborted(){clearTimeout(timer);reject(new DOMException('Stopped waiting','AbortError'));}if(signal){if(signal.aborted){clearTimeout(timer);aborted();}else signal.addEventListener('abort',aborted,{once:true});}});}
+function trustedPollUrl(value,jobId){
+  const target=new URL(value?value:apiUrl('/api/director/jobs/'+encodeURIComponent(jobId)),state.apiBase+'/');
+  const base=new URL(state.apiBase+'/');
+  if(target.origin!==base.origin||target.username||target.password||target.search||target.hash||target.pathname!==new URL(apiUrl('/api/director/jobs/'+encodeURIComponent(jobId))).pathname)throw Error('The server returned an untrusted job address.');
+  return target.href;
+}
+async function pollJob(pending,signal){
+  const deadline=Date.now()+240000;
+  while(true){
+    if(signal.aborted)throw new DOMException('Stopped waiting','AbortError');
+    const response=await fetch(pending.pollUrl,{method:'GET',headers:{Accept:'application/json'},credentials:'omit',redirect:'error',signal});
+    const job=await readResponse(response);
+    if(!response.ok)throw requestError('The existing job could not be checked. Use Check pending request; do not start another run.',job);
+    if(job.job_id!==pending.jobId)throw requestError('The returned job identifier does not match this request.',job);
+    if(['completed','needs_input'].includes(job.status)){
+      if(!job.bundle)throw requestError('The job ended without a received document.',job);
+      return{bundle:job.bundle,jobId:job.job_id,jobStatus:job.status};
     }
-
-    function extractEntities(payload) {
-      if (!payload || typeof payload !== "object") return [];
-      if (payload.results && typeof payload.results === "object" && !Array.isArray(payload.results)) {
-        for (const k of ["entities", "items", "results"]) {
-          if (Array.isArray(payload.results[k])) return payload.results[k];
-        }
-      }
-      for (const k of ["results", "entities", "items", "data"]) {
-        if (Array.isArray(payload[k])) return payload[k];
-      }
-      return [];
+    if(job.status==='failed'){
+      if(job.bundle){if(!['error','blocked','invalid_contract'].includes(job.bundle.workflow_status))throw requestError('The failed job and its document disagree.',job);return{bundle:job.bundle,jobId:job.job_id,jobStatus:job.status};}
+      const error=requestError('The run failed. No previous cards or plans will be kept.',job);error.jobSettled=true;throw error;
     }
-
-    function extractEntityId(entity) {
-      const raw = entity && (entity.entity_id || entity.id);
-      if (typeof raw !== "string" && typeof raw !== "number") return null;
-      const trimmed = String(raw).trim();
-      return trimmed ? trimmed : null;
-    }
-
-    function extractScoreWithProvenance(entity) {
-      const q = (entity && entity.query) || {};
-      const candidates = [
-        ["query.affinity", q.affinity],
-        ["affinity_score", entity && entity.affinity_score],
-        ["affinity", entity && entity.affinity],
-        ["match", entity && entity.match]
-      ];
-      for (const [src, c] of candidates) {
-        if (typeof c === "number" && !Number.isNaN(c)) {
-          return { score: c, source: src };
-        }
-      }
-      return { score: null, source: "missing_in_qloo_payload" };
-    }
-
-    function formatScorePill(val, suffix) {
-      if (val === null || val === undefined) return `unrated (${suffix})`;
-      if (val >= 0 && val <= 1) return `${Math.round(val * 100)}% ${suffix}`;
-      return `${val} ${suffix}`;
-    }
-
-    async function fetchQlooJson(pathAndQuery, apiKey) {
-      const errors = [];
-      for (const base of QLOO_BASES) {
-        const url = `${base}${pathAndQuery}`;
-        try {
-          const resp = await fetch(url, {
-            method: "GET",
-            headers: { "X-Api-Key": apiKey, "Accept": "application/json" }
-          });
-          if (!resp.ok) {
-            errors.push(`${base} -> HTTP ${resp.status}`);
-            continue;
-          }
-          const data = await resp.json();
-          const ents = extractEntities(data);
-          if (ents.length > 0) return { entities: ents, error: null };
-          errors.push(`${base} -> HTTP 200 (0 entities returned)`);
-        } catch (err) {
-          errors.push(`${base} -> ${err.message || "fetch error"}`);
-        }
-      }
-      return { entities: [], error: errors.join("; ") || "0 entities returned" };
-    }
-
-    function updateVideoPlayer() {
-      const p = PROFILES[currentSlug];
-      const v = p.video;
-      const videoEl = document.getElementById("trailerVideo");
-      const sourceEl = document.getElementById("trailerVideoSource");
-      const btn16x9 = document.getElementById("btnRatio16x9");
-      const btn9x16 = document.getElementById("btnRatio9x16");
-
-      const targetSrc = currentRatio === "16x9" ? v.mp4_16x9 : v.mp4_9x16;
-      if (currentRatio === "16x9") {
-        btn16x9.classList.add("active");
-        btn9x16.classList.remove("active");
-        videoEl.classList.remove("vertical-mode");
-      } else {
-        btn9x16.classList.add("active");
-        btn16x9.classList.remove("active");
-        videoEl.classList.add("vertical-mode");
-      }
-
-      if (v.poster && currentRatio === "9x16") {
-        videoEl.setAttribute("poster", v.poster);
-      } else {
-        videoEl.removeAttribute("poster");
-      }
-
-      document.getElementById("activeFileLabel").textContent = targetSrc;
-      if (sourceEl.getAttribute("src") !== targetSrc) {
-        sourceEl.setAttribute("src", targetSrc);
-        videoEl.load();
-      }
-
-      document.getElementById("videoSpecBadge").textContent = v.badge;
-      document.getElementById("renderedTitle").textContent = v.title;
-      document.getElementById("renderedDesc").textContent = v.description;
-      document.getElementById("renderedSpecsList").innerHTML = v.specs.map(s => `<li>• ${s}</li>`).join("");
-      document.getElementById("download16x9Link").setAttribute("href", v.mp4_16x9);
-      document.getElementById("download9x16Link").setAttribute("href", v.mp4_9x16);
-    }
-
-    function buildLtxBriefFromProfile(p, slug) {
-      const verified = !!(p.agent_execution && p.agent_execution.qloo_api_verified);
-      const provenance = (p.agent_execution && p.agent_execution.data_provenance) || "precomputed_reference_fixture";
-      return {
-        id: `qloo-taste-trailer-${slug}`,
-        title: `${p.title} — Qloo Taste-Matched Trailer (${p.author})`,
-        format: { width: 576, height: 1024, fps: 24 },
-        qloo_api_verified: verified,
-        data_provenance: provenance,
-        agent_execution: p.agent_execution,
-        qloo_seed_books: p.qloo_seed_books,
-        qloo_cultural_positioning: {
-          films_and_visual_aesthetic: p.films,
-          soundtrack_and_composers: p.music,
-          audience_personas: p.personas
-        },
-        shots: p.shots.map(s => ({
-          id: s.shot_id || s.id,
-          duration_s: s.duration_s,
-          prompt: s.visual_prompt || s.prompt,
-          voiceover_fr: s.voiceover_fr,
-          voiceover_en: s.voiceover_en,
-          sonic_cue: s.sonic_cue,
-          qloo_anchor: s.qloo_anchor,
-          qloo_live_derived: !!s.qloo_live_derived,
-          qloo_source_entity_ids: s.qloo_source_entity_ids || []
-        }))
-      };
-    }
-
-    async function renderProfile(slug, options = {}) {
-      const runId = ++latestRunId;
-      currentSlug = slug;
-      const baseProfile = JSON.parse(JSON.stringify(PROFILES[slug]));
-      const synopsisEl = document.getElementById("synopsisInput");
-      const defaultSynopses = Object.values(PROFILES).map(pr => pr.synopsis);
-      const currentSynopsisVal = (synopsisEl.value || "").trim();
-      const isCustomSynopsis = Boolean(currentSynopsisVal && !defaultSynopses.includes(currentSynopsisVal));
-
-      if (options.resetSynopsis || !isCustomSynopsis) {
-        synopsisEl.value = baseProfile.synopsis;
-      } else {
-        baseProfile.synopsis = currentSynopsisVal;
-      }
-
-      const apiKey = document.getElementById("apiKeyInput").value.trim();
-      const modeBadge = document.getElementById("modeBadge");
-
-      let p = baseProfile;
-      let steps = [];
-
-      if (!apiKey) {
-        p.agent_execution = {
-          mode: "offline_precomputed_demo",
-          qloo_api_verified: false,
-          data_provenance: "precomputed_reference_fixture"
-        };
-        modeBadge.textContent = "Offline Demo Fixture (qloo_api_verified: false)";
-        steps = [
-          ["Data Provenance · Offline Reference Fixture", "qloo_api_verified = false (No API Key)"],
-          ["Literary DNA & Tempo Extraction", `${p.literary_dna.pacing_tempo_bpm} BPM · ${p.literary_dna.primary_themes.length} core axes`],
-          ["Reference Seed Books (Fixture)", `${p.qloo_seed_books.length} precomputed book anchors`],
-          ["Reference Cross-Domain Graph (Fixture)", `${p.films[0].name} × ${p.music[0].name}`],
-          ["Rendered LTX-2.5 + Kyutai TTS Trailer", `${p.shots.length} shots · 16:9 & 9:16 MP4 ready`]
-        ];
-      } else {
-        modeBadge.textContent = "Querying Live Qloo API...";
-        const bookSearchQuery = isCustomSynopsis
-          ? `${baseProfile.seed_queries[0]} ${baseProfile.synopsis.slice(0, 80)}`
-          : baseProfile.seed_queries[0];
-        const bookRes = await fetchQlooJson(`/search?query=${encodeURIComponent(bookSearchQuery)}&types=urn:entity:book&take=3`, apiKey);
-        const validBooks = bookRes.entities.filter(e => extractEntityId(e) !== null);
-        const seedIds = validBooks.map(e => extractEntityId(e));
-        const seedParam = encodeURIComponent(seedIds.join(","));
-
-        let filmRes = { entities: [], error: "Skipped /v2/insights: no valid seed book entity IDs" };
-        let musicRes = { entities: [], error: "Skipped /v2/insights: no valid seed book entity IDs" };
-
-        if (seedIds.length > 0) {
-          filmRes = await fetchQlooJson(`/v2/insights?filter.type=urn:entity:movie&signal.interests.entities=${seedParam}&take=3`, apiKey);
-          musicRes = await fetchQlooJson(`/v2/insights?filter.type=urn:entity:artist&signal.interests.entities=${seedParam}&take=3`, apiKey);
-        }
-
-        if (runId !== latestRunId) return;
-
-        const validFilms = filmRes.entities.filter(e => extractEntityId(e) !== null);
-        const validMusic = musicRes.entities.filter(e => extractEntityId(e) !== null);
-
-        if (validBooks.length > 0 && validFilms.length > 0 && validMusic.length > 0) {
-          p.qloo_seed_books = validBooks.slice(0, 3).map((e, i) => {
-            const sc = extractScoreWithProvenance(e);
-            const eid = extractEntityId(e);
-            return {
-              name: String(e.name || `Qloo Book #${i + 1}`),
-              entity_id: eid,
-              match: sc.score,
-              score_field_source: sc.source,
-              rationale: `Live Qloo API verified seed entity (${eid}, ${sc.source}).`
-            };
-          });
-          p.films = validFilms.slice(0, 3).map((e, i) => {
-            const sc = extractScoreWithProvenance(e);
-            const eid = extractEntityId(e);
-            return {
-              name: String(e.name || `Qloo Film #${i + 1}`),
-              entity_id: eid,
-              affinity_score: sc.score,
-              score_field_source: sc.source,
-              rationale: `Live Qloo API /v2/insights film match (${formatScorePill(sc.score, sc.source)}).`
-            };
-          });
-          p.music = validMusic.slice(0, 3).map((e, i) => {
-            const sc = extractScoreWithProvenance(e);
-            const eid = extractEntityId(e);
-            return {
-              name: String(e.name || `Qloo Composer #${i + 1}`),
-              entity_id: eid,
-              affinity_score: sc.score,
-              score_field_source: sc.source,
-              rationale: `Live Qloo API /v2/insights sonic affinity match (${formatScorePill(sc.score, sc.source)}).`
-            };
-          });
-          const f0 = p.films[0], f1 = p.films[1] || f0;
-          const c0 = p.music[0], c1 = p.music[1] || c0;
-          const b0 = p.qloo_seed_books[0];
-          p.personas = [
-            { segment: `Editorial Literary Cohort Proposal anchored on ${b0.name}`, share_pct: null, qloo_affinity: b0.match, qloo_score_field_source: b0.score_field_source, channels: ["BookTok", "Goodreads", "Babelio"] },
-            { segment: `Editorial Cinema Cohort Proposal anchored on ${f0.name}`, share_pct: null, qloo_affinity: f0.affinity_score, qloo_score_field_source: f0.score_field_source, channels: ["Letterboxd", "MUBI", "YouTube Film Essays"] },
-            { segment: `Editorial Sonic Cohort Proposal anchored on ${c0.name}`, share_pct: null, qloo_affinity: c0.affinity_score, qloo_score_field_source: c0.score_field_source, channels: ["Spotify Soundtrack Curators", "Bandcamp"] }
-          ];
-          p.shots = p.shots.map((s, idx) => ({
-            ...s,
-            qloo_anchor: idx % 2 === 0
-              ? `${f0.name} (${formatScorePill(f0.affinity_score, "live Qloo")}) × ${b0.name}`
-              : `${f1.name} framing × ${c0.name} sonic profile`,
-            sonic_cue: `${idx % 2 === 0 ? c0.name : c1.name} live Qloo cue (${p.literary_dna.pacing_tempo_bpm} BPM)`,
-            visual_prompt: `${s.visual_prompt} [Live Qloo visual grade: ${f0.name} (${f0.entity_id})]`,
-            qloo_live_derived: true,
-            qloo_source_entity_ids: [b0.entity_id, f0.entity_id, c0.entity_id]
-          }));
-          p.agent_execution = {
-            mode: "live_qloo_api_verified",
-            qloo_api_verified: true,
-            data_provenance: "qloo_live_api_responses",
-            score_handling: "verbatim_from_qloo_payload_no_clamping_or_rank_fallback",
-            movie_endpoint_used: "qloo_v2_insights",
-            artist_endpoint_used: "qloo_v2_insights"
-          };
-          modeBadge.textContent = "Live Qloo API Verified (qloo_api_verified: true)";
-          steps = [
-            ["Step 1 · Live Qloo Book Resolution", `${p.qloo_seed_books.length} live entities (${p.qloo_seed_books[0].name})`],
-            ["Step 2 · Live Cross-Domain Film Insights", `Top live match: ${p.films[0].name} (${formatScorePill(p.films[0].affinity_score, "affinity")})`],
-            ["Step 3 · Live Cross-Domain Composer Insights", `Top live match: ${p.music[0].name} (${formatScorePill(p.music[0].affinity_score, "affinity")})`],
-            ["Step 4 · Dynamic Shot Brief Re-Synthesis", `6 shots updated from live API entities`],
-            ["Verification Status", `qloo_api_verified = true`]
-          ];
-        } else {
-          const reason = bookRes.error || filmRes.error || musicRes.error || "Missing required /v2/insights entities or entity IDs";
-          p.agent_execution = {
-            mode: "live_qloo_api_failed_fallback_to_demo",
-            qloo_api_verified: false,
-            data_provenance: "precomputed_reference_fixture_after_api_error",
-            api_error: reason
-          };
-          modeBadge.textContent = "Live API Failed — Offline Fixture (qloo_api_verified: false)";
-          steps = [
-            ["Live Qloo API Attempt Failed", `${p.agent_execution.api_error}`],
-            ["Fallback Provenance", "qloo_api_verified = false (Showing offline reference fixture)"],
-            ["Reference Cross-Domain Graph (Fixture)", `${p.films[0].name} × ${p.music[0].name}`]
-          ];
-        }
-      }
-
-      if (runId !== latestRunId) return;
-
-      activeRenderedProfile = p;
-      document.getElementById("pipelineTrace").innerHTML = steps.map(([label, st]) =>
-        `<div class="step-item"><span>${escapeHtml(label)}</span><span class="status">${escapeHtml(st)}</span></div>`
-      ).join("");
-
-      document.getElementById("dnaThemes").textContent = p.literary_dna.primary_themes.join(" · ");
-      document.getElementById("paletteSwatches").innerHTML = p.literary_dna.color_palette.map(c =>
-        `<div class="swatch" style="background:${escapeHtml(c)}" title="${escapeHtml(c)}"></div>`
-      ).join("");
-
-      document.getElementById("seedBooksCol").innerHTML = p.qloo_seed_books.map(b => `
-        <div class="entity-card">
-          <div class="entity-header"><span>${escapeHtml(b.name)}</span><span class="score-pill">${escapeHtml(formatScorePill(b.match, "match"))}</span></div>
-          <div class="urn">${escapeHtml(b.entity_id)}</div>
-          <div class="rationale">${escapeHtml(b.rationale)}</div>
-        </div>
-      `).join("");
-
-      document.getElementById("filmsCol").innerHTML = p.films.map(f => `
-        <div class="entity-card">
-          <div class="entity-header"><span>${escapeHtml(f.name)}</span><span class="score-pill">${escapeHtml(formatScorePill(f.affinity_score, "affinity"))}</span></div>
-          <div class="urn">${escapeHtml(f.entity_id)}</div>
-          <div class="rationale">${escapeHtml(f.rationale)}</div>
-        </div>
-      `).join("");
-
-      document.getElementById("musicCol").innerHTML = p.music.map(m => `
-        <div class="entity-card">
-          <div class="entity-header"><span>${escapeHtml(m.name)}</span><span class="score-pill">${escapeHtml(formatScorePill(m.affinity_score, "affinity"))}</span></div>
-          <div class="urn">${escapeHtml(m.entity_id)}</div>
-          <div class="rationale">${escapeHtml(m.rationale)}</div>
-        </div>
-      `).join("");
-
-      document.getElementById("personasRow").innerHTML = p.personas.map(per => `
-        <div class="entity-card">
-          <div class="entity-header"><span>${escapeHtml(per.segment)}</span><span class="score-pill">${escapeHtml(per.share_pct !== null && per.share_pct !== undefined ? per.share_pct + "% audience" : formatScorePill(per.qloo_affinity, "Qloo affinity (no % in API)"))}</span></div>
-          <div class="rationale" style="margin-top:0.35rem;"><strong>Target Channels:</strong> ${escapeHtml(per.channels.join(" · "))}</div>
-        </div>
-      `).join("");
-
-      const totalDur = p.shots.reduce((acc, s) => acc + s.duration_s, 0).toFixed(1);
-      document.getElementById("totalDurationBadge").textContent = `${p.shots.length} Shots · ${totalDur}s Total`;
-
-      document.getElementById("shotsGrid").innerHTML = p.shots.map(s => `
-        <div class="shot-card">
-          <div class="shot-top"><span>${escapeHtml(s.shot_id)}</span><span>${s.duration_s.toFixed(1)}s</span></div>
-          <div class="shot-prompt"><strong>LTX-2.5 Visual Prompt:</strong> ${escapeHtml(s.visual_prompt)}</div>
-          <div class="shot-vo">“${escapeHtml(s.voiceover_en)}”<br/><small style="color:var(--muted);">FR: « ${escapeHtml(s.voiceover_fr)} »</small></div>
-          <div class="shot-meta">🎵 <strong>Sonic Cue:</strong> ${escapeHtml(s.sonic_cue)}<br/>🧭 <strong>Qloo Taste Anchor:</strong> ${escapeHtml(s.qloo_anchor)}</div>
-        </div>
-      `).join("");
-
-      updateVideoPlayer();
-    }
-
-    document.getElementById("presetSelect").addEventListener("change", (e) => renderProfile(e.target.value, { resetSynopsis: true }));
-    document.getElementById("runAgentBtn").addEventListener("click", () => renderProfile(document.getElementById("presetSelect").value));
-    document.getElementById("btnRatio16x9").addEventListener("click", () => {
-      currentRatio = "16x9";
-      updateVideoPlayer();
-    });
-    document.getElementById("btnRatio9x16").addEventListener("click", () => {
-      currentRatio = "9x16";
-      updateVideoPlayer();
-    });
-    document.getElementById("exportJsonBtn").addEventListener("click", () => {
-      const p = activeRenderedProfile || PROFILES[currentSlug];
-      const briefObj = buildLtxBriefFromProfile(p, currentSlug);
-      const blob = new Blob([JSON.stringify(briefObj, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `qloo-taste-matched-trailer-${currentSlug}.json`;
-      a.click();
-    });
-
-    renderProfile("le-bronze-et-la-cendre");
-  </script>
-</body>
-</html>
+    if(!['queued','running'].includes(job.status))throw requestError('The server returned an unknown job state.',job);
+    status(job.status==='queued'?'Your request is queued. Waiting does not submit another run.':'The current request is running. Checking its status…');
+    $('runId').textContent='Job '+job.job_id;
+    if(Date.now()>=deadline)throw requestError('The job is still pending. Check this request again; no new run has been submitted.',{job_id:job.job_id,status:job.status});
+    await waitForPoll(signal);
+  }
+}
+async function submitWorkflow(pending,signal){
+  if(pending.jobId)return pollJob(pending,signal);
+  const response=await fetch(apiUrl(pending.endpoint||'/api/director/run'),{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':pending.key},body:JSON.stringify(pending.payload),credentials:'omit',redirect:'error',signal});
+  const data=await readResponse(response);
+  if(response.status===202){
+    if(typeof data.job_id!=='string'||!data.job_id)throw requestError('The service accepted the request without a job identifier.',data);
+    const pollUrl=trustedPollUrl(data.poll_url,data.job_id);pending.jobId=data.job_id;pending.pollUrl=pollUrl;
+    return pollJob(pending,signal);
+  }
+  if(!response.ok){const e=requestError('The server could not accept this request. Review the details before trying again.',data);e.jobSettled=true;throw e;}
+  return{bundle:data,jobId:null,jobStatus:data.workflow_status};
+}
+async function runCurrent(){
+  if(state.busy)return;
+  let request;
+  if(state.unresolved)request=state.unresolved.payload;
+  else try{request=buildServerPayload();}catch(e){status(e.message,'warn');return;}
+  const op=++state.revision,snap=state.unresolved?state.unresolved.snapshot:snapshot();
+  if(state.controller)state.controller.abort();state.controller=new AbortController();
+  if(!state.unresolved){try{state.unresolved={payload:clone(request),snapshot:snap,key:idempotencyKey(),jobId:null,pollUrl:null,endpoint:'/api/director/run',expectedMode:request.mode};}catch(e){status(e.message,'bad');state.controller=null;buttons();return;}}
+  state.bundle=null;state.snapshot=null;state.busy=true;clearResults();buttons();status('Working on the current request. No result is available yet.');
+  try{
+    const pending=state.unresolved,received=await submitWorkflow(pending,state.controller.signal);
+    if(op!==state.revision)return;
+    state.unresolved=null;
+    if(snap!==snapshot()){clearResults();status('The earlier request finished. Create a new result for the changed inputs.','warn');return;}
+    validateBundle(received.bundle,pending.expectedMode||request.mode);if(pending.expectedRunId&&received.bundle.run_id!==pending.expectedRunId)throw Error('The removal response belongs to another run.');state.bundle=received.bundle;state.snapshot=snap;state.parentJobId=received.jobId;renderBundle();
+  }catch(e){
+    if(e.jobSettled)state.unresolved=null;
+    if(op===state.revision){state.bundle=null;clearResults();status(e.message||'No final document was received. Check the pending request before starting again.','bad');$('sourceDetails').hidden=false;$('redactedProofBox').textContent=JSON.stringify(e.details||{message:e.message},null,2);}
+  }finally{if(op===state.revision){state.busy=false;state.controller=null;buttons();}}
+}
+async function removeReference(id){
+  if(state.busy||!current())return;
+  if(!state.parentJobId){status('This document has no server job for removal. Create a server-managed result first.','warn');return;}
+  const previous=state.bundle,op=++state.revision,snap=state.snapshot;
+  state.unresolved={payload:{parent_job_id:state.parentJobId,entity_id:id},snapshot:snap,key:idempotencyKey(),jobId:null,pollUrl:null,endpoint:'/api/director/remove-reference',expectedMode:previous.mode,expectedRunId:previous.run_id};
+  state.busy=true;state.controller=new AbortController();buttons();status('Waiting for the server to confirm this removal.');
+  try{const received=await submitWorkflow(state.unresolved,state.controller.signal);if(op!==state.revision||snap!==snapshot())return;state.unresolved=null;validateBundle(received.bundle,previous.mode);if(received.bundle.run_id!==previous.run_id)throw Error('The removal response belongs to another run.');state.bundle=received.bundle;state.parentJobId=received.jobId;renderBundle();}
+  catch(e){if(e.jobSettled)state.unresolved=null;if(op===state.revision){state.bundle=null;clearResults();status('Removal was not confirmed. Check the pending request; no unconfirmed update is being shown.','bad');}}
+  finally{if(op===state.revision){state.busy=false;state.controller=null;buttons();}}
+}
+function downloadReceived(){
+  if(state.busy)return;if(!current()){invalidate('Inputs changed. Create a new result before downloading.');return;}if(!exportable())return;
+  const blob=new Blob([JSON.stringify(state.bundle,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cultural-launch-director-'+state.bundle.run_id.replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);
+}
+function validApiBase(raw){const u=new URL(raw,window.location.origin);if(u.username||u.password||u.search||u.hash)throw Error('The public backend address must not contain credentials, query parameters or fragments.');if(u.protocol!=='https:'&&!(u.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(u.hostname)))throw Error('The public backend must use HTTPS.');return u.href.replace(/\/$/,'');}
+async function loadConfiguration(){
+  let config={};try{const response=await fetch(new URL('director-config.json',window.location.href),{cache:'no-store'});if(response.ok)config=await response.json();}catch{}
+  try{if(config.api_base_url)state.apiBase=validApiBase(config.api_base_url);else if(['http:','https:'].includes(window.location.protocol)&&!window.location.hostname.endsWith('.github.io'))state.apiBase=validApiBase(window.location.origin);else throw Error('The live backend is not connected to this frontend yet.');state.configurationReady=true;$('connectionStatus').textContent='Application backend configured. A run starts only when you click Create the brief.';$('connectionDetails').textContent=JSON.stringify({api_base_url:state.apiBase},null,2);}
+  catch(e){state.configurationReady=false;$('connectionStatus').textContent=e.message;$('connectionDetails').textContent='The publisher must supply director-config.json. No credential belongs in this file.';}buttons();
+}
+$('presetSelect').addEventListener('change',loadPreset);
+for(const id of FORM_IDS)if(id!=='presetSelect'){ $(id).addEventListener('input',()=>invalidate());$(id).addEventListener('change',()=>invalidate()); }
+$('runServerBtn').addEventListener('click',runCurrent);$('exportJsonBtn').addEventListener('click',downloadReceived);
+$('candidateConfirmationsRow').addEventListener('click',event=>{const button=event.target.closest&&event.target.closest('[data-remove-id]');if(button)removeReference(button.getAttribute('data-remove-id'));});
+loadPreset();loadConfiguration();
+</script>
+</body></html>

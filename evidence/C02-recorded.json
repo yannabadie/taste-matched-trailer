@@ -1,0 +1,310 @@
+{
+  "kind": "recorded_export_of_authentic_run",
+  "captured_at": "2026-10-20T00:05:51+00:00",
+  "not_a_new_live_request": true,
+  "document": {
+    "schema_version": "1.0",
+    "director_version": "2.6.1-issues-sonic-contract-20261020",
+    "run_id": "run-eval-20261020-3f2038b2-c02-q",
+    "mode": "live",
+    "status": "ok",
+    "workflow_status": "ok",
+    "qloo_api_verified": true,
+    "brief": {
+      "id": "brief-run-eval-20261020-3f2038b2-c02-q",
+      "run_id": "run-eval-20261020-3f2038b2-c02-q",
+      "mode": "live",
+      "created_at": "2026-10-20T00:05:51+00:00",
+      "synopsis": "Un narrateur doute de ses perceptions et de la présence d’un être invisible. Le trailer doit maintenir le doute, sans monstre montré.",
+      "user_constraints": {
+        "no_visible_monster": true
+      },
+      "decision_refs": [
+        "dec-run-eval-20261020-3f2038b2-c02-q-01-movie"
+      ],
+      "total_duration_seconds": 38,
+      "aspect_ratio": "16:9",
+      "completeness": "complete",
+      "verification": {
+        "deterministic_status": "pass",
+        "llm_status": "accept",
+        "unresolved_claims": []
+      },
+      "limitations": [
+        "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
+        "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
+      ],
+      "qloo_api_verified": true,
+      "shots": [
+        {
+          "id": "shot_01",
+          "purpose": "Ouvrir un mystère propre au synopsis",
+          "visual_prompt": "Vue subjective à travers une vitre embuée. Des reflets lumineux dérivent lentement, créant une distorsion subtile de la pièce vide derrière. Ambiance froide, bleutée, statique.",
+          "voiceover": "Je ne sais plus si c'est moi qui bouge, ou si la pièce respire.",
+          "sonic_direction": "Basse fréquence sourde, respiration lente et amplifiée, léger grésillement de fond.",
+          "on_screen_text": "Le doute commence ici.",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-eval-20261020-3f2038b2-c02-q-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-eval-20261020-3f2038b2-c02-q-movie",
+              "item_pointer": "/results/0"
+            }
+          ],
+          "retained_entity_refs": [
+            "D2243411-C04C-4134-88C6-578B3F0A6116"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_02",
+          "purpose": "Faire évoluer une trace matérielle",
+          "visual_prompt": "Gros plan sur une surface de bois. Une trace humide s'étend organiquement, formant un motif circulaire. La lumière change, révélant des textures impossibles dans le grain du bois.",
+          "voiceover": "Il laisse des traces. Mais rien ne confirme sa présence.",
+          "sonic_direction": "Son de liquide qui s'étale, craquement sec du bois, silence soudain.",
+          "on_screen_text": "Une trace sans origine.",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-eval-20261020-3f2038b2-c02-q-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-eval-20261020-3f2038b2-c02-q-movie",
+              "item_pointer": "/results/0"
+            }
+          ],
+          "retained_entity_refs": [
+            "D2243411-C04C-4134-88C6-578B3F0A6116"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_03",
+          "purpose": "Créer un basculement émotionnel",
+          "visual_prompt": "Plan large d'un couloir. Les murs semblent se rapprocher imperceptiblement. Une ombre se déplace contre le mur, mais aucune source lumineuse ne l'explique. Tension maximale.",
+          "voiceover": "Et si tout ce que je vois n'est que mon propre reflet déformé ?",
+          "sonic_direction": "Montée de tension sonore, battements de cœur rapides, dissonance aiguë.",
+          "on_screen_text": "Réalité ou hallucination ?",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-eval-20261020-3f2038b2-c02-q-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-eval-20261020-3f2038b2-c02-q-movie",
+              "item_pointer": "/results/1"
+            }
+          ],
+          "retained_entity_refs": [
+            "C7EC4CA9-1CCC-4991-B738-55F075441B3F"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_04",
+          "purpose": "Conclure par une invitation à lire",
+          "visual_prompt": "Écran noir. Une ligne de texte apparaît lentement au centre, en typographie fine et élégante. Pas d'image, seulement le texte qui pulse doucement.",
+          "voiceover": "Lisez. Et décidez par vous-même.",
+          "sonic_direction": "Silence total, puis un léger souffle final.",
+          "on_screen_text": "Découvrez la vérité.",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [],
+          "evidence_refs": [],
+          "retained_entity_refs": [],
+          "line_status": "active",
+          "interpretation_labels": [
+            "user_constraint",
+            "editorial_inference"
+          ]
+        }
+      ]
+    },
+    "directions": [
+      {
+        "direction_id": "editorial_direction_1",
+        "title": "L'Écho du Vide",
+        "angle": "Une exploration sensorielle de la paranoïa où l'espace se déforme subtilement, inspirée par l'isolement de Solaris et l'ambiguïté temporelle d'Arrival.",
+        "origin": "editorial_inference"
+      }
+    ],
+    "decisions": [
+      {
+        "id": "dec-run-eval-20261020-3f2038b2-c02-q-01-movie",
+        "action": "select_movie_references",
+        "claim_origin": "qloo_result",
+        "status": "supported",
+        "selected_entity_ids": [
+          "D2243411-C04C-4134-88C6-578B3F0A6116",
+          "C7EC4CA9-1CCC-4991-B738-55F075441B3F"
+        ],
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-run-eval-20261020-3f2038b2-c02-q-movie",
+            "item_pointer": "/results/0"
+          },
+          {
+            "evidence_id": "ev-run-eval-20261020-3f2038b2-c02-q-movie",
+            "item_pointer": "/results/1"
+          }
+        ],
+        "rule_version": "det-select-v1.4",
+        "rationale": "Ranked same-type (urn:entity:movie) shortlist via `qloo_rank` (ev-run-eval-20261020-3f2038b2-c02-q-movie): 2 retenu(s), 1 écarté(s), 0 non évaluable(s).",
+        "limitations": [
+          "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution."
+        ],
+        "candidates": [
+          {
+            "name": "Solaris",
+            "entity_id": "D2243411-C04C-4134-88C6-578B3F0A6116",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 0,
+            "is_tie": false,
+            "qualification_state": "retenu",
+            "score_field": "affinity",
+            "score_value": 0.8121439473485612
+          },
+          {
+            "name": "Arrival",
+            "entity_id": "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 1,
+            "is_tie": false,
+            "qualification_state": "retenu",
+            "score_field": "affinity",
+            "score_value": 0.7716091533203502
+          },
+          {
+            "name": "Blade Runner 2049",
+            "entity_id": "3A02361C-987B-4F7E-9AAD-071C3853AD92",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 2,
+            "is_tie": false,
+            "qualification_state": "écarté",
+            "score_field": "affinity",
+            "score_value": 0.7344022616073991
+          }
+        ]
+      }
+    ],
+    "candidate_resolution": {
+      "gate_status": "ok",
+      "resolved_groups": [
+        {
+          "query": "The Turn of the Screw (book)",
+          "status": "confirmed",
+          "ambiguous": false,
+          "synthetic_title_declared": false,
+          "selected_entity_id": "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788",
+          "choice_origin": "typed_unique_match",
+          "candidates": [
+            {
+              "name": "The Turn of the Screw",
+              "entity_id": "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "A governess becomes convinced that the children in her care are haunted by ghosts at a remote estate."
+            }
+          ]
+        },
+        {
+          "query": "Rebecca (book)",
+          "status": "confirmed",
+          "ambiguous": false,
+          "synthetic_title_declared": false,
+          "selected_entity_id": "3224800A-A757-48CC-8489-BD377F5A43BF",
+          "choice_origin": "typed_unique_match",
+          "candidates": [
+            {
+              "name": "Rebecca",
+              "entity_id": "3224800A-A757-48CC-8489-BD377F5A43BF",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "<em>Last night I dreamt I went to Manderley again...</em><br /><br />The novel begins in Monte Carlo, where our heroine is swept off her feet by the dashing widower Maxim de Winter and his sudden proposal of marriage. Orphaned and working as a lady's maid, she can barely believe her luck. It is only when they arrive at his massive country estate that she realizes how large a shadow his late wife will cast over their lives--presenting her with a lingering evil that threatens to destroy their marr"
+            }
+          ]
+        }
+      ],
+      "confirmed_entity_ids": [
+        "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788",
+        "3224800A-A757-48CC-8489-BD377F5A43BF"
+      ]
+    },
+    "clarification_questions": [
+      "Le doute du narrateur est-il lié à une condition médicale ou purement psychologique ?",
+      "Y a-t-il des indices physiques subtils (bruits, traces) pour ancrer la présence invisible dans le réel ?"
+    ],
+    "run_budget": {
+      "qloo_network_attempt_limit": 11,
+      "qloo_network_attempts_used": 10,
+      "llm_call_limit": 3,
+      "llm_calls_used": 3,
+      "active_time_limit_ms": 120000,
+      "active_time_used_ms": 74812
+    },
+    "constraint_fidelity": {
+      "status": "pass",
+      "errors": [],
+      "scope": "duration_sum_aspect_screen_text_assets_and_explicit_forbidden_visuals; semantic_review_is_role3"
+    },
+    "evidence_sources": [
+      {
+        "id": "ev-run-eval-20261020-3f2038b2-c02-q-movie",
+        "mode": "live",
+        "tool": "qloo_rank",
+        "status": "ok",
+        "authentication_state": "authenticated",
+        "source_payload_sha256": "f37c68baac505aa2c698a5ccae6f3bc3b7ee1be6644b9eac9fe8041c2627237b",
+        "used_items": [
+          {
+            "item_pointer": "/results/0",
+            "entity_id": "D2243411-C04C-4134-88C6-578B3F0A6116",
+            "returned_order": 0,
+            "score_field": "affinity",
+            "score_value": 0.8121439473485612
+          },
+          {
+            "item_pointer": "/results/1",
+            "entity_id": "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+            "returned_order": 1,
+            "score_field": "affinity",
+            "score_value": 0.7716091533203502
+          },
+          {
+            "item_pointer": "/results/2",
+            "entity_id": "3A02361C-987B-4F7E-9AAD-071C3853AD92",
+            "returned_order": 2,
+            "score_field": "affinity",
+            "score_value": 0.7344022616073991
+          }
+        ]
+      }
+    ],
+    "limitations": [
+      "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
+      "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
+    ]
+  }
+}

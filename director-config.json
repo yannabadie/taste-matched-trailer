@@ -1,0 +1,7 @@
+{
+  "api_base_url": "https://telephone-forming-dollar-delhi.trycloudflare.com",
+  "supported_modes": [
+    "live"
+  ],
+  "release": "2.6.1"
+}

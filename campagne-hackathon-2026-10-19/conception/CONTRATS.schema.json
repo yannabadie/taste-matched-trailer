@@ -1,0 +1,922 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agentique:qloo:campaign:2026-10-19:contracts:v2",
+  "title": "Proposed Evidence / Decision / Brief contracts",
+  "description": "Contrat documentaire Codex v2, R1. Cohérences de valeurs déclarées uniquement : aucune preuve d’authenticité Qloo, de hash ou de résolution entre documents. Les objets de test sont synthétiques, sans appel API.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/Evidence"
+    },
+    {
+      "$ref": "#/$defs/Decision"
+    },
+    {
+      "$ref": "#/$defs/Brief"
+    },
+    {
+      "$ref": "#/$defs/RunBudget"
+    }
+  ],
+  "$defs": {
+    "Evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "run_id",
+        "source_type",
+        "mode",
+        "tool",
+        "requested_at",
+        "received_at",
+        "request_redacted",
+        "confirmed_entity_ids",
+        "status",
+        "authentication_state",
+        "payload_redacted",
+        "payload_redacted_sha256",
+        "limitations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_type": {
+          "enum": [
+            "qloo_response",
+            "synthetic_fixture",
+            "user_confirmation"
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "live",
+            "recorded_live",
+            "fixture"
+          ]
+        },
+        "tool": {
+          "type": "string"
+        },
+        "harness_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "requested_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recorded_live_original_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "request_redacted": {
+          "type": "object"
+        },
+        "confirmed_entity_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "empty",
+            "needs_input",
+            "partial",
+            "degraded",
+            "error",
+            "invalid_contract"
+          ]
+        },
+        "authentication_state": {
+          "enum": [
+            "authenticated",
+            "not_authenticated",
+            "not_checked"
+          ]
+        },
+        "payload_redacted": {
+          "type": "object"
+        },
+        "payload_redacted_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_payload_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "used_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "item_pointer",
+              "entity_id",
+              "returned_order",
+              "score_field",
+              "score_value"
+            ],
+            "properties": {
+              "item_pointer": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?:/(?:[^~/]|~[01])*)+$",
+                "description": "JSON Pointer non racine ; syntaxe seulement. Existence dans used_items et payload, identité/version et authenticité restent vérifiées par le validateur sémantique externe."
+              },
+              "entity_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "returned_order": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "score_field": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "score_value": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source_type": {
+                "const": "synthetic_fixture"
+              }
+            },
+            "required": [
+              "source_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "const": "fixture"
+              },
+              "authentication_state": {
+                "const": "not_checked"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "recorded_live"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "required": [
+              "recorded_live_original_at"
+            ],
+            "properties": {
+              "recorded_live_original_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "fixture"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_type": {
+                "not": {
+                  "const": "qloo_response"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_type": {
+                "const": "qloo_response"
+              }
+            },
+            "required": [
+              "source_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "live",
+                  "recorded_live"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_type": {
+                "const": "qloo_response"
+              },
+              "status": {
+                "enum": [
+                  "ok",
+                  "partial",
+                  "degraded"
+                ]
+              }
+            },
+            "required": [
+              "source_type",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "used_items"
+            ],
+            "properties": {
+              "authentication_state": {
+                "const": "authenticated"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_type": {
+                "const": "qloo_response"
+              },
+              "mode": {
+                "const": "recorded_live"
+              }
+            },
+            "required": [
+              "source_type",
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "authentication_state": {
+                "const": "authenticated"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "live"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "recorded_live_original_at": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "partial",
+                  "degraded"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "limitations": {
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "pattern": "\\S"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "run_id",
+        "action",
+        "claim_origin",
+        "status",
+        "candidates",
+        "selected_entity_ids",
+        "evidence_refs",
+        "rule_version",
+        "rationale",
+        "constraints_origin",
+        "limitations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "claim_origin": {
+          "enum": [
+            "qloo_result",
+            "editorial_inference",
+            "user_constraint",
+            "insufficient_evidence"
+          ]
+        },
+        "status": {
+          "enum": [
+            "supported",
+            "proposed",
+            "needs_input",
+            "blocked"
+          ]
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "selected_entity_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "excluded_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidence_id",
+              "item_pointer"
+            ],
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "item_pointer": {
+                "type": "string",
+                "description": "JSON Pointer non racine ; syntaxe seulement. Existence dans used_items et payload, identité/version et authenticité restent vérifiées par le validateur sémantique externe.",
+                "minLength": 1,
+                "pattern": "^(?:/(?:[^~/]|~[01])*)+$"
+              }
+            }
+          }
+        },
+        "rule_version": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "constraints_origin": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "claim_origin": {
+                "const": "qloo_result"
+              }
+            },
+            "required": [
+              "claim_origin"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidence_id",
+                    "item_pointer"
+                  ],
+                  "properties": {
+                    "evidence_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "item_pointer": {
+                      "type": "string",
+                      "description": "JSON Pointer non racine ; syntaxe seulement. Existence dans used_items et payload, identité/version et authenticité restent vérifiées par le validateur sémantique externe.",
+                      "minLength": 1,
+                      "pattern": "^(?:/(?:[^~/]|~[01])*)+$"
+                    }
+                  }
+                },
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Brief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "run_id",
+        "mode",
+        "qloo_api_verified",
+        "created_at",
+        "synopsis",
+        "user_constraints",
+        "decision_refs",
+        "shots",
+        "verification",
+        "limitations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "live",
+            "recorded_live",
+            "fixture"
+          ]
+        },
+        "qloo_api_verified": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "synopsis": {
+          "type": "string"
+        },
+        "user_constraints": {
+          "type": "object"
+        },
+        "decision_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shots": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "purpose",
+              "visual_prompt",
+              "voiceover",
+              "sonic_direction",
+              "decision_refs",
+              "evidence_refs",
+              "interpretation_labels"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              },
+              "visual_prompt": {
+                "type": "string"
+              },
+              "voiceover": {
+                "type": "string"
+              },
+              "sonic_direction": {
+                "type": "string"
+              },
+              "decision_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidence_id",
+                    "item_pointer"
+                  ],
+                  "properties": {
+                    "evidence_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "item_pointer": {
+                      "type": "string",
+                      "description": "JSON Pointer non racine ; syntaxe seulement. Existence dans used_items et payload, identité/version et authenticité restent vérifiées par le validateur sémantique externe.",
+                      "minLength": 1,
+                      "pattern": "^(?:/(?:[^~/]|~[01])*)+$"
+                    }
+                  }
+                }
+              },
+              "interpretation_labels": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "qloo_result",
+                    "editorial_inference",
+                    "user_constraint",
+                    "synthetic_fixture",
+                    "insufficient_evidence"
+                  ]
+                }
+              },
+              "duration_seconds": {
+                "type": "number",
+                "minimum": 0
+              },
+              "aspect_ratio": {
+                "type": "string"
+              },
+              "on_screen_text": {
+                "type": "string"
+              },
+              "retained_entity_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "interpretation_labels": {
+                      "contains": {
+                        "const": "qloo_result"
+                      }
+                    }
+                  },
+                  "required": [
+                    "interpretation_labels"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "evidence_refs": {
+                      "minItems": 1
+                    },
+                    "decision_refs": {
+                      "minItems": 1
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "deterministic_status",
+            "llm_status",
+            "unresolved_claims"
+          ],
+          "properties": {
+            "deterministic_status": {
+              "enum": [
+                "pass",
+                "fail",
+                "not_run"
+              ]
+            },
+            "llm_status": {
+              "enum": [
+                "accept",
+                "revise",
+                "block",
+                "not_run"
+              ]
+            },
+            "unresolved_claims": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total_duration_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "aspect_ratio": {
+          "type": "string"
+        },
+        "completeness": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "fixture"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "qloo_api_verified": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qloo_api_verified": {
+                "const": true
+              }
+            },
+            "required": [
+              "qloo_api_verified"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "live",
+                  "recorded_live"
+                ]
+              },
+              "verification": {
+                "properties": {
+                  "deterministic_status": {
+                    "const": "pass"
+                  }
+                }
+              },
+              "decision_refs": {
+                "minItems": 1
+              },
+              "shots": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "interpretation_labels",
+                    "evidence_refs",
+                    "decision_refs"
+                  ],
+                  "properties": {
+                    "interpretation_labels": {
+                      "contains": {
+                        "const": "qloo_result"
+                      }
+                    },
+                    "evidence_refs": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "decision_refs": {
+                      "type": "array",
+                      "minItems": 1
+                    }
+                  }
+                },
+                "minContains": 1,
+                "items": {
+                  "properties": {
+                    "interpretation_labels": {
+                      "not": {
+                        "contains": {
+                          "const": "synthetic_fixture"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "RunBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "limits_are_internal_proposals",
+        "qloo_network_attempt_limit",
+        "qloo_network_attempts_used",
+        "llm_call_limit",
+        "llm_calls_used",
+        "max_retries_per_call",
+        "active_time_limit_ms",
+        "active_time_used_ms",
+        "quota_official_state",
+        "charge_known"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "limits_are_internal_proposals": {
+          "const": true
+        },
+        "qloo_network_attempt_limit": {
+          "type": "integer",
+          "maximum": 14,
+          "minimum": 0
+        },
+        "qloo_network_attempts_used": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "llm_call_limit": {
+          "type": "integer",
+          "maximum": 5,
+          "minimum": 0
+        },
+        "llm_calls_used": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_retries_per_call": {
+          "type": "integer",
+          "maximum": 1,
+          "minimum": 0
+        },
+        "active_time_limit_ms": {
+          "type": "integer",
+          "maximum": 120000,
+          "minimum": 0
+        },
+        "active_time_used_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quota_official_state": {
+          "enum": [
+            "known",
+            "unknown"
+          ]
+        },
+        "charge_known": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "x-semantic-invariants": [
+    "Un schéma valide prouve uniquement la structure et la cohérence de valeurs déclarées. authentication_state=authenticated et deterministic_status=pass restent déclaratifs ; aucun appel Qloo réel n’est ainsi prouvé.",
+    "Tout evidence_ref et decision_ref doit être résolu vers le document exact du même run et de la version reçue. Les références des plans doivent correspondre aux décisions et preuves du brief ; cette résolution entre documents est externe au JSON Schema.",
+    "Une Decision qloo_result ou un plan attribué à Qloo doit pointer vers une Evidence source_type=qloo_response, mode live ou recorded_live, authentication_state=authenticated, statut ok/partial/degraded ; item_pointer doit être présent dans used_items ET résoudre le bon item dans payload_redacted. Les IDs et signaux confirmés doivent correspondre.",
+    "used_items est requis pour une réponse Qloo ok/partial/degraded mais peut être vide pour journaliser une absence d’item. Un ok vide, empty, needs_input, error ou invalid_contract ne soutient pas une recommandation ni qloo_api_verified=true.",
+    "Pour partial/degraded le schéma exige une limite textuelle explicite sans en vérifier le sens. Le producteur doit restreindre les décisions aux items réellement reçus et propager manques, dégradations et limites au brief et à l’interface.",
+    "Recorded_live est une observation authentique antérieure à provenance et date vérifiées, jamais une nouvelle exécution live. Le schéma distingue le mode et exige la présence/type de date d’origine ; chronologie, formats effectivement activés et origine restent à contrôler.",
+    "qloo_api_verified=true exige résultat authentique utile, IDs confirmés et chaîne Evidence → Decision → Brief vérifiée sur ce run. Les contraintes intradocument sont nécessaires mais ne qualifient pas l’intégration, le parcours navigateur ou sa disponibilité actuelle.",
+    "Un score sans champ documenté n’est pas affiché ; rang et popularité ne sont pas une affinité. Aucun score ou ID n’est inventé.",
+    "Compteurs réels inférieurs aux plafonds ; limites officielles plus strictes prioritaires. R3, réservations et tenue du compteur ne sont pas traités par ce changement R1.",
+    "Le hash de la copie expurgée est recalculé sur sa sérialisation canonique documentée ; hash source distinct si disponible. Le schéma vérifie seulement la forme hexadécimale, pas l’égalité d’un hash au contenu."
+  ],
+  "x-contract-version": 2,
+  "x-compatible-revision": "2026-10-20:minimal_movie_v1:four_shots:cap14:120s"
+}

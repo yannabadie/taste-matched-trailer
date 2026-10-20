@@ -1,61 +1,93 @@
-# The Taste-Matched Trailer — Qloo Cultural Intelligence Agent
+# Cultural Launch Director
 
-**Built for the [Qloo Agentic Hackathon](https://qloo.devpost.com) ("Agents, but with taste")**  
-**Live Hosted Demo:** [https://yannabadie.github.io/taste-matched-trailer/](https://yannabadie.github.io/taste-matched-trailer/)  
-**Live Commercial Case Study (*Le Bronze et la Cendre*):** [https://yannabadie.github.io/taste-matched-trailer/le-bronze-et-la-cendre.html](https://yannabadie.github.io/taste-matched-trailer/le-bronze-et-la-cendre.html)  
-**License:** MIT (Open Source)
+A Qloo-powered working prototype for choosing explainable cultural references for a book and turning those choices into a creative trailer brief.
 
-## Why This Exists (and Why It Cannot Work Without Qloo)
+The workflow separates the book’s intent, Qloo’s aggregate cultural associations, the selection decision, and the writer’s creative interpretation. Affinity is not an individual probability, a sales forecast, or proof of commercial positioning.
 
-> *"If your submission would work the same without Qloo, you're building the wrong thing."*
+## Try the application
 
-When an independent author or small publisher wants to promote a book on BookTok (TikTok), Instagram Reels, YouTube Shorts, or Amazon KDP, generic LLMs fail at creative direction because **they only read the text in isolation** — they have zero empirical knowledge of **real-world cross-domain cultural taste**.
+The existing public frontend is hosted at [GitHub Pages](https://yannabadie.github.io/taste-matched-trailer/). The 2.6.1 release connects to an application-only HTTPS gateway. A temporary gateway depends on the originating Mac and tunnel remaining available; its uptime through the judging period is not established by a local test.
 
-**The Taste-Matched Trailer** bridges manuscript analysis with the **Qloo Cultural Taste Graph (250M+ entities)** to act as an autonomous Cultural Director:
-1. **Literary DNA Extraction:** Analyzes a manuscript's themes, era, emotional cadence (BPM), and chromatic palette.
-2. **Qloo Seed Entity Resolution (`urn:entity:book`):** Anchors the manuscript against comparable literary works in Qloo's graph.
-3. **Cross-Domain Taste Graph Traversal (`urn:entity:movie`, `urn:entity:artist`):** Queries Qloo for the exact films, directors, cinematographers, and soundtrack composers that readers of those seed books statistically over-index on.
-4. **Audience Persona Clustering:** Identifies high-conversion reader cohorts and where they discover new books.
-5. **Executable LTX-2.5 Book-Trailer Production & Rendering:** Synthesizes a 6-shot cinematic trailer brief (visual prompts, bilingual voiceover, sonic cues, and Qloo aesthetic anchors) and renders the complete `16:9` Widescreen and `9:16` BookTok MP4 trailers locally using **LTX-2.5** and **Kyutai TTS**.
+1. Choose **Your own brief**, a frozen evaluation case, or the separately labelled historical-input demonstration.
+2. Review the brief and public reference titles. The public gateway supports **Live** only; fixtures and archived replay are private-tool modes.
+3. Click **Create the brief**. Queued and running jobs are followed by status reads; the browser does not silently resubmit a POST.
+4. If a title is ambiguous, select a candidate and click **Continue with selected references**. This is an explicit new request linked to the preceding job.
+5. Inspect the returned scores, selection decisions, creative plans and sources. Removing a selected reference waits for server confirmation and shows the updated dependency state.
+6. Download the exact public document received for the displayed run. Failed or blocked results cannot be exported as a successful brief.
 
----
+The eight frozen cases remain unmodified. Their original French wording is accompanied by an English translation. A custom edit is a separate request, not a successful execution of an unchanged evaluation case. Availability of all eight cases in the interface does not mean all eight have passed live evaluation.
 
-## Quick Start
+## Modes and evidence
 
-### 1. Live Web Application & Embedded Video Outputs
-Visit **[https://yannabadie.github.io/taste-matched-trailer/](https://yannabadie.github.io/taste-matched-trailer/)** (or serve locally with `python3 -m http.server 8080 --directory .`) to:
-- Explore multi-hop Qloo Taste Graph traversals for both manuscripts.
-- Stream the **real rendered book trailers** (`16:9 Landscape` and `9:16 Vertical BookTok`) directly in the browser.
-- Visit the live storefront page (`le-bronze-et-la-cendre.html`) powered by the generated trailer.
+The public interface and gateway accept **Live only**. The other options are disabled and rejected locally before a request. The private CLI/backend can support fixture and recorded-live workflows separately; those full bundles are not the public UI contract.
 
-### 2. Python Agent CLI (Offline Demo Fixture vs. Live Verified Qloo API)
-The agent strictly separates **offline reference fixtures** (`qloo_api_verified: false`) from **live Qloo API execution** (`qloo_api_verified: true`), where API responses from `/search` and `/v2/insights` dynamically determine the seed books, cross-domain film & composer affinities, audience persona shares, and 6-shot LTX-2.5 brief (`qloo_anchor`, `sonic_cue`, `visual_prompt`):
+- **Live** requests new evidence. A live-mode label alone does not prove an authenticated useful result. The public source references and the server’s lineage checks determine that claim; complete private receipts remain server-side.
+- **Recorded live** uses a dated, authentic archive when the server has one; it does not establish current API availability.
+- **Fixture** is a synthetic illustration, never an authentic Qloo observation.
 
-```bash
-# 1. Offline Demo Mode (no API key -> mode="offline_precomputed_demo", qloo_api_verified=false):
-python3 taste_matched_trailer_agent.py \
-  --profile le-horla-maupassant \
-  --export-brief ./brief-horla-ltx25.json
+The Turn of the Screw demonstration uses one book UUID and three movie UUIDs from the dated qualification of 19 October 2026 as fixed reference inputs. They are explicitly attributed as historical inputs. Only a new run’s returned evidence can support a fresh ranking claim.
 
-# 2. Live Verified Qloo API Mode (requires valid Qloo API key -> mode="live_qloo_api_verified", qloo_api_verified=true):
-QLOO_API_KEY="your_qloo_key" python3 taste_matched_trailer_agent.py \
-  --profile le-bronze-et-la-cendre \
-  --strict-live \
-  --export-brief ./brief-bronze-ltx25.json
+No conversion improvement, audience split, invented affinity percentage, commercial-comparable quality or market validation is claimed. The dated video illustration predates the application’s authenticated run and is not output from the current run.
 
-# 3. Run the verification test suite (proves offline vs. live API output determination):
-python3 -m unittest -v test_taste_matched_trailer_agent.py
+## Frontend configuration
+
+The buildless `index.html` reads `director-config.json` next to it:
+
+```json
+{ "api_base_url": "https://YOUR-APPLICATION-GATEWAY" }
 ```
 
----
+Use the actual app-only HTTPS gateway. This is a public URL, not a secret. Never put a Qloo key, model key, bearer credential or password in this file or the frontend.
 
-## Included Case Studies & Rendered Video Assets (`assets/`)
+With an empty value, the frontend can use its own HTTP(S) origin only when that origin is the **public application gateway**. The private backend server is a different contract and must not be used as this public UI’s API base. GitHub Pages without a configured gateway remains visibly unavailable for runs.
 
-1. **Case 1 — *Le Bronze et la Cendre* (Yann Abadie, 2026):**
-   - **Qloo Seed Books:** *Hyperion*, *Memoirs of Hadrian*, *Dune*
-   - **Qloo Cinema & Sonic Matches:** *Dune: Part Two* (96%), *Blade Runner 2049* (92%), *Rome* (89%) × Jóhann Jóhannsson (95%), Max Richter (92%)
-   - **Rendered Output:** `assets/teaser-bronze-v1-16x9.mp4` (`16:9`) & `assets/teaser-bronze-v1.mp4` (`9:16` BookTok), 40.58s, 24 fps, narrated via Kyutai TTS.
-2. **Case 2 — *Le Horla* (Guy de Maupassant, 1887):**
-   - **Qloo Seed Books:** *The Turn of the Screw*, *The Fall of the House of Usher*, *Rebecca*
-   - **Qloo Cinema & Sonic Matches:** *The Lighthouse* (95%), *The Others* (93%), *Nosferatu* (91%) × Hildur Guðnadóttir (94%), Colin Stetson (90%)
-   - **Rendered Output:** `assets/teaser-horla-v1-16x9.mp4` (`16:9`) & `assets/teaser-horla-v1.mp4` (`9:16` BookTok), 40.25s, 24 fps, narrated via Kyutai TTS.
+GitHub Pages hosts the static interface. It does not run Python, MLX, the Qloo stdio harness or the local model. The backend and model route must be prepared separately by the operator. The local full workflow uses the already guarded model route; this frontend does not start or configure a model.
+
+## Private local tools and the public interface
+
+The private Node/Python backend and CLI are operator/development tools. They can return a complete internal bundle with detailed evidence, runtime data and private receipt fields. Keep that service on loopback and outside public access.
+
+For example, the private backend can be started by its operator with the already configured runtime:
+
+```sh
+node qloo_mcp_backend.mjs --serve --host 127.0.0.1 --port 8787
+```
+
+This command starts the **private backend**, not the public gateway. Even if that server serves `index.html`, its direct API response is not the whitelisted `public_export` this interface expects. Do not treat opening port 8787 as a working public demo or expose it directly.
+
+The public interface is served by GitHub Pages or the application gateway and uses `director-config.json` to address that gateway. The gateway submits work to the protected backend, returns jobs and exposes only the whitelisted public result. The public UI never requests or accepts a full private bundle.
+
+Fixture/recorded-live diagnostics remain in the private CLI/offline workflow. Follow the official Qloo kit for the event credential and harness, and configure them only through protected server mechanisms. The native model route and CPU tokenizer remain behind the existing guard; the interface never starts or configures them.
+
+The operator must receive the exact gateway/backend/guard combination and enforce app-only paths, the permitted frontend origin and server budgets before external use. Never expose the model guard, arbitrary files or private receipts.
+
+## Backend contract
+
+- `POST /api/director/run`, with `Idempotency-Key`, accepts the brief, public references, confirmed IDs, ranking domains, shortlist options, constraints and mode. Frozen cases add `frozen_case_id`.
+- A `202` response provides `job_id`, `status` and `poll_url`. `GET /api/director/jobs/<id>` is polled every three seconds. `queued` and `running` are not successful results. Terminal states include `needs_input`, `completed` and `failed`.
+- A `200` response containing the same whitelisted `public_export` directly is accepted for compatibility. A private backend full bundle is not accepted.
+- Explicit disambiguation sends `confirmed_entity_ids`, an object `resolution_choices` mapping the original server-returned query strings to chosen IDs, and `parent_job_id`. The server validates candidates against its stored authentic parent result and supplies provenance.
+- `POST /api/director/remove-reference` sends `parent_job_id` and `entity_id` with a new Idempotency-Key for the explicit action, then follows the same `202` job polling contract. The browser’s bundle is not trusted as server state.
+- Public results must be expurgated server-side. Full private evidence, filesystem paths and credentials are not public exports.
+
+The server owns physical Qloo limits, the common model budget, one-operation concurrency, authentic provenance and public access controls. The browser cannot establish those guarantees.
+
+## Validation and limitations
+
+Frontend contract receipts record the focused synthetic checks for each revision, including public-export rendering, jobs and clarification. The latest Live-only gate was checked locally without a live call. This is not a live API, model, server, browser or layout qualification. Live case results and the final external browser reception must be documented by their exact version and receipt. Prior successful local runs do not qualify a changed release automatically.
+
+Setup of the Node/Python backend, official Qloo harness, protected credential and native local model route is an operator task. The event kit requires Node.js 22.19 or newer and Qloo harness 0.1.26 or newer; record exact versions used. Do not run arbitrary fixture data as live evidence.
+
+## License and sources
+
+MIT. Preserve the repository’s LICENSE and rights for bundled assets.
+
+- [Official Qloo hackathon kit](https://github.com/qloo/qloo-hackathon-kit)
+- [Submission requirements](https://qloo.devpost.com/)
+- [Official rules](https://qloo.devpost.com/rules)
+
+## Release layout and access
+
+The current source is in `taste-matched-trailer/`, with its adjacent frozen `campagne-hackathon-2026-10-19/` contracts. Earlier root agent files and dated media remain historical. The root index and configuration serve GitHub Pages. Private credentials, native receipts, runtime jobs, machine logs and raw Qloo responses are excluded. `evidence/*-recorded.json` contains explicitly dated exports, never automatic LIVE fallbacks.
+
+The Mac hosts the private backend and native model; the public gateway exposes only application jobs. Its first public allowance is 10 families / 140 physical requests / 30 native calls, with no automatic refill. It requires the Mac and tunnel to remain online. There is no reboot autostart or guaranteed availability through the 17 November 2026, 05:45 Paris end of judging. The page remains at its stable GitHub Pages URL if the temporary tunnel stops.

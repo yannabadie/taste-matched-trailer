@@ -1,0 +1,203 @@
+{
+  "release": "2.6.1",
+  "at": "2026-10-20T00:12:54.049368+00:00",
+  "cases": [
+    {
+      "case": "C01",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 4,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "ok",
+      "current_version": "2.6.1-issues-sonic-contract-20261020",
+      "actual_api_verified": true,
+      "physical_http_added": 7,
+      "native_calls_added": 3,
+      "operator_confirmation": "Codex selected the canonical first novel from genuine candidates; this was not a click or approval by Yann",
+      "original_resolution_reused": true,
+      "complete_shots": 4,
+      "total_duration_seconds": 40,
+      "verifier": "accept",
+      "constraints": "pass",
+      "ranked_references": [
+        {
+          "name": "Solaris",
+          "affinity": 0.874902087852643
+        },
+        {
+          "name": "Arrival",
+          "affinity": 0.7951763947943529
+        },
+        {
+          "name": "Blade Runner 2049",
+          "affinity": 0.783513153057703
+        }
+      ]
+    },
+    {
+      "case": "C02",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "error",
+        "physical_http": 10,
+        "native_calls": 2
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "ok",
+      "current_version": "2.6.1-issues-sonic-contract-20261020",
+      "actual_api_verified": true,
+      "physical_http_added": 10,
+      "native_calls_added": 3,
+      "corrective_change": "Sound direction field bound100->160; original failure retained; writer1200-token ceiling unchanged",
+      "complete_shots": 4,
+      "total_duration_seconds": 38.0,
+      "verifier": "accept",
+      "constraints": "pass",
+      "ranked_references": [
+        {
+          "name": "Solaris",
+          "affinity": 0.8121439473485612
+        },
+        {
+          "name": "Arrival",
+          "affinity": 0.7716091533203502
+        },
+        {
+          "name": "Blade Runner 2049",
+          "affinity": 0.7344022616073991
+        }
+      ]
+    },
+    {
+      "case": "C03",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 0,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "needs_input",
+      "actual_api_verified": false,
+      "physical_http_added": 0,
+      "native_calls_added": 0,
+      "corrected_parser_check": "Offline decoding of the same authentic initial responses; no fresh API call",
+      "candidate_counts": []
+    },
+    {
+      "case": "C04",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 2,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "needs_input",
+      "actual_api_verified": false,
+      "physical_http_added": 0,
+      "native_calls_added": 0,
+      "corrected_parser_check": "Offline decoding of the same authentic initial responses; no fresh API call",
+      "candidate_counts": [
+        5,
+        4
+      ]
+    },
+    {
+      "case": "C05",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 1,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "needs_input",
+      "actual_api_verified": false,
+      "physical_http_added": 0,
+      "native_calls_added": 0,
+      "corrected_parser_check": "Offline decoding of the same authentic initial responses; no fresh API call",
+      "candidate_counts": [
+        5
+      ]
+    },
+    {
+      "case": "C06",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 1,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "ok",
+      "current_version": "2.6.1-issues-sonic-contract-20261020",
+      "actual_api_verified": true,
+      "physical_http_added": 5,
+      "native_calls_added": 3,
+      "operator_confirmation": "Codex selected the canonical first novel from genuine candidates; this was not a click or approval by Yann",
+      "original_resolution_reused": true,
+      "complete_shots": 4,
+      "total_duration_seconds": 38.0,
+      "verifier": "accept",
+      "constraints": "pass",
+      "ranked_references": [
+        {
+          "name": "Arrival",
+          "affinity": null
+        },
+        {
+          "name": "Blade Runner 2049",
+          "affinity": null
+        },
+        {
+          "name": "Solaris",
+          "affinity": null
+        }
+      ]
+    },
+    {
+      "case": "C07",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 0,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "needs_input",
+      "actual_api_verified": false,
+      "physical_http_added": 0,
+      "native_calls_added": 0,
+      "corrected_parser_check": "Offline decoding of the same authentic initial responses; no fresh API call",
+      "candidate_counts": []
+    },
+    {
+      "case": "C08",
+      "initial": {
+        "version": "2.6.0-eight-case-native-20261020",
+        "status": "needs_input",
+        "physical_http": 0,
+        "native_calls": 0
+      },
+      "original_inputs_unchanged": true,
+      "final_status": "needs_input",
+      "actual_api_verified": false,
+      "physical_http_added": 0,
+      "native_calls_added": 0,
+      "corrected_parser_check": "Offline decoding of the same authentic initial responses; no fresh API call",
+      "candidate_counts": []
+    }
+  ],
+  "physical_requests_total": 40,
+  "native_calls_total": 11,
+  "unknown_outcomes": 0,
+  "initial_errors_retained": true,
+  "same_model_baseline_run": false,
+  "measured_quality_or_sales_improvement": false,
+  "coverage": "8 cases examined; 3 complete authentic workflows after corrections/attributed choices; 5 honest clarification branches, including3without usable references and0API",
+  "public_browser_smoke": "pending"
+}

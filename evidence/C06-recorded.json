@@ -1,0 +1,323 @@
+{
+  "kind": "recorded_export_of_authentic_run",
+  "captured_at": "2026-10-20T00:08:34+00:00",
+  "not_a_new_live_request": true,
+  "document": {
+    "schema_version": "1.0",
+    "director_version": "2.6.1-issues-sonic-contract-20261020",
+    "run_id": "run-eval-20261020-dfc8667c-c06-q-choice1",
+    "mode": "live",
+    "status": "ok",
+    "workflow_status": "ok",
+    "qloo_api_verified": true,
+    "brief": {
+      "id": "brief-run-eval-20261020-dfc8667c-c06-q-choice1",
+      "run_id": "run-eval-20261020-dfc8667c-c06-q-choice1",
+      "mode": "live",
+      "created_at": "2026-10-20T00:08:34+00:00",
+      "synopsis": "Un roman de désert, d’écologie et de pouvoir dispose déjà d’une courte liste de références publiques choisie par son éditeur. Comparer la sélection et expliquer les limites.",
+      "user_constraints": {
+        "accept_existing_choices": true
+      },
+      "decision_refs": [
+        "dec-run-eval-20261020-dfc8667c-c06-q-choice1-01-movie"
+      ],
+      "total_duration_seconds": 38,
+      "aspect_ratio": "16:9",
+      "completeness": "complete",
+      "verification": {
+        "deterministic_status": "pass",
+        "llm_status": "accept",
+        "unresolved_claims": []
+      },
+      "limitations": [
+        "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
+        "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
+      ],
+      "qloo_api_verified": true,
+      "shots": [
+        {
+          "id": "shot_01",
+          "purpose": "Ouvrir un mystère propre au synopsis",
+          "visual_prompt": "Dunes de sable doré sous un ciel brumeux, une structure géométrique isolée, lumière rasante créant des ombres longues et mystérieuses.",
+          "voiceover": "Dans ce désert, chaque grain de sable raconte une histoire de survie et de pouvoir.",
+          "sonic_direction": "Vent lointain, grondement sourd, silence pesant.",
+          "on_screen_text": "Le mystère du désert",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-eval-20261020-dfc8667c-c06-q-choice1-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie",
+              "item_pointer": "/results/0"
+            }
+          ],
+          "retained_entity_refs": [
+            "C7EC4CA9-1CCC-4991-B738-55F075441B3F"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_02",
+          "purpose": "Faire évoluer une trace matérielle",
+          "visual_prompt": "Gros plan sur une carte érodée par le vent, des symboles anciens apparaissent, texture du papier usé, détails précis.",
+          "voiceover": "Les traces matérielles révèlent les limites de notre compréhension du monde.",
+          "sonic_direction": "Frottement du papier, craquement léger, écho discret.",
+          "on_screen_text": "Traces et mémoire",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-eval-20261020-dfc8667c-c06-q-choice1-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie",
+              "item_pointer": "/results/0"
+            }
+          ],
+          "retained_entity_refs": [
+            "C7EC4CA9-1CCC-4991-B738-55F075441B3F"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_03",
+          "purpose": "Créer un basculement émotionnel",
+          "visual_prompt": "Intérieur sombre, une silhouette face à une fenêtre, lumière bleutée, reflets sur le verre, atmosphère mélancolique.",
+          "voiceover": "Le basculement émotionnel vient de la confrontation avec la réalité.",
+          "sonic_direction": "Respiration lente, battement de cœur, silence intérieur.",
+          "on_screen_text": "Basculement",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-eval-20261020-dfc8667c-c06-q-choice1-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie",
+              "item_pointer": "/results/1"
+            }
+          ],
+          "retained_entity_refs": [
+            "3A02361C-987B-4F7E-9AAD-071C3853AD92"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_04",
+          "purpose": "Conclure par une invitation à lire",
+          "visual_prompt": "Livre ouvert sur une table, pages blanches, lumière douce, invitation à la réflexion, composition épurée.",
+          "voiceover": "Lisez, explorez, et découvrez les limites de la curation éditoriale.",
+          "sonic_direction": "Page qui se tourne, silence apaisé, note douce.",
+          "on_screen_text": "Lisez et explorez",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [],
+          "evidence_refs": [],
+          "retained_entity_refs": [],
+          "line_status": "active",
+          "interpretation_labels": [
+            "user_constraint",
+            "editorial_inference"
+          ]
+        }
+      ]
+    },
+    "directions": [
+      {
+        "direction_id": "editorial_direction_1",
+        "title": "Écologie et pouvoir",
+        "angle": "Explorer la tension entre survie environnementale et dynamiques de gouvernance dans un désert hostile.",
+        "origin": "editorial_inference"
+      },
+      {
+        "direction_id": "editorial_direction_2",
+        "title": "Curation éditoriale",
+        "angle": "Analyser les limites de la sélection de références publiques pour un roman d'écologie et de pouvoir.",
+        "origin": "editorial_inference"
+      }
+    ],
+    "decisions": [
+      {
+        "id": "dec-run-eval-20261020-dfc8667c-c06-q-choice1-01-movie",
+        "action": "select_movie_references",
+        "claim_origin": "qloo_result",
+        "status": "supported",
+        "selected_entity_ids": [
+          "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+          "3A02361C-987B-4F7E-9AAD-071C3853AD92"
+        ],
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie",
+            "item_pointer": "/results/0"
+          },
+          {
+            "evidence_id": "ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie",
+            "item_pointer": "/results/1"
+          }
+        ],
+        "rule_version": "det-select-v1.4",
+        "rationale": "Ranked same-type (urn:entity:movie) shortlist via `qloo_rank` (ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie): 2 retenu(s), 1 écarté(s), 0 non évaluable(s).",
+        "limitations": [
+          "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution."
+        ],
+        "candidates": [
+          {
+            "name": "Arrival",
+            "entity_id": "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 0,
+            "is_tie": false,
+            "qualification_state": "retenu",
+            "score_field": null,
+            "score_value": null
+          },
+          {
+            "name": "Blade Runner 2049",
+            "entity_id": "3A02361C-987B-4F7E-9AAD-071C3853AD92",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 1,
+            "is_tie": false,
+            "qualification_state": "retenu",
+            "score_field": null,
+            "score_value": null
+          },
+          {
+            "name": "Solaris",
+            "entity_id": "D2243411-C04C-4134-88C6-578B3F0A6116",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 2,
+            "is_tie": false,
+            "qualification_state": "écarté",
+            "score_field": null,
+            "score_value": null
+          }
+        ]
+      }
+    ],
+    "candidate_resolution": {
+      "gate_status": "ok",
+      "resolved_groups": [
+        {
+          "query": "Dune (book)",
+          "status": "confirmed",
+          "ambiguous": true,
+          "synthetic_title_declared": false,
+          "selected_entity_id": "9BA85467-2189-46DC-BB98-4B25EE182A9D",
+          "choice_origin": "explicit_confirmation",
+          "candidates": [
+            {
+              "name": "Dune (Dune, #1)",
+              "entity_id": "9BA85467-2189-46DC-BB98-4B25EE182A9D",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "Paul Atreides, heir to House Atreides, becomes a leader on the desert planet Arrakis, where he battles for control of the spice melange."
+            },
+            {
+              "name": "Dune Messiah (Dune #2)",
+              "entity_id": "4C8CC32D-2453-41E2-BEC2-B216D03BB280",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "Paul Atreides faces political and personal challenges as Emperor."
+            },
+            {
+              "name": "Everything, Everything",
+              "entity_id": "571CCD85-4660-4FCA-A316-F62F9E969925",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "An isolated girl with SCID falls in love with her neighbor and discovers her illness might not be real."
+            },
+            {
+              "name": "House Corrino (Prelude to Dune, #3)",
+              "entity_id": "8B60CC11-281E-4872-9DB1-7F1327B37CEE",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "Duke Leto Atreides fights to reclaim Ix as Emperor Shaddam IV seeks to control spice production."
+            },
+            {
+              "name": "House Harkonnen (Prelude to Dune, #2)",
+              "entity_id": "39F44CE7-7F4E-42F1-8D1E-E2B622F16A2E",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "Baron Harkonnen plots against the Emperor and House Atreides, while Leto faces critical choices."
+            }
+          ]
+        }
+      ],
+      "confirmed_entity_ids": [
+        "9BA85467-2189-46DC-BB98-4B25EE182A9D"
+      ]
+    },
+    "clarification_questions": [
+      "Quels critères précis l'éditeur a-t-il utilisés pour sélectionner Dune comme référence unique ?",
+      "Quelles sont les limites spécifiques de cette sélection que vous souhaitez mettre en évidence ?"
+    ],
+    "run_budget": {
+      "qloo_network_attempt_limit": 8,
+      "qloo_network_attempts_used": 6,
+      "llm_call_limit": 3,
+      "llm_calls_used": 3,
+      "active_time_limit_ms": 120000,
+      "active_time_used_ms": 62051
+    },
+    "constraint_fidelity": {
+      "status": "pass",
+      "errors": [],
+      "scope": "duration_sum_aspect_screen_text_assets_and_explicit_forbidden_visuals; semantic_review_is_role3"
+    },
+    "evidence_sources": [
+      {
+        "id": "ev-run-eval-20261020-dfc8667c-c06-q-choice1-movie",
+        "mode": "live",
+        "tool": "qloo_rank",
+        "status": "ok",
+        "authentication_state": "authenticated",
+        "source_payload_sha256": "ecf0589d6beac51f3507a914e564b7cb651e85aeafdbf4817e4d896ba487a914",
+        "used_items": [
+          {
+            "item_pointer": "/results/0",
+            "entity_id": "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+            "returned_order": 0,
+            "score_field": null,
+            "score_value": null
+          },
+          {
+            "item_pointer": "/results/1",
+            "entity_id": "3A02361C-987B-4F7E-9AAD-071C3853AD92",
+            "returned_order": 1,
+            "score_field": null,
+            "score_value": null
+          },
+          {
+            "item_pointer": "/results/2",
+            "entity_id": "D2243411-C04C-4134-88C6-578B3F0A6116",
+            "returned_order": 2,
+            "score_field": null,
+            "score_value": null
+          }
+        ]
+      }
+    ],
+    "limitations": [
+      "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
+      "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
+    ]
+  }
+}

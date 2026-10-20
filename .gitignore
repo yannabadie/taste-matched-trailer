@@ -1,0 +1,8 @@
+**/var/
+**/bridge/runs/
+**/bridge/preparation/
+**/__pycache__/
+.env
+.env.*
+node_modules/
+*.log
