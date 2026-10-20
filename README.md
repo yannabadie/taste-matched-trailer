@@ -14,7 +14,7 @@ When coverage is complete, a native Hermes/Qwen analyst, writer and verifier pro
 
 See [EVALUATION_RESULTS.json](EVALUATION_RESULTS.json) and [PHYSICAL-COVERAGE-RECEPTION.json](PHYSICAL-COVERAGE-RECEPTION.json). The earlier 2.6.1 full qualifications are withdrawn, with original outcomes preserved historically: Qloo resolves Dune and Rebecca metadata but reports their IDs as `not_found` at the ranking endpoint. C01 and C02 therefore have partial coverage. C06 has no usable ranking signal and no affinity; input order must not be presented as a measured cultural ranking.
 
-The three incomplete-reference cases correctly make zero API/model calls. Ambiguous titles and the synthetic-title case require clarification. Version 2.6.2 was checked on the genuine archived HTTP responses, with no new inference during those regression checks. Historical artifacts under `evidence/` are expressly unqualified, not LIVE fallbacks. A separate clean-reference positive control is recorded in PUBLIC-BROWSER-RECEPTION.json after execution.
+The three incomplete-reference cases correctly make zero API/model calls. Ambiguous titles and the synthetic-title case require clarification. Version 2.6.2 was checked on the genuine archived HTTP responses, with no new inference during those regression checks. Historical artifacts under `evidence/` are expressly unqualified, not LIVE fallbacks. A separate clean-reference positive control is now qualified in [PUBLIC-BROWSER-RECEPTION.json](PUBLIC-BROWSER-RECEPTION.json): 7 HTTP 200 responses, no ignored seed, 3 finite affinities, 3 native role calls, 4 complete plans and verifier acceptance. The browser download equals the server public export. This is a new custom control, not a rewritten frozen case.
 
 ## Source and architecture
 

@@ -236,5 +236,29 @@
   },
   "qualification_revision": "Raw HTTP warnings override former harness/core success flags",
   "previous_full_qualifications_withdrawn": true,
-  "positive_control_2_6_2": "pending"
+  "positive_control_2_6_2": {
+    "status": "qualified_complete_positive_control",
+    "run_id": "run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
+    "input_kind": "custom positive control, not a rewritten frozen case",
+    "public_references": [
+      "The Turn of the Screw (book)"
+    ],
+    "physical_http": 7,
+    "physical_insights_warnings": [],
+    "finite_affinity_count": 3,
+    "native_calls": 3,
+    "complete_shots": 4,
+    "verification": {
+      "deterministic_status": "pass",
+      "llm_status": "accept",
+      "unresolved_claims": []
+    },
+    "download_matches_server_public_export": true
+  },
+  "total_including_both_public_checks": {
+    "physical_http": 57,
+    "native_qwen_calls": 17,
+    "unknown_outcomes": 0,
+    "native_coordination_not_included": true
+  }
 }

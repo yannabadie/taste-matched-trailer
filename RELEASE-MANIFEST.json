@@ -16,7 +16,11 @@
   },
   "initial_evaluation_plan": "preparation-v3",
   "corrective_plan": "preparation-v4",
-  "frontend_after_evaluation_delta": "Live-only mode declarations; external browser reception remains to run",
+  "frontend_after_evaluation_delta": "Single covered book default; coverage gate reasons visible; independent public2.6.2 smoke completed",
   "coverage_fix": "Preserve raw HTTP warnings; reject ignored seeds and rankings without measured affinity before native models",
-  "public_positive_control": "pending"
+  "public_positive_control": {
+    "status": "qualified",
+    "run_id": "run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
+    "receipt": "PUBLIC-BROWSER-RECEPTION.json"
+  }
 }

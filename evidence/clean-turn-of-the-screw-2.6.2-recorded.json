@@ -1,0 +1,309 @@
+{
+  "kind": "recorded_export_of_clean_positive_control",
+  "captured_at": "2026-10-20T00:38:37+00:00",
+  "not_a_new_live_request": true,
+  "qualification": "complete_signal_coverage_and_finite_affinities_verified_from_raw_HTTP",
+  "document": {
+    "schema_version": "1.0",
+    "director_version": "2.6.2-measured-rank-http-warnings-20261020",
+    "run_id": "run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
+    "mode": "live",
+    "status": "ok",
+    "workflow_status": "ok",
+    "qloo_api_verified": true,
+    "brief": {
+      "id": "brief-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
+      "run_id": "run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
+      "mode": "live",
+      "created_at": "2026-10-20T00:38:37+00:00",
+      "synopsis": "A narrator doubts their perceptions and senses an unseen presence. Preserve the uncertainty without showing a creature. Create an intimate, tense trailer brief.",
+      "user_constraints": {
+        "aspect_ratio": "16:9",
+        "sound_off": false,
+        "no_visible_monster": true
+      },
+      "decision_refs": [
+        "dec-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-01-movie"
+      ],
+      "total_duration_seconds": 38,
+      "aspect_ratio": "16:9",
+      "completeness": "complete",
+      "verification": {
+        "deterministic_status": "pass",
+        "llm_status": "accept",
+        "unresolved_claims": []
+      },
+      "limitations": [
+        "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
+        "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
+      ],
+      "qloo_api_verified": true,
+      "shots": [
+        {
+          "id": "shot_01",
+          "purpose": "Ouvrir un mystère propre au synopsis",
+          "visual_prompt": "Gros plan sur une surface de miroir légèrement embuée. Des reflets distordus d'une pièce sombre apparaissent et disparaissent. La lumière est froide, bleutée, créant des ombres mouvantes sans source visible.",
+          "voiceover": "Je ne sais plus si c'est moi qui regarde, ou si c'est elle qui me regarde.",
+          "sonic_direction": "Bruit de respiration lente et profonde, accompagné d'un bourdonnement grave et soutenu qui monte progressivement en intensité.",
+          "on_screen_text": "La perception est-elle fiable ?",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie",
+              "item_pointer": "/results/0"
+            }
+          ],
+          "retained_entity_refs": [
+            "D2243411-C04C-4134-88C6-578B3F0A6116"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_02",
+          "purpose": "Faire évoluer une trace matérielle",
+          "visual_prompt": "Plan fixe sur une table en bois. Une tasse de café refroidit, la vapeur s'élevant en spirales irrégulières. Une ombre passe brièvement sur le mur derrière, sans objet correspondant. La texture du bois est très détaillée.",
+          "voiceover": "Chaque détail semble familier, et pourtant, quelque chose a changé.",
+          "sonic_direction": "Clics métalliques discrets, comme un mécanisme qui s'arrête, et un silence soudain qui accentue la tension.",
+          "on_screen_text": "Une trace qui ne devrait pas exister.",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie",
+              "item_pointer": "/results/0"
+            }
+          ],
+          "retained_entity_refs": [
+            "D2243411-C04C-4134-88C6-578B3F0A6116"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_03",
+          "purpose": "Créer un basculement émotionnel",
+          "visual_prompt": "Vue subjective à travers une vitre sale. Des gouttes d'eau coulent lentement, déformant la vue d'un couloir vide. La lumière change subitement, passant du jaune au blanc clinique, créant un effet de vertige visuel.",
+          "voiceover": "Le temps ne passe plus. Il s'accumule, comme une dette impayable.",
+          "sonic_direction": "Un battement de cœur qui s'accélère, mélangé à des chuchotements indistincts qui semblent venir de partout et de nulle part.",
+          "on_screen_text": "La mémoire est une prison.",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [
+            "dec-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-01-movie"
+          ],
+          "evidence_refs": [
+            {
+              "evidence_id": "ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie",
+              "item_pointer": "/results/1"
+            }
+          ],
+          "retained_entity_refs": [
+            "C7EC4CA9-1CCC-4991-B738-55F075441B3F"
+          ],
+          "line_status": "active",
+          "interpretation_labels": [
+            "qloo_result",
+            "user_constraint",
+            "editorial_inference"
+          ]
+        },
+        {
+          "id": "shot_04",
+          "purpose": "Conclure par une invitation à lire",
+          "visual_prompt": "Plan large d'une bibliothèque déserte. Les livres sont alignés avec une précision maniaque. Une seule page d'un livre ouvert flotte doucement dans l'air, sans vent. La lumière est douce, dorée, invitant à la réflexion.",
+          "voiceover": "Lisez entre les lignes. La vérité y est cachée, en attendant d'être trouvée.",
+          "sonic_direction": "Son de pages qui tournent doucement, suivi d'un accord de piano unique et résonnant qui s'estompe lentement.",
+          "on_screen_text": "Découvrez le mystère. Lisez maintenant.",
+          "duration_seconds": 9.5,
+          "aspect_ratio": "16:9",
+          "assets": [],
+          "decision_refs": [],
+          "evidence_refs": [],
+          "retained_entity_refs": [],
+          "line_status": "active",
+          "interpretation_labels": [
+            "user_constraint",
+            "editorial_inference"
+          ]
+        }
+      ]
+    },
+    "directions": [
+      {
+        "direction_id": "editorial_direction_1",
+        "title": "L'Écho Intérieur",
+        "angle": "Une exploration sensorielle de la paranoïa où le silence devient une présence tangible, inspirée par l'isolement psychologique de Solaris.",
+        "origin": "editorial_inference"
+      },
+      {
+        "direction_id": "editorial_direction_2",
+        "title": "La Fracture Temporelle",
+        "angle": "Un basculement émotionnel où la mémoire et la réalité se confondent, créant une tension intime sans confirmation visuelle, dans l'esprit d'Arrival.",
+        "origin": "editorial_inference"
+      }
+    ],
+    "decisions": [
+      {
+        "id": "dec-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-01-movie",
+        "action": "select_movie_references",
+        "claim_origin": "qloo_result",
+        "status": "supported",
+        "selected_entity_ids": [
+          "D2243411-C04C-4134-88C6-578B3F0A6116",
+          "C7EC4CA9-1CCC-4991-B738-55F075441B3F"
+        ],
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie",
+            "item_pointer": "/results/0"
+          },
+          {
+            "evidence_id": "ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie",
+            "item_pointer": "/results/1"
+          }
+        ],
+        "rule_version": "det-select-v1.5",
+        "rationale": "Ranked same-type (urn:entity:movie) shortlist via `qloo_rank` (ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie): 2 retenu(s), 1 écarté(s), 0 non évaluable(s).",
+        "limitations": [
+          "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution.",
+          "Qloo warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution."
+        ],
+        "candidates": [
+          {
+            "name": "Solaris",
+            "entity_id": "D2243411-C04C-4134-88C6-578B3F0A6116",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 0,
+            "is_tie": false,
+            "qualification_state": "retenu",
+            "score_field": "affinity",
+            "score_value": 0.8121439473485612
+          },
+          {
+            "name": "Arrival",
+            "entity_id": "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 1,
+            "is_tie": false,
+            "qualification_state": "retenu",
+            "score_field": "affinity",
+            "score_value": 0.7716091533203502
+          },
+          {
+            "name": "Blade Runner 2049",
+            "entity_id": "3A02361C-987B-4F7E-9AAD-071C3853AD92",
+            "entity_type": "urn:entity:movie",
+            "returned_order": 2,
+            "is_tie": false,
+            "qualification_state": "écarté",
+            "score_field": "affinity",
+            "score_value": 0.7344022616073991
+          }
+        ]
+      }
+    ],
+    "candidate_resolution": {
+      "gate_status": "ok",
+      "resolved_groups": [
+        {
+          "query": "The Turn of the Screw (book)",
+          "status": "confirmed",
+          "ambiguous": false,
+          "synthetic_title_declared": false,
+          "selected_entity_id": "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788",
+          "choice_origin": "typed_unique_match",
+          "candidates": [
+            {
+              "name": "The Turn of the Screw",
+              "entity_id": "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788",
+              "entity_type": "urn:entity:book",
+              "disambiguation": "A governess becomes convinced that the children in her care are haunted by ghosts at a remote estate."
+            }
+          ]
+        }
+      ],
+      "confirmed_entity_ids": [
+        "25BB0EA8-BEB2-4DCB-9365-FD5388DF3788"
+      ]
+    },
+    "clarification_questions": [
+      "Should the narrator's voiceover be the primary audio element, or is ambient sound preferred?",
+      "Are there specific locations or props from the source material that must be featured visually?",
+      "What is the intended duration of the trailer brief?"
+    ],
+    "gate_reasons": [],
+    "run_budget": {
+      "qloo_network_attempt_limit": 14,
+      "qloo_network_attempts_used": 7,
+      "llm_call_limit": 3,
+      "llm_calls_used": 3,
+      "active_time_limit_ms": 120000,
+      "active_time_used_ms": 87876
+    },
+    "constraint_fidelity": {
+      "status": "pass",
+      "errors": [],
+      "scope": "duration_sum_aspect_screen_text_assets_and_explicit_forbidden_visuals; semantic_review_is_role3"
+    },
+    "evidence_sources": [
+      {
+        "id": "ev-run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f-movie",
+        "mode": "live",
+        "tool": "qloo_rank",
+        "status": "ok",
+        "authentication_state": "authenticated",
+        "source_payload_sha256": "4aee3c8045e0de5840449141e2533bc4ae876b6568e2aef28afc83764f70ffbf",
+        "used_items": [
+          {
+            "item_pointer": "/results/0",
+            "entity_id": "D2243411-C04C-4134-88C6-578B3F0A6116",
+            "returned_order": 0,
+            "score_field": "affinity",
+            "score_value": 0.8121439473485612
+          },
+          {
+            "item_pointer": "/results/1",
+            "entity_id": "C7EC4CA9-1CCC-4991-B738-55F075441B3F",
+            "returned_order": 1,
+            "score_field": "affinity",
+            "score_value": 0.7716091533203502
+          },
+          {
+            "item_pointer": "/results/2",
+            "entity_id": "3A02361C-987B-4F7E-9AAD-071C3853AD92",
+            "returned_order": 2,
+            "score_field": "affinity",
+            "score_value": 0.7344022616073991
+          }
+        ],
+        "limitations": [
+          "MCP warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution.",
+          "Qloo warning: Qloo selected the only candidate matching every supplied name and location term; reuse its Qloo ID to override future name resolution."
+        ]
+      }
+    ],
+    "limitations": [
+      "Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.",
+      "Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."
+    ]
+  }
+}
