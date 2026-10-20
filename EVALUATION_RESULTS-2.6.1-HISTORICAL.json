@@ -22,20 +22,8 @@
       "total_duration_seconds": 40,
       "verifier": "accept",
       "constraints": "pass",
-      "ranked_references": [
-        {
-          "name": "Solaris",
-          "affinity": 0.874902087852643
-        },
-        {
-          "name": "Arrival",
-          "affinity": 0.7951763947943529
-        },
-        {
-          "name": "Blade Runner 2049",
-          "affinity": 0.783513153057703
-        }
-      ]
+      "ranked_reference_count": 3,
+      "response_rows_retained_privately": true
     },
     {
       "case": "C02",
@@ -56,20 +44,8 @@
       "total_duration_seconds": 38.0,
       "verifier": "accept",
       "constraints": "pass",
-      "ranked_references": [
-        {
-          "name": "Solaris",
-          "affinity": 0.8121439473485612
-        },
-        {
-          "name": "Arrival",
-          "affinity": 0.7716091533203502
-        },
-        {
-          "name": "Blade Runner 2049",
-          "affinity": 0.7344022616073991
-        }
-      ]
+      "ranked_reference_count": 3,
+      "response_rows_retained_privately": true
     },
     {
       "case": "C03",
@@ -144,20 +120,8 @@
       "total_duration_seconds": 38.0,
       "verifier": "accept",
       "constraints": "pass",
-      "ranked_references": [
-        {
-          "name": "Arrival",
-          "affinity": null
-        },
-        {
-          "name": "Blade Runner 2049",
-          "affinity": null
-        },
-        {
-          "name": "Solaris",
-          "affinity": null
-        }
-      ]
+      "ranked_reference_count": 3,
+      "response_rows_retained_privately": true
     },
     {
       "case": "C07",
@@ -208,5 +172,6 @@
     "verifier": "accept",
     "download_matches_server_export": true,
     "receipt": "PUBLIC-BROWSER-RECEPTION.json"
-  }
+  },
+  "public_data_note": "API-derived response rows are retained only in the operator private cache. This public receipt preserves application outcomes, counts and qualification limits; it is not a response dataset. Original evaluation inputs are unchanged."
 }

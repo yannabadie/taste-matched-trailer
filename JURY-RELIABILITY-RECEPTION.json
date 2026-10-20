@@ -1,0 +1,52 @@
+{
+  "release": "2.6.2-jury-reliability-20261020",
+  "received_at": "2026-10-20T12:31:03.056200+00:00",
+  "status": "runtime_recovery_and_private_cache_received_public_browser_pending",
+  "source_sha256": {
+    "index.html": "8296efc99220579e039fad12dad0d477f3bf5cfdce572d10fca6abc8722ed98f",
+    "taste-matched-trailer/public_gateway.mjs": "ca75c5db0ee6140b683475540dd98649e363bad94620debe22be1dfcc9a439fa",
+    "taste-matched-trailer/cultural_launch_director.py": "ddaef071073444c2bc9510513ceca7e01585670b7b3f37f0e619dfedd06ed02c",
+    "runtime/qloo_runtime.py": "390572331b5a127fdb6bc9d7684b9f482b4b169c5fd794ec0a1d24e3b8713fe2",
+    "runtime/publish_pointer.py": "fbc766c8bde7aa652e7c5a20ddc2cbb773982631266e195991c1fd02cd56f9c9"
+  },
+  "verified_behaviour": [
+    "Dedicated user service restarts its gateway and conservatively reconciles dead locks",
+    "Supervisor adopts owned backend/gateway/tunnel without duplicates",
+    "Live admission can be paused before allocation",
+    "Two fixed private-cache GETs work while backend is unavailable",
+    "Read-only cache GETs do not invoke Qloo or a model or change the persistent job ledger",
+    "Known browser jobs resume by GET at their original origin; unknown submission outcomes block duplicates"
+  ],
+  "actual_system_tests": {
+    "gateway_crash_and_recovery": true,
+    "supervisor_adoption": true,
+    "private_cache_with_backend_unavailable": true,
+    "original_job_ledger_bytes_unchanged": true,
+    "new_qloo_calls": 0,
+    "new_model_calls": 0
+  },
+  "frozen_evaluation_inputs_sha256": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
+  "response_data_policy": {
+    "storage": "private local Mac cache only",
+    "authentic_response_caches_removed_from_current_public_checkout": 4,
+    "mixed_receipts_response_rows_redacted": 3,
+    "private_originals_preserved": true,
+    "git_history_rewritten": false,
+    "sites_data_uploads": 0
+  },
+  "public_pool_at_runtime_reception": {
+    "families_reserved": 2,
+    "families_limit": 10,
+    "physical_requests_consumed": 17,
+    "model_calls_consumed": 6,
+    "automatic_refill": false
+  },
+  "limits": [
+    "The Mac/network/user login remain required; no uptime guarantee through judging",
+    "Local guard health does not guarantee a future model slot",
+    "Quota limits are finite; no claim of unlimited API access",
+    "No new end-to-end API/model qualification is claimed by restart or health checks",
+    "The 20 October recorded positive control does not qualify all eight frozen cases",
+    "The older global Hermes memory closure remains separate"
+  ]
+}

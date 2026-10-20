@@ -6,3 +6,7 @@
 .env.*
 node_modules/
 *.log
+# Authentic Qloo response caches stay in the operator's private local storage.
+**/evidence/*-recorded.json
+**/evidence/recorded-demo-manifest.json
+**/recorded-cache/

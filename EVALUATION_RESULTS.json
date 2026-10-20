@@ -21,20 +21,6 @@
       "total_duration_seconds": 40,
       "verifier": "accept",
       "constraints": "pass",
-      "ranked_references": [
-        {
-          "name": "Solaris",
-          "affinity": 0.874902087852643
-        },
-        {
-          "name": "Arrival",
-          "affinity": 0.7951763947943529
-        },
-        {
-          "name": "Blade Runner 2049",
-          "affinity": 0.783513153057703
-        }
-      ],
       "previous_qualification": {
         "status": "ok",
         "api_verified": true,
@@ -43,7 +29,9 @@
       "coverage_reason": "Dune not recognized by ranking",
       "current_policy": "No model generation, selection or qualified export after this warning",
       "correction_validation": "Offline replay of the genuine physical responses under2.6.2; no new API call",
-      "complete_shots_historical": 4
+      "complete_shots_historical": 4,
+      "ranked_reference_count": 3,
+      "response_rows_retained_privately": true
     },
     {
       "case": "C02",
@@ -63,20 +51,6 @@
       "total_duration_seconds": 38.0,
       "verifier": "accept",
       "constraints": "pass",
-      "ranked_references": [
-        {
-          "name": "Solaris",
-          "affinity": 0.8121439473485612
-        },
-        {
-          "name": "Arrival",
-          "affinity": 0.7716091533203502
-        },
-        {
-          "name": "Blade Runner 2049",
-          "affinity": 0.7344022616073991
-        }
-      ],
       "previous_qualification": {
         "status": "ok",
         "api_verified": true,
@@ -85,7 +59,9 @@
       "coverage_reason": "Rebecca not recognized by ranking",
       "current_policy": "No model generation, selection or qualified export after this warning",
       "correction_validation": "Offline replay of the genuine physical responses under2.6.2; no new API call",
-      "complete_shots_historical": 4
+      "complete_shots_historical": 4,
+      "ranked_reference_count": 3,
+      "response_rows_retained_privately": true
     },
     {
       "case": "C03",
@@ -159,20 +135,6 @@
       "total_duration_seconds": 38.0,
       "verifier": "accept",
       "constraints": "pass",
-      "ranked_references": [
-        {
-          "name": "Arrival",
-          "affinity": null
-        },
-        {
-          "name": "Blade Runner 2049",
-          "affinity": null
-        },
-        {
-          "name": "Solaris",
-          "affinity": null
-        }
-      ],
       "previous_qualification": {
         "status": "ok",
         "api_verified": true,
@@ -181,7 +143,9 @@
       "coverage_reason": "Dune not recognized by ranking",
       "current_policy": "No model generation, selection or qualified export after this warning",
       "correction_validation": "Offline replay of the genuine physical responses under2.6.2; no new API call",
-      "complete_shots_historical": 4
+      "complete_shots_historical": 4,
+      "ranked_reference_count": 3,
+      "response_rows_retained_privately": true
     },
     {
       "case": "C07",
@@ -260,5 +224,6 @@
     "native_qwen_calls": 17,
     "unknown_outcomes": 0,
     "native_coordination_not_included": true
-  }
+  },
+  "public_data_note": "API-derived response rows are retained only in the operator private cache. This public receipt preserves application outcomes, counts and qualification limits; it is not a response dataset. Original evaluation inputs are unchanged."
 }

@@ -6,7 +6,15 @@ import http from "node:http";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
 
-export const GATEWAY_VERSION = "1.0.2-core-2.6.2-20261020";
+export const GATEWAY_VERSION = "1.1.1-private-recording-20261020";
+export const RECORDED_CAPTURE = Object.freeze({
+  runId: "run-public-c481ae42-e8d6-4e74-bdb0-98618000cd8f",
+  capturedAt: "2026-10-20T00:38:37+00:00", expiresAt: "2026-11-17T04:45:00Z",
+  manifest: "recorded-demo-manifest.json",
+  manifestSha256: "e765221e2a1d302b977ac3aa7eb9eba2ea1f052bc49fec848dbfab40142fabfa",
+  archive: "clean-turn-of-the-screw-2.6.2-recorded.json",
+  archiveSha256: "b6b948a1abbf0268aee715f78a87cff47b0080c85d4b251886192c4fd511d58c",
+});
 export const POLICY = Object.freeze({ families: 10, physical: 140, models: 30,
   familyPhysical: 14, familyModels: 3, activeMs: 120000, queued: 4, perIpHour: 4 });
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -25,6 +33,45 @@ const canonical = value => JSON.stringify(value, (_key, item) => item && !Array.
   ? Object.fromEntries(Object.keys(item).sort().map(key => [key, item[key]])) : item);
 const hash = value => crypto.createHash("sha256").update(value).digest("hex");
 const fail = (status, code) => Object.assign(new Error(code), { status, code });
+
+/** Only a private regular file with a demonstrably dead owner may be archived.
+ * The recovery mutex prevents two contenders from moving a new owner's lock. A
+ * corrupt file, EPERM, live PID or abandoned recovery mutex requires owner review. */
+export function acquireGatewayLock(lockPath) {
+  const owner = crypto.randomUUID();
+  const write = () => {
+    const fd = fs.openSync(lockPath, "wx", 0o600);
+    try { fs.writeFileSync(fd, JSON.stringify({ pid: process.pid, owner, created_at: new Date().toISOString() })); fs.fsyncSync(fd); }
+    finally { fs.closeSync(fd); }
+  };
+  try { write(); }
+  catch (error) {
+    if (error.code !== "EEXIST") throw error;
+    const recoveryPath = `${lockPath}.recovery`;
+    const recovery = fs.openSync(recoveryPath, "wx", 0o600);
+    try {
+      fs.writeFileSync(recovery, JSON.stringify({ pid: process.pid, owner }));
+      const stat = fs.lstatSync(lockPath);
+      if (!stat.isFile() || stat.nlink !== 1 || stat.uid !== process.getuid() || (stat.mode & 0o077)) throw new Error("LOCK_OWNERSHIP_UNCERTAIN");
+      const bytes = fs.readFileSync(lockPath);
+      const previous = JSON.parse(bytes);
+      if (!Number.isSafeInteger(previous.pid) || previous.pid < 2 || typeof previous.owner !== "string") throw new Error("LOCK_IDENTITY_UNCERTAIN");
+      let dead = false;
+      try { process.kill(previous.pid, 0); }
+      catch (cause) { if (cause.code === "ESRCH") dead = true; else throw cause; }
+      if (!dead) throw new Error("LOCK_OWNER_ALIVE");
+      const current = fs.lstatSync(lockPath);
+      if (current.ino !== stat.ino || current.dev !== stat.dev || !fs.readFileSync(lockPath).equals(bytes)) throw new Error("LOCK_CHANGED_DURING_RECOVERY");
+      fs.renameSync(lockPath, `${lockPath}.stale-${Date.now()}-${owner}`);
+      // Never overwrite a concurrent winner, and never loop back to archive it.
+      write();
+    } finally {
+      fs.closeSync(recovery);
+      try { if (JSON.parse(fs.readFileSync(recoveryPath, "utf8")).owner === owner) fs.unlinkSync(recoveryPath); } catch {}
+    }
+  }
+  return () => { try { if (JSON.parse(fs.readFileSync(lockPath, "utf8")).owner === owner) fs.unlinkSync(lockPath); } catch {} };
+}
 const boundedText = (value, max) => {
   if (typeof value !== "string" || value.length > max || /\bsk-[A-Za-z0-9_-]{12,}|Authorization\s*:\s*Bearer|X-Api-Key\s*[:=]/i.test(value)) throw fail(400, "PUBLIC_INPUT_INVALID");
   return value;
@@ -111,21 +158,51 @@ function publicProjection(raw) {
   return projected;
 }
 
+/** Two pinned files only. No filenames/paths are ever taken from an HTTP request. */
+function readRecordedPair(directory, now) {
+  if (now() >= Date.parse(RECORDED_CAPTURE.expiresAt)) throw fail(410, "RECORDED_CAPTURE_EXPIRED");
+  if (!directory) throw fail(503, "RECORDED_CAPTURE_UNAVAILABLE");
+  try {
+    const folder = fs.lstatSync(directory);
+    if (!folder.isDirectory() || folder.uid !== process.getuid() || (folder.mode & 0o077)) throw new Error("PRIVATE_DIRECTORY_REQUIRED");
+    const load = (name, expected) => {
+      const file = path.join(directory, name);
+      const stat = fs.lstatSync(file);
+      if (!stat.isFile() || stat.nlink !== 1 || stat.uid !== process.getuid() || (stat.mode & 0o077) || stat.size > 131072) throw new Error("PRIVATE_FILE_REQUIRED");
+      const bytes = fs.readFileSync(file);
+      if (hash(bytes) !== expected) throw new Error("CAPTURE_HASH_MISMATCH");
+      return { bytes, document: JSON.parse(bytes.toString("utf8")) };
+    };
+    const manifest = load(RECORDED_CAPTURE.manifest, RECORDED_CAPTURE.manifestSha256);
+    const archive = load(RECORDED_CAPTURE.archive, RECORDED_CAPTURE.archiveSha256);
+    const info = manifest.document;
+    const saved = archive.document;
+    if (info.original_run_id !== RECORDED_CAPTURE.runId || info.kind !== "single_recorded_demonstration" ||
+        info.display_mode !== "recorded_live" || info.captured_at !== RECORDED_CAPTURE.capturedAt ||
+        info.archive?.sha256 !== RECORDED_CAPTURE.archiveSha256 || info.archive?.file !== RECORDED_CAPTURE.archive ||
+        info.archive?.bytes !== archive.bytes.length || saved.kind !== "recorded_export_of_clean_positive_control" ||
+        saved.not_a_new_live_request !== true || saved.captured_at !== RECORDED_CAPTURE.capturedAt ||
+        saved.document?.run_id !== RECORDED_CAPTURE.runId || canonical(publicProjection(saved.document)) !== canonical(saved.document)) throw new Error("CAPTURE_PROVENANCE_INVALID");
+    if (Date.parse(RECORDED_CAPTURE.capturedAt) > now()) throw new Error("CAPTURE_DATE_IN_FUTURE");
+    return { manifest: manifest.bytes, archive: archive.bytes };
+  } catch { throw fail(503, "RECORDED_CAPTURE_UNAVAILABLE_OR_INVALID"); }
+}
+
 /** No listener is opened here. Tests inject internalPost; production only calls a loopback backend. */
 export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirectory, trustedProxy = null,
-    now = Date.now, internalPost = null, autoStart = true } = {}) {
+    now = Date.now, internalPost = null, internalReady = null, admissionFile = null, recordedDirectory = null, autoStart = true } = {}) {
   if (allowedOrigin !== PAGE_ORIGIN) throw new Error("Exact received Pages origin required");
   const endpoint = new URL(backendOrigin || "invalid:");
   if (endpoint.protocol !== "http:" || endpoint.hostname !== "127.0.0.1" || endpoint.username || endpoint.password || endpoint.pathname !== "/" || endpoint.search || endpoint.hash) throw new Error("Loopback backend origin required");
   if (!path.isAbsolute(stateDirectory || "")) throw new Error("Private absolute state directory required");
   if (trustedProxy !== null && !["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(trustedProxy)) throw new Error("Only an explicitly trusted loopback proxy is supported");
+  if (admissionFile !== null && !path.isAbsolute(admissionFile)) throw new Error("Absolute private admission file required");
+  if (recordedDirectory !== null && !path.isAbsolute(recordedDirectory)) throw new Error("Absolute private recording directory required");
   fs.mkdirSync(stateDirectory, { recursive: true, mode: 0o700 });
   const lockPath = path.join(stateDirectory, "gateway.lock");
   const statePath = path.join(stateDirectory, "jobs.json");
   const owner = crypto.randomUUID();
-  const lockFd = fs.openSync(lockPath, "wx", 0o600);
-  fs.writeFileSync(lockFd, JSON.stringify({ pid: process.pid, owner })); fs.closeSync(lockFd);
-  const release = () => { try { if (JSON.parse(fs.readFileSync(lockPath, "utf8")).owner === owner) fs.unlinkSync(lockPath); } catch {} };
+  const release = acquireGatewayLock(lockPath);
   const policyHash = publicPolicyHash();
   let state;
   try {
@@ -167,6 +244,25 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
       return JSON.parse(text);
     } finally { clearTimeout(timeout); }
   });
+  const admissionOpen = () => {
+    if (!admissionFile) return true;
+    try {
+      const lease = JSON.parse(fs.readFileSync(admissionFile, "utf8"));
+      return lease.schema_version === 1 && lease.accepting === true && Number.isFinite(Date.parse(lease.expires_at)) && Date.parse(lease.expires_at) > now();
+    } catch { return false; }
+  };
+  const backendReady = internalReady || (internalPost ? async () => true : async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    try {
+      const response = await fetch(new URL("/api/health", endpoint), { redirect: "error", signal: controller.signal });
+      const text = await response.text();
+      if (!response.ok || Buffer.byteLength(text) > 65536) return false;
+      const health = JSON.parse(text);
+      return health.status === "ok" && health.qloo_key_present_on_server === true && health.llm_route_configured === "guarded_qwen_18080";
+    } catch { return false; }
+    finally { clearTimeout(timeout); }
+  });
   let pumping = false;
   let pumpPromise = Promise.resolve();
   let closed = false;
@@ -179,6 +275,13 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
           if (closed || state.halted) break;
           const job = Object.values(state.jobs).find(value => value.status === "queued");
           if (!job) break;
+          if (!admissionOpen() || !await backendReady() || !admissionOpen()) {
+            job.status = "failed";
+            job.error = { code: "BACKEND_UNAVAILABLE_BEFORE_DISPATCH", message: "The backend is unavailable. No execution was dispatched; no automatic retry." };
+            job.finished_at = new Date(now()).toISOString();
+            if (job.family_id) state.families[job.family_id].pending_job = null;
+            persist(); continue;
+          }
           job.status = "running"; job.dispatched_at = new Date(now()).toISOString(); persist();
           try {
             const raw = await post(job.route, job.request);
@@ -330,6 +433,14 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
     return reply(job);
   };
 
+  // Readiness is tested before irreversible admission, and again before POST.
+  // A failed check never allocates a family or changes the global unknown fence.
+  const admit = async (body, context) => {
+    if (context?.origin !== allowedOrigin) throw fail(403, "ORIGIN_REFUSED");
+    if (!admissionOpen() || !await backendReady() || !admissionOpen()) throw fail(503, "DEMO_TEMPORARILY_UNAVAILABLE");
+    return submit(body, context);
+  };
+
   const handle = async (req, res) => {
     const origin = req.headers.origin;
     const send = (code, value) => {
@@ -338,12 +449,26 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
       res.end(JSON.stringify(value));
     };
     try {
+      const route = new URL(req.url || "/", "http://gateway.invalid").pathname;
+      if (req.method === "GET" && route === "/api/health" && (origin === undefined || origin === allowedOrigin)) {
+        send(200, { status: "ok", gateway_version: GATEWAY_VERSION, admission_open: admissionOpen() && !state.halted && !closed,
+          reconciliation_required: Boolean(state.halted), running: Object.values(state.jobs).filter(job => job.status === "running").length,
+          remaining_families: POLICY.families - state.reserved.families, qloo_calls_on_health: 0, model_calls_on_health: 0,
+          end_to_end_verified_by_health: false }); return;
+      }
       if (origin !== allowedOrigin) throw fail(403, "ORIGIN_REFUSED");
       if (req.method === "OPTIONS") {
         res.writeHead(204, { "Access-Control-Allow-Origin": allowedOrigin, "Vary": "Origin",
           "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, Idempotency-Key" }); res.end(); return;
       }
-      const route = new URL(req.url || "/", "http://gateway.invalid").pathname;
+      if (req.method === "GET" && ["/api/director/recorded/manifest", "/api/director/recorded/archive"].includes(route)) {
+        const pair = readRecordedPair(recordedDirectory, now);
+        const bytes = route.endsWith("/manifest") ? pair.manifest : pair.archive;
+        res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff", "Access-Control-Allow-Origin": allowedOrigin, "Vary": "Origin",
+          "X-Recorded-Captured-At": RECORDED_CAPTURE.capturedAt, "X-Recorded-Expires-At": RECORDED_CAPTURE.expiresAt });
+        res.end(bytes); return;
+      }
       const match = route.match(/^\/api\/(?:director\/jobs|jobs)\/([0-9a-f-]{36})$/i);
       if (req.method === "GET" && match) {
         const job = state.jobs[match[1]];
@@ -363,11 +488,11 @@ export function createPublicGateway({ allowedOrigin, backendOrigin, stateDirecto
       const peer = req.socket.remoteAddress;
       const forwarded = req.headers["cf-connecting-ip"];
       const ip = trustedProxy && peer === trustedProxy && typeof forwarded === "string" && net.isIP(forwarded) ? forwarded : peer;
-      send(202, submit(body, { origin, ip, idempotencyKey: req.headers["idempotency-key"], removal: route.endsWith("remove-reference") }));
+      send(202, await admit(body, { origin, ip, idempotencyKey: req.headers["idempotency-key"], removal: route.endsWith("remove-reference") }));
     } catch (error) { send(error.status || 400, { error: { code: error.code || "INVALID_PUBLIC_REQUEST", message: "Request refused; no automatic retry." } }); }
   };
   if (autoStart && !state.halted) queueMicrotask(pump);
-  return { handle, submit, pump, getJob: id => state.jobs[id] ? reply(state.jobs[id]) : null,
+  return { handle, submit, admit, pump, getJob: id => state.jobs[id] ? reply(state.jobs[id]) : null,
     close: async () => { closed = true; await pumpPromise; process.removeListener("exit", release); release(); } };
 }
 
@@ -376,7 +501,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (Object.hasOwn(process.env, "QLOO_API_KEY")) throw new Error("Gateway must run without a Qloo credential");
   const gateway = createPublicGateway({ allowedOrigin: process.env.DIRECTOR_PUBLIC_ALLOWED_ORIGIN,
     backendOrigin: process.env.DIRECTOR_PUBLIC_BACKEND_ORIGIN, stateDirectory: process.env.DIRECTOR_PUBLIC_STATE_DIR,
-    trustedProxy: process.env.DIRECTOR_PUBLIC_TRUST_PROXY || null });
+    trustedProxy: process.env.DIRECTOR_PUBLIC_TRUST_PROXY || null,
+    admissionFile: process.env.DIRECTOR_PUBLIC_ADMISSION_FILE || null,
+    recordedDirectory: process.env.DIRECTOR_PUBLIC_RECORDED_DIR || path.resolve(process.env.DIRECTOR_PUBLIC_STATE_DIR, "../../jury-runtime-20261020/recorded-c481") });
   const server = http.createServer(gateway.handle);
   const port = Number(process.env.DIRECTOR_PUBLIC_PORT || 0);
   server.listen(port, "127.0.0.1", () => process.stdout.write(JSON.stringify({ event: "public_gateway_ready", version: GATEWAY_VERSION, port: server.address().port }) + "\n"));

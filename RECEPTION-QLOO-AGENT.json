@@ -1,13 +1,14 @@
 {
   "schema_version": 2,
+  "publication_note": "Historical 18 October receipt, not qualification of the current application. Operator-local paths are redacted in this public copy; original artifact hashes describe the historical private originals.",
   "generated_at": "2026-10-18T23:42:18+02:00",
   "review_refs_resolved": [
     "mc_6b2c9eb7d5f098100fc46e42 v2 & v3",
     "mc_8e3739cfd35118c7b805dd7e v1",
     "mc_3d487e730c3a183acb4c2d2b v1",
-    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/parallel/2026-10-18/qloo/PLAN-INTEGRATION.txt",
-    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/parallel/2026-10-18/qloo/validate_backend.py",
-    "/Users/yannabadie/Documents/ChatGPT/Voice Vrac/parallel/2026-10-18/qloo/validate_web.cjs"
+    "operator-private/2026-10-18/qloo/PLAN-INTEGRATION.txt",
+    "operator-private/2026-10-18/qloo/validate_backend.py",
+    "operator-private/2026-10-18/qloo/validate_web.cjs"
   ],
   "code_and_provenance_fixes": {
     "score_clamping_and_rank_fallback_removed": true,
@@ -32,37 +33,37 @@
   },
   "artifacts": {
     "taste_matched_trailer_agent.py": {
-      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/taste_matched_trailer_agent.py",
+      "path": "historical-source/taste_matched_trailer_agent.py",
       "bytes": 51763,
       "mtime_ns": 1792359264481765832,
       "sha256": "953533f5eaba07dfc02112987a531e3cc5eb8cc402bb0bba8616fb72fe2169ec"
     },
     "test_taste_matched_trailer_agent.py": {
-      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/test_taste_matched_trailer_agent.py",
+      "path": "historical-source/test_taste_matched_trailer_agent.py",
       "bytes": 18141,
       "mtime_ns": 1792359491776911562,
       "sha256": "342cf17b5dbee4a3fbd950a16d81333782d80848214dcd68c48e541b395fc0ed"
     },
     "index.html": {
-      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/index.html",
+      "path": "historical-source/index.html",
       "bytes": 50851,
       "mtime_ns": 1792359446338608944,
       "sha256": "de7c38c72760ef2dfde4683330e2942bbcc5e60907b03a51033738a97fb67269"
     },
     "README.md": {
-      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/README.md",
+      "path": "historical-source/README.md",
       "bytes": 4717,
       "mtime_ns": 1792318322959200409,
       "sha256": "cc46fdcea6be72701b39f5bd7aa19308417268713fac350284e2b29d6bccf5f1"
     },
     "test-results-qloo-agent.txt": {
-      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/test-results-qloo-agent.txt",
+      "path": "historical-source/test-results-qloo-agent.txt",
       "bytes": 1436,
       "mtime_ns": 1792359503022736590,
       "sha256": "e3e563f5d4d82a96179151befba5989a140db834cf38a2fc9068c294368187eb"
     },
     "brief-bronze-ltx25.json": {
-      "path": "/Users/yannabadie/Documents/code/agentique/production/devpost-qloo/taste-matched-trailer/brief-bronze-ltx25.json",
+      "path": "historical-source/brief-bronze-ltx25.json",
       "bytes": 7375,
       "mtime_ns": 1792359575134144664,
       "sha256": "6de4a7e57adfce191efd916c1cd2f9250e1dccea9d661057116cfa3a64be366b"
