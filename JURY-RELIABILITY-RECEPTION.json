@@ -1,7 +1,7 @@
 {
   "release": "2.6.3-jury-reliability-20261020",
-  "received_at": "2026-10-20T13:55:37.891003+00:00",
-  "status": "live_2_6_3_and_fixed_cache_received_browser_publication_pending",
+  "received_at": "2026-10-20T14:01:48.796583+00:00",
+  "status": "received_public_live_2_6_3_and_recorded_english_reading_aid",
   "source_sha256": {
     "index.html": "75544e425be55f2e71e2cc592d7a350346f6e19fc42975102b49ddd886cc1e7d",
     "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
@@ -132,7 +132,7 @@
     "new_native_calls": 0,
     "new_api_calls": 0,
     "explicit_new_request_distinct_from_clarification": true,
-    "publication_reception": "pending"
+    "publication_reception": "included_in_final_published_frontend; targeted synthetic controls only; no extra native run for button transition"
   },
   "recorded_example_2_6_3": {
     "original_run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -160,6 +160,31 @@
       "new_model_calls": 0,
       "gateway_only_reloaded": true,
       "source_pins_sha256": "eb24f24a95a46e6608dfce773de4b4484ead2104204e611dd78ede38ac820479"
-    }
+    },
+    "public_browser_reception": "passed; original bytes exact"
+  },
+  "final_browser_reception": {
+    "at": "2026-10-20T14:01:48.796583+00:00",
+    "public_url": "https://yannabadie.github.io/taste-matched-trailer/",
+    "source_commit": "c2e73aef1c2928f25652aa8aad5fd06b0db85c6e",
+    "pages_build_status": "built",
+    "pages_built_at": "2026-10-20T13:56:48Z",
+    "public_index_sha256": "75544e425be55f2e71e2cc592d7a350346f6e19fc42975102b49ddd886cc1e7d",
+    "public_index_bytes": 62686,
+    "recorded_mode_visible": true,
+    "original_execution_date_visible": true,
+    "english_editorial_translation_visible": true,
+    "original_french_expandable": true,
+    "four_complete_shots_visible": true,
+    "recorded_download_bytes": 11701,
+    "recorded_download_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d",
+    "recorded_download_equals_native_live_download": true,
+    "live_action_reenabled_after_ready_pointer": true,
+    "ready_pointer_revision": "runtime-9a07e5ffa19e42268f937bb687e6b131",
+    "ready_pointer_commit": "80ae7609e7b48e7f29f47355efdff112c7a991f2",
+    "screenshot_sha256": "b9823593f86da31e0872be928d347179c553c6b246f10720a970c6a5973b407a",
+    "no_new_analysis_in_this_browser_reception": true,
+    "new_qloo_calls": 0,
+    "new_model_calls": 0
   }
 }
