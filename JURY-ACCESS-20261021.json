@@ -11,8 +11,14 @@
   "validation": {
     "unchanged_candidate_prior_targeted_offline_checks": 11,
     "native_Sites_reader_visible": true,
-    "GitHub_cross_origin_browser_reception": "pending immediately after publication",
-    "new_Qloo_or_model_calls": 0
+    "GitHub_cross_origin_browser_reception": "received HTTP200 for both fixed GETs, no cookie or authorization/service token",
+    "new_Qloo_or_model_calls": 0,
+    "recorded_visible_with_live_config_blocked": true,
+    "temporary_browser_block_removed": true,
+    "exact_original_downloads_received": true,
+    "devpost_story_and_link_saved_and_reread": true,
+    "ledger_unchanged": true,
+    "received_at_utc": "2026-10-20T23:51:38.562464+00:00"
   },
   "limits": [
     "Dated recording, not a new live analysis",
