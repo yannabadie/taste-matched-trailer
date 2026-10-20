@@ -20,7 +20,7 @@ import time
 import urllib.request
 import uuid
 
-from publish_pointer import atomic_json, publish, DEADLINE
+from publish_pointer import atomic_json, publish, DEADLINE, pointer_expiry, pointer_needs_renewal, pointer_unexpired
 
 BASE = Path(__file__).resolve().parents[1]
 APP = BASE / "taste-matched-trailer"
@@ -189,9 +189,14 @@ def get_json(url, timeout=5):
         return json.load(response)
 
 
-def write_lease(accepting):
+def write_lease(accepting, valid_until=None):
+    instant = dt.datetime.now(dt.timezone.utc)
+    expires_at = instant + dt.timedelta(seconds=45)
+    if valid_until is not None:
+        expires_at = min(expires_at, valid_until)
+        accepting = bool(accepting) and instant < valid_until
     atomic_json(LEASE, {"schema_version": 1, "accepting": bool(accepting),
-                       "expires_at": (dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=45)).isoformat()})
+                       "expires_at": expires_at.isoformat()})
 
 
 def source_pins():
@@ -313,7 +318,6 @@ class Supervisor:
 
     def loop(self):
         self.adopt()
-        last_publish = 0
         while not STOP.is_set() and dt.datetime.now(dt.timezone.utc) < DEADLINE:
             healthy = True
             for role in ("backend", "gateway", "tunnel", "idle_sleep_guard"):
@@ -345,12 +349,11 @@ class Supervisor:
             ready = healthy and pins_ok and backend_health() and self.url is not None and not summary()["halted"]
             control = json.loads(CONTROL.read_text())
             declared = "ready" if ready and control.get("allow_live") else "offline"
-            if self.url and (self.pointer is None or self.pointer["api_base_url"] != self.url or self.pointer["runtime_status"] != declared or time.monotonic() - last_publish > 18 * 3600):
+            if self.url and (self.pointer is None or self.pointer["api_base_url"] != self.url or self.pointer["runtime_status"] != declared or pointer_needs_renewal(self.pointer, dt.datetime.now(dt.timezone.utc))):
                 if time.monotonic() >= self.next_start["publisher"]:
                     try:
                         result = publish(RUNTIME, self.url, declared, acquire_lock)
                         self.pointer = result["config"]
-                        last_publish = time.monotonic()
                         log("pointer_published", revision=self.pointer["revision"], status=declared, changed=result["changed"])
                     except Exception as error:
                         code = str(error) if re.fullmatch(r"[A-Z_:]+", str(error)) else type(error).__name__
@@ -360,11 +363,11 @@ class Supervisor:
                 self.pointer_checked = time.monotonic()
                 try:
                     visible = get_json(PAGE_CONFIG + "?revision=" + self.pointer["revision"])
-                    self.published_revision = visible.get("revision") if visible.get("api_base_url") == self.url else None
+                    self.published_revision = visible.get("revision") if visible.get("api_base_url") == self.url and pointer_unexpired(visible, dt.datetime.now(dt.timezone.utc)) else None
                 except Exception:
                     self.published_revision = None
-            allow = ready and control.get("allow_live") is True and self.pointer and self.published_revision == self.pointer.get("revision")
-            write_lease(allow)
+            allow = ready and control.get("allow_live") is True and self.pointer and self.published_revision == self.pointer.get("revision") and pointer_unexpired(self.pointer, dt.datetime.now(dt.timezone.utc))
+            write_lease(allow, pointer_expiry(self.pointer))
             self.save()
             STOP.wait(5)
         write_lease(False)

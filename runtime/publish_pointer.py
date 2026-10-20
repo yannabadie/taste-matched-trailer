@@ -13,6 +13,32 @@ CONFIG_PATH = "director-config.json"
 DEADLINE = dt.datetime.fromisoformat("2026-11-17T04:45:00+00:00")
 
 
+def pointer_expiry(config):
+    """Return a timezone-aware expiry within the runtime deadline, or None."""
+    value = config.get("expires_at") if isinstance(config, dict) else None
+    if not isinstance(value, str):
+        return None
+    try:
+        expiry = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if expiry.tzinfo is None or expiry.utcoffset() is None:
+            return None
+        expiry = expiry.astimezone(dt.timezone.utc)
+        return expiry if expiry <= DEADLINE else None
+    except (ValueError, OverflowError):
+        return None
+
+
+def pointer_needs_renewal(config, instant):
+    expiry = pointer_expiry(config)
+    # A deadline-capped pointer cannot be extended, even in its final six hours.
+    return expiry is None or (expiry < DEADLINE and expiry <= instant + dt.timedelta(hours=6))
+
+
+def pointer_unexpired(config, instant):
+    expiry = pointer_expiry(config)
+    return expiry is not None and instant < expiry
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -91,7 +117,7 @@ def publish(private_directory, api_base, runtime_status, acquire_lock):
         if instant >= DEADLINE:
             runtime_status = "offline"
         expiry = min(DEADLINE, instant + dt.timedelta(hours=24))
-        if current.get("api_base_url") == api_base and current.get("runtime_status") == runtime_status and current.get("release") == "2.6.3" and dt.datetime.fromisoformat(current.get("expires_at", "1970-01-01T00:00:00Z").replace("Z", "+00:00")) > instant + dt.timedelta(hours=6):
+        if current.get("api_base_url") == api_base and current.get("runtime_status") == runtime_status and current.get("release") == "2.6.3" and not pointer_needs_renewal(current, instant):
             return {"changed": False, "config": current, "config_sha256": digest(remote_bytes)}
         # Refuse unrelated local commits; only our one pending config commit may rebase.
         ahead = git(checkout, "rev-list", "--count", "origin/main..HEAD").decode().strip()

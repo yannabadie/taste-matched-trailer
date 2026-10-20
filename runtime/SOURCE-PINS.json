@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-20T13:54:07.504931+00:00",
+  "generated_at": "2026-10-20T21:15:28.520333+00:00",
   "release": "2.6.3",
-  "runtime": "1.1.2",
-  "scope": "same2.6.3 sources; fixed recorded example928 with unchanged original and attributed English reading aid",
+  "runtime": "1.1.3-pointer-expiry",
+  "scope": "Application 2.6.3 unchanged; runtime renews from pointer expiry and caps admission lease. Existing recorded capture retained.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
@@ -14,10 +14,10 @@
     "taste-matched-trailer/bridge/cpu_counter.py": "bcda630e2d17904b6969f9820efc7481858db5a8c6f266cd1e6291c2e0d737c7",
     "campagne-hackathon-2026-10-19/conception/CONTRATS.schema.json": "cd995049bd30e8f1c9f617df99780139dd8fa01c5d900553b48c93a545263408",
     "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
-    "runtime/qloo_runtime.py": "451f2c43fa6a3302667404a1b99d68917593fa4232fb348e6be0ab484c5a3ccb",
-    "runtime/publish_pointer.py": "c68b025faf2ae8a2e8b0baa23a35dda6210078c71956faae5b89f5a099e318d5"
+    "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
+    "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9"
   },
-  "previous_source_pins_sha256": "b4d242be02434a9a8b8a964f054ccba707341c86660a7ce8df7f2b5eff1aa378",
+  "previous_source_pins_sha256": "eb24f24a95a46e6608dfce773de4b4484ead2104204e611dd78ede38ac820479",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
   "recorded_capture": {
     "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -26,5 +26,15 @@
     "manifest_sha256": "612bda9a303ef4c9e435959d86db6d41ba0aaa6f00dc6e8313973324fd1d55d2",
     "archive_sha256": "2cb4293e46b7018b35c9bf96a10c4076301fd4428dc9d2e4fc74dc96361bfe9c",
     "original_export_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d"
+  },
+  "runtime_change": {
+    "reason": "Restart could delay renewal beyond public pointer expiry",
+    "patch_sha256": "02a2588048dadda2f4d94801582e14123fa299944f03e8c4770d235aae54ad93",
+    "offline_tests": {
+      "targeted": 6,
+      "failures": 0,
+      "errors": 0
+    },
+    "application_e2e_rerun": false
   }
 }

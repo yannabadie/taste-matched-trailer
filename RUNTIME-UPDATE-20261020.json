@@ -1,0 +1,34 @@
+{
+  "application_release": "2.6.3",
+  "runtime": "1.1.3-pointer-expiry",
+  "received_at_utc": "2026-10-20T21:17:08.379998+00:00",
+  "scope": "Runtime-only expiry correction; application engine and recorded positive control unchanged.",
+  "sha256": {
+    "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9",
+    "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
+    "runtime/SOURCE-PINS.json": "3540ba42ebcd7b1e5284004d554b04c929c69758e70a01e8d2f2df9892b6feb7"
+  },
+  "source_pins": "runtime/SOURCE-PINS.json",
+  "previous_source_pins_sha256": "eb24f24a95a46e6608dfce773de4b4484ead2104204e611dd78ede38ac820479",
+  "behavior": [
+    "Renew from actual expires_at at the six-hour threshold, including after a restart that returned changed=false.",
+    "Close admission for invalid or expired pointers; cap the 45-second lease at pointer expiration.",
+    "Do not periodically renew a pointer already capped at the final deadline."
+  ],
+  "validation": {
+    "targeted_pure_tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "real_controlled_restart": true,
+    "new_component_health_received": true,
+    "public_ready_reception": "pending at source publication; requires the matching public pointer revision",
+    "qloo_calls": 0,
+    "model_calls": 0,
+    "authoritative_budget_ledger_unchanged": true
+  },
+  "limits": [
+    "No future renewal, uptime or new end-to-end API run is claimed.",
+    "Mac, user session, network and provider availability remain required."
+  ],
+  "historical_manifest": "RELEASE-MANIFEST.json retains its original 2.6.2 snapshot; do not use it as the current runtime manifest."
+}
