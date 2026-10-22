@@ -53,6 +53,25 @@ currently available. Its execution date, version and provenance are retained.
 The Mac-cache wording in the preserved manifest describes the original capture;
 the current read path uses Sites. The original bytes have not been rewritten.
 
+## Follow a reference through the decision
+
+In the hosted recording, compare each candidate's returned position and finite
+affinity with the selected reference IDs. The selector follows the received
+order after eligibility checks; it does not reweight or locally sort the
+numerical affinity values.
+
+Then follow a selected ID into the individual shots. For a two-reference
+result, the first reference is bound to shots 1 and 2, the second to shot 3.
+Shot 4 is an editorial close with no Qloo reference. The exported document
+preserves the decision and evidence links, so the source of a reference can
+be distinguished from the writer's camera, sound and wording choices.
+
+This is the product's useful distinction: I can inspect why a reference was
+selected before deciding whether to use the creative interpretation. Finite
+affinities and returned order establish this data dependency; they do not
+establish that the resulting creative text is better than a model-only brief.
+Reading this chain in the recording makes no new Qloo request or model call.
+
 ## Try a new live analysis
 
 1. Use the default custom brief and **The Turn of the Screw (book)** as the
