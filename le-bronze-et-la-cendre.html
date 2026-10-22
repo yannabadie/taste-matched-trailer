@@ -12,21 +12,41 @@
   <meta property="og:site_name" content="Les Minutes Impossibles · Yann Abadie" />
   <meta property="og:url" content="https://yannabadie.github.io/taste-matched-trailer/le-bronze-et-la-cendre.html" />
   <meta property="og:title" content="Le Bronze et la Cendre — La Part des dieux, Livre I | Yann Abadie" />
-  <meta property="og:description" content="« On ne choisit pas ce qu’on laisse au passeur. » Découvrez le Book-Trailer officiel (40,58 s), téléchargez gratuitement le Chapitre 1 (EPUB) ou commandez l'édition numérique intégrale sans DRM (9,00 €)." />
-  <meta property="og:image" content="https://yannabadie.github.io/taste-matched-trailer/couverture-illustree-1600x2560.jpg" />
-  <meta property="og:image:width" content="1600" />
-  <meta property="og:image:height" content="2560" />
-  <meta property="og:video" content="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-v1-16x9.mp4" />
-  <meta property="og:video:secure_url" content="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-v1-16x9.mp4" />
+  <meta property="og:description" content="« On ne choisit pas ce qu’on laisse au passeur. » Découvrez le teaser vertical (15 s), téléchargez gratuitement le Chapitre 1 (EPUB) ou commandez l'édition numérique intégrale sans DRM (9,00 €)." />
+  <meta property="og:image" content="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-15s-20261022-poster.png" />
+  <meta property="og:image:width" content="1080" />
+  <meta property="og:image:height" content="1920" />
+  <meta property="og:video" content="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-15s-20261022.mp4" />
+  <meta property="og:video:secure_url" content="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-15s-20261022.mp4" />
   <meta property="og:video:type" content="video/mp4" />
-  <meta property="og:video:width" content="1024" />
-  <meta property="og:video:height" content="576" />
+  <meta property="og:video:width" content="1080" />
+  <meta property="og:video:height" content="1920" />
+
+  <meta property="og:image:alt" content="Teaser du roman : La guerre se paie en jours de vie. SF mythologique, Yann Abadie." />
 
   <!-- Twitter / X Cards -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Le Bronze et la Cendre — La Part des dieux, Livre I | Yann Abadie" />
-  <meta name="twitter:description" content="« On ne choisit pas ce qu’on laisse au passeur. » Découvrez le Book-Trailer officiel (40,58 s), le Chapitre 1 gratuit et l'édition directe EPUB 3 + PDF sans DRM." />
-  <meta name="twitter:image" content="https://yannabadie.github.io/taste-matched-trailer/couverture-illustree-1600x2560.jpg" />
+  <meta name="twitter:description" content="« On ne choisit pas ce qu’on laisse au passeur. » Découvrez le teaser vertical (15 s), le Chapitre 1 gratuit et l'édition directe EPUB 3 + PDF sans DRM." />
+  <meta name="twitter:image" content="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-15s-20261022-poster.png" />
+
+  <meta name="twitter:image:alt" content="Teaser du roman : La guerre se paie en jours de vie. SF mythologique, Yann Abadie." />
+
+  <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Le Bronze et la Cendre — Teaser de 15 secondes",
+    "description": "La guerre se paie en jours de vie. Et les dieux tiennent les comptes. Teaser du roman de SF mythologique de Yann Abadie.",
+    "duration": "PT15S",
+    "width": 1080,
+    "height": 1920,
+    "inLanguage": "fr",
+    "encodingFormat": "video/mp4",
+    "contentUrl": "https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-15s-20261022.mp4",
+    "thumbnailUrl": "https://yannabadie.github.io/taste-matched-trailer/assets/teaser-bronze-15s-20261022-poster.png"
+}
+  </script>
 
   <style>
     :root {
@@ -239,52 +259,57 @@
       margin-bottom: 18px;
     }
     .trailer-header h2 { margin-bottom: 0; }
-    .ratio-switch {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    .trailer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 330px) minmax(0, 1fr);
+      gap: 32px;
+      align-items: center;
     }
-    .ratio-btn {
-      background: var(--card-alt);
-      color: var(--muted);
+    .video-wrapper { min-width: 0; }
+    video#officialTrailer {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 9 / 16;
       border: 1px solid var(--gold-dim);
-      padding: 8px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
+      background: #04080b;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+    }
+    .trailer-hook {
+      font-family: Georgia, serif;
+      color: var(--ivory);
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      line-height: 1.25;
+      margin: 0 0 18px;
+    }
+    .trailer-genre, .trailer-caption {
       font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      color: var(--muted);
     }
-    .ratio-btn.active {
-      background: var(--gold);
-      color: #090d10;
-      border-color: var(--gold);
-    }
-    .video-wrapper {
+    .trailer-genre { margin: 0 0 12px; }
+    .trailer-caption { margin: 12px 0 0; }
+    .trailer-actions {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      background: #04080b;
-      border: 1px solid rgba(216, 185, 130, 0.22);
-      border-radius: 8px;
-      padding: 18px;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 24px;
     }
-    video#officialTrailer {
-      width: 100%;
-      max-width: 860px;
-      border-radius: 6px;
-      background: #000;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.8);
-      transition: max-width 0.25s ease;
-    }
-    video#officialTrailer.vertical {
-      max-width: 360px;
-    }
-    .trailer-caption {
-      margin-top: 14px;
-      font-size: 0.88rem;
+    .trailer-credits {
+      margin-top: 24px;
       color: var(--muted);
-      text-align: center;
+      font-size: 0.82rem;
+      overflow-wrap: anywhere;
+    }
+    .trailer-credits summary { cursor: pointer; color: var(--gold); }
+    .trailer-credits a { color: var(--gold); }
+    .trailer-credits p { margin: 10px 0; }
+    @media (max-width: 720px) {
+      .trailer-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+      .video-wrapper { width: 100%; max-width: 330px; margin: 0 auto; }
+      .trailer-actions { align-items: stretch; }
+      .trailer-actions a { text-align: center; }
     }
     .excerpt {
       font-family: Georgia, serif;
@@ -361,27 +386,44 @@
       </div>
     </div>
 
-    <!-- LECTEUR VIDÉO DU BOOK-TRAILER OFFICIEL (40,58 s) -->
-    <div class="section-card">
+    <!-- TEASER VERTICAL DE 15 SECONDES -->
+    <section class="section-card" aria-labelledby="trailer-title">
       <div class="trailer-header">
-        <h2>🎬 Book-Trailer Officiel (40,58 s)</h2>
-        <div class="ratio-switch">
-          <button id="btn16x9" class="ratio-btn active" type="button">Format 16:9 (Cinéma)</button>
-          <button id="btn9x16" class="ratio-btn" type="button">Format 9:16 (Mobile / BookTok)</button>
+        <h2 id="trailer-title">Le roman en 15 secondes</h2>
+      </div>
+      <div class="trailer-grid">
+        <div class="video-wrapper">
+          <video id="officialTrailer" controls preload="metadata" playsinline width="1080" height="1920"
+            poster="assets/teaser-bronze-15s-20261022-poster.png" aria-label="Teaser de 15 secondes du roman Le Bronze et la Cendre" aria-describedby="trailer-caption">
+            <source id="officialTrailerSource" src="assets/teaser-bronze-15s-20261022.mp4" type="video/mp4" />
+            Votre navigateur ne prend pas en charge la lecture vidéo HTML5.
+            <a href="assets/teaser-bronze-15s-20261022.mp4">Télécharger le teaser (MP4, 15 secondes)</a>.
+          </video>
+          <p id="trailer-caption" class="trailer-caption">15 secondes · Lecture avec le son à la demande.</p>
+        </div>
+        <div class="trailer-copy">
+          <p class="trailer-genre">SF mythologique · La Part des dieux, Livre I</p>
+          <h3 class="trailer-hook">La guerre se paie en jours de vie.<br />Et les dieux tiennent les comptes.</h3>
+          <p>« En 2287, on croyait les empires éteints. Il ne restait que le bronze… et la cendre. »</p>
+          <div class="trailer-actions">
+            <a class="btn-secondary" href="https://www.amazon.fr/dp/B0HNM8GWXT" target="_blank" rel="noopener">Voir l’édition Kindle sur Amazon.fr</a>
+            <a class="btn-secondary" href="Extrait_Le_Bronze_et_la_Cendre_Chapitre_1.epub" download>Lire gratuitement le Chapitre 1 (EPUB)</a>
+          </div>
+          <details class="trailer-credits">
+            <summary>Crédits du teaser</summary>
+            <p>Images générées localement avec LTX 2.5 ; nouveau montage et typographie.
+              Voix de titre synthétique Kyutai TTS : « Le Bronze et la Cendre. Un roman de Yann Abadie. »</p>
+            <p>Source de la voix française : CML-TTS, sélection <span lang="en">cml-tts/fr</span> de
+              <a href="https://huggingface.co/kyutai/tts-voices#cml-ttsfr" target="_blank" rel="noopener">Kyutai tts-voices</a>,
+              voix 10087_11650_000028-0002, sous licence
+              <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.
+              <a href="https://openslr.org/146/" target="_blank" rel="noopener">Corpus CML-TTS</a>.
+              Audio mixé et encodé, sans changer la vitesse ni la hauteur.</p>
+            <p><a href="assets/teaser-bronze-15s-20261022-credits.txt">Crédits complets de cette coupe</a></p>
+          </details>
         </div>
       </div>
-
-      <div class="video-wrapper">
-        <video id="officialTrailer" controls preload="metadata" playsinline>
-          <source id="officialTrailerSource" src="assets/teaser-bronze-v1-16x9.mp4" type="video/mp4" />
-          Votre navigateur ne prend pas en charge la lecture vidéo HTML5.
-        </video>
-        <div class="trailer-caption">
-          « En 2287, on croyait les empires éteints. Il ne restait que le bronze… et la cendre. »<br />
-          Réalisation Studio Les Minutes Impossibles (LTX-2.5 local &amp; voix française Kyutai TTS · 40,58 s · 24 im/s).
-        </div>
-      </div>
-    </div>
+    </section>
 
     <!-- QUATRIÈME DE COUVERTURE -->
     <div class="section-card">
@@ -433,29 +475,6 @@
     </div>
   </div>
 
-  <script>
-    const video = document.getElementById("officialTrailer");
-    const source = document.getElementById("officialTrailerSource");
-    const btn16x9 = document.getElementById("btn16x9");
-    const btn9x16 = document.getElementById("btn9x16");
 
-    btn16x9.addEventListener("click", () => {
-      btn16x9.classList.add("active");
-      btn9x16.classList.remove("active");
-      video.classList.remove("vertical");
-      video.removeAttribute("poster");
-      source.setAttribute("src", "assets/teaser-bronze-v1-16x9.mp4");
-      video.load();
-    });
-
-    btn9x16.addEventListener("click", () => {
-      btn9x16.classList.add("active");
-      btn16x9.classList.remove("active");
-      video.classList.add("vertical");
-      video.setAttribute("poster", "couverture-illustree-1600x2560.jpg");
-      source.setAttribute("src", "assets/teaser-bronze-v1.mp4");
-      video.load();
-    });
-  </script>
 </body>
 </html>

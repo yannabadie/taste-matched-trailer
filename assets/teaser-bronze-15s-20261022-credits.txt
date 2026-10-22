@@ -1,0 +1,22 @@
+LE BRONZE ET LA CENDRE — TEASER DE 15 SECONDES
+La Part des dieux, Livre I — un roman de Yann Abadie
+Genre : science-fiction mythologique.
+
+Coupe du 22 octobre 2026 : 15 secondes, 1080 × 1920, 24 images/seconde.
+Images générées localement avec LTX 2.5, réutilisées depuis les rendus existants.
+Nouveau montage et typographie. Aucun nouveau rendu de modèle pour cette coupe.
+
+Voix de titre synthétique Kyutai TTS, issue du rendu local existant :
+« Le Bronze et la Cendre. Un roman de Yann Abadie. »
+Source de la voix française : CML-TTS, sélection cml-tts/fr de Kyutai tts-voices,
+voix 10087_11650_000028-0002. Licence CC BY 4.0.
+Audio mixé et encodé, sans changer la vitesse ni la hauteur.
+https://huggingface.co/kyutai/tts-voices#cml-ttsfr
+https://openslr.org/146/
+https://creativecommons.org/licenses/by/4.0/
+
+Poster : cadre existant QA-01 du teaser, ouverture « La guerre se paie en jours de vie. »
+Repris sans génération ou modification d'image.
+
+Fichier vidéo : teaser-bronze-15s-20261022.mp4
+SHA-256 : ec9dc3b0cfbaccca973d6d365b5c9a34af8d7763cf6b44b5d8b80eae6fd7b37b
