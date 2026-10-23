@@ -74,6 +74,22 @@ Reading this chain in the recording makes no new Qloo request or model call.
 
 ## Make a local editorial choice first
 
+For a concrete delivery task, follow **Adapt this received result for sound-off
+viewing** and choose **Prepare a local sound-off adaptation**. For each plan,
+inspect the original narration, existing caption and proposed combined screen
+text. The comparison identifies missing spoken word sequences, not semantic
+comprehension. Correct the screen text of the relevant plan, then explicitly
+accept or reject the local draft. The original images and shot lengths are kept.
+Fixed timing and long captions remain visible as warnings, not silently retimed.
+
+Download the exact local decision. It has its own derived identity and payload
+hash, links the unchanged parent bytes/hash, records the exact caption and note,
+and distinguishes historical parent Qloo evidence, local structural checks and
+native derivative verification **not executed**. A free correction is author text
+with canon/spoilers and comprehension **not verified**. Editing the text or note
+requires another decision. The parent's native `sound_off` and original review
+are unchanged; this local goal does not submit another analysis.
+
 Once the recorded example or an accepted live result is visible, open **Choose
 an edit for your book**. Compare **Let the images lead** and **Let the words lead**:
 their full timelines use the source's actual images and words, with different

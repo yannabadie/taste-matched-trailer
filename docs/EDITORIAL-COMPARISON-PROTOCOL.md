@@ -44,6 +44,51 @@ The dated reader remains distinct from a new live analysis. Original creative
 words keep their received language; English editing instructions do not translate
 them. Neither a live result nor either edit is a rendered film.
 
+## One useful constraint: adapt the received brief for sound-off viewing
+
+The local sound-off tool is a separate task from choosing a cadence. It keeps
+the original shot timing and images, displays the original narration and captions,
+and identifies a spoken word sequence not reproduced on screen. This is a case-
+and punctuation-insensitive text comparison, not proof that the image fails to
+convey that information. The proposed screen text combines the received caption
+and missing narration; no new plot sentence is invented by the transfer.
+
+The author can correct a specific plan's screen text, then explicitly accept or
+reject the local adaptation. Free text is attributed as an unverified author
+correction. An edit to text or the decision note invalidates the previous local
+decision. The native parent's `user_constraints` and verdict remain unchanged.
+The local delivery constraint `sound_off: true` belongs only to the derivative.
+
+The derivative uses its own schema and `local-silent-<SHA256>` identity. Its hash
+covers canonical payload JSON including parent identity/hash, exact captions,
+decision, note, original timing, local checks and explicit verification limits.
+It attaches the exact original UTF-8 bytes and document separately. Native
+`verification`, `qloo_api_verified` and `constraint_fidelity` are not copied into
+the derivative. Historical Qloo reference links are labelled parent lineage.
+Native variant verification is `not_executed`; canon/spoilers are `not_verified`;
+understandability still requires author review, including for an accepted local
+decision with a favourable word-rate estimate.
+
+Fixed individual timing is kept and warned about. Long or missing text is shown
+as a constraint issue; missing text prevents acceptance but its rejected draft can
+still be exported. Parent changes, original-byte/hash mismatch, structural changes
+or concurrent edits fail before a new exact decision/export is delivered. The
+cadence preview continues to use the original words; corrected silent captions
+are inspected in their editor and separate derivative export.
+
+## Zero-family author task — NOT RUN
+
+Use the same historical parent and the same sound-off delivery goal for three
+anonymised documents: the original and the two local recompositions. Alternate
+presentation order and give every reader the same constraints and inspection
+time. Allow the original, either recomposition, a tie or none. Ask for one concrete
+passage motivating the decision, the main remaining defect and the exact local
+correction to keep in the sound-off export. Retain rejection for a canon/spoiler
+or visibility problem ahead of aesthetic preference. Stop expansion if the
+differences are decorative, need major rewriting or do not support a concrete
+decision. This tests written-brief usefulness, not video perception or audience.
+The historical original already uses Qloo; it is not a no-Qloo baseline.
+
 ## What is received without consuming the demonstration pool
 
 `node --test tests/test_editorial_workbench.mjs` exercises the delivered source,

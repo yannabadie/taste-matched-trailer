@@ -13,6 +13,16 @@ bindings remain inspectable. A silent adaptation can omit narration and reuse
 existing words as captions. The author can choose either proposal, a tie, or
 neither, then download a separate decision with the exact original UTF-8 export,
 source hash, timing estimates and note. An input change requires a new choice.
+The separate **Prepare a local sound-off adaptation** action addresses a delivery
+constraint on that received result. It shows spoken words not reproduced in the
+captions, proposes their transfer to screen text, and lets the author correct each
+plan before explicitly accepting or rejecting it. Original timing is kept, with
+warnings for fixed timing or long text. Its separate derivative ID/hash links the
+exact parent, exact correction and decision; the original UTF-8 export is attached.
+The native parent's sound constraint and verdict are not rewritten. Native
+verification of the derivative has not run; free author text is not checked for
+canon, spoilers or comprehension. Local word-rate checks do not establish those
+properties. Editing again invalidates the local decision.
 These are deterministic local recompositions of a received result, including a
 dated recording, not two new Qloo/Qwen generations or rendered trailers. The
 two cadences keep one scenario; distinct narrative angles remain an open product

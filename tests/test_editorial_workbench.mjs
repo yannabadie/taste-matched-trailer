@@ -6,7 +6,7 @@ import test from 'node:test';
 import {gardeningSource} from './editorial-fixture.mjs';
 
 const root=new URL('../',import.meta.url),core=fs.readFileSync(new URL('editorial-workbench.js',root),'utf8');
-const sandbox=vm.createContext({});vm.runInContext(core+';globalThis.work=EditorialWorkbench;',sandbox);const work=sandbox.work;
+const sandbox=vm.createContext({crypto:webcrypto,TextEncoder});vm.runInContext(core+';globalThis.work=EditorialWorkbench;',sandbox);const work=sandbox.work;
 const clone=x=>JSON.parse(JSON.stringify(x));
 const hash=x=>createHash('sha256').update(x).digest('hex');
 function build(source=gardeningSource()){return work.build(source,{source_sha256:hash(JSON.stringify(source)),display_kind:'fixture'});}
@@ -74,7 +74,7 @@ test('both delivered HTML copies contain exactly the tested core and parse witho
   for(const match of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
 });
 
-function browser({realTimers=false}={}){
+function browser({realTimers=false,inputSource=null}={}){
   const elements=new Map(),downloads=[],blobs=new Map();
   const element=id=>elements.get(id)||elements.set(id,{id,value:'',checked:false,hidden:false,disabled:false,innerHTML:'',textContent:'',className:'',addEventListener(){},appendChild(){}}).get(id);
   const document={getElementById:element,querySelector(){return document.selected || null;},addEventListener(){},body:{appendChild(){}},createElement(){return{remove(){},click(){downloads.push({filename:this.download,blob:blobs.get(this.href)});}};}};
@@ -83,8 +83,8 @@ function browser({realTimers=false}={}){
   const context=vm.createContext({document,window,crypto:webcrypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},setInterval:realTimers?setInterval:()=>1,clearInterval:realTimers?clearInterval:()=>{},performance:realTimers?performance:{now:()=>0},console});
   const html=fs.readFileSync(new URL('index.html',root),'utf8');let script=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   script=script.replace('loadPreset();restorePending();loadConfiguration();viewRecording();','');
-  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview};',context);
-  const source=gardeningSource(),raw=JSON.stringify(source);Object.assign(context.qa.state,{bundle:source,displayKind:'recorded',recording:{originalRaw:raw,manifest:{captured_at:'2026-10-20T13:41:27Z'}}});context.qa.state.snapshot=context.qa.snapshot();
+  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision};',context);
+  const source=inputSource || gardeningSource(),raw=JSON.stringify(source);Object.assign(context.qa.state,{bundle:source,displayKind:'recorded',recording:{originalRaw:raw,manifest:{captured_at:'2026-10-20T13:41:27Z'}}});context.qa.state.snapshot=context.qa.snapshot();
   return{qa:context.qa,document,element,downloads,raw};
 }
 test('real frontend choice downloads a separate dated recomposition; original bytes remain intact',async()=>{
@@ -124,4 +124,72 @@ test('actual wall-clock frontend callbacks show different image and text entries
     assert.ok(eventsA.some(e=>e.shot_id==='shot_01' && e.event==='voice_text_cue' && e.elapsed_seconds>=1));
     console.log('EDITORIAL_CHRONOLOGY_RECEIPT '+JSON.stringify({kind:'actual_wall_clock_frontend_callbacks_isolated_DOM_not_rendered_browser',source:'synthetic_gardening_38_second_control',observed_elapsed_seconds:Math.round((performance.now()-started)/10)/100,images_lead_events:eventsA,words_lead_events:eventsB,no_audio_video_network_or_model:true}));
   }finally{a.qa.stopEditorialPreview(false);b.qa.stopEditorialPreview(false);}
+});
+
+function silentCase(){
+  const source=gardeningSource();source.brief.shots[0].on_screen_text='A small beginning';
+  const raw=JSON.stringify(source),draft=work.createSilentDraft(source,{source_sha256:hash(raw),display_kind:'fixture'});
+  return{source,raw,draft};
+}
+test('silent adaptation exposes words carried by narration and transfers actual text without changing the parent',()=>{
+  const {source,raw,draft}=silentCase();assert.equal(draft.shots[0].transfer.spoken_word_sequence_not_on_screen,true);
+  assert.equal(draft.shots[0].on_screen_text,'A small beginning\nStart with a seed.');
+  assert.equal(draft.local_delivery_constraint.sound_off,true);assert.equal(source.brief.user_constraints.sound_off,false);
+  assert.equal(JSON.stringify(source),raw);for(const shot of draft.shots){assert.equal(shot.voiceover,'');assert.equal(shot.sonic_direction,'');}
+});
+test('silent author correction and decision have their own reproducible hash, exact text and no inherited native verdict',async()=>{
+  const {source,raw,draft}=silentCase(),text='  My author correction.\nKeep this line exactly.  ';
+  work.setSilentCaption(draft,source,'shot_01',text);
+  const artifact=await work.finalizeSilentDraft(draft,source,raw,'accept','Reason, exactly.','2026-10-23T15:00:00Z');
+  assert.equal(artifact.payload.shots[0].on_screen_text,text);assert.equal(artifact.payload.shots[0].text_origin,'author_free_edit_unverified');
+  assert.equal(artifact.payload.parent.document_sha256,hash(raw));assert.equal(artifact.parent_original_export_utf8,raw);
+  assert.equal(hash(work.canonicalJSON(artifact.payload)),artifact.payload_sha256);assert.equal(artifact.derived_id,'local-silent-'+artifact.payload_sha256);
+  assert.equal(artifact.payload.variant_verification.native_status,'not_executed');assert.equal(artifact.payload.variant_verification.canon_spoiler_status,'not_verified');
+  assert.equal(artifact.payload.local_checks.canon_spoilers_and_understandability,'not_verified');
+  assert.equal('verification' in artifact.payload,false);assert.equal('qloo_api_verified' in artifact.payload,false);assert.equal('user_constraints' in artifact.payload,false);
+  assert.equal(artifact.parent_original_document.brief.verification.llm_status,'accept');assert.equal(artifact.parent_original_document.brief.user_constraints.sound_off,false);
+});
+test('silent missing text prevents local acceptance, while rejection preserves the exact unresolved draft',async()=>{
+  const {source,raw,draft}=silentCase();work.setSilentCaption(draft,source,'shot_01','');
+  await assert.rejects(()=>work.finalizeSilentDraft(draft,source,raw,'accept'),/no silent text/);
+  const rejected=await work.finalizeSilentDraft(draft,source,raw,'reject','This needs reconstruction.');
+  assert.equal(rejected.payload.author_decision.use_adaptation,false);assert.equal(rejected.payload.author_decision.status,'reject');
+  assert.equal(rejected.payload.shots[0].on_screen_text,'');assert.equal(rejected.payload.local_checks.errors[0].kind,'missing_silent_text');
+});
+test('silent fixed-timing source keeps every duration and warns rather than inventing extra reading time',async()=>{
+  const source=gardeningSource();source.brief.user_constraints.timing_locked=true;const raw=JSON.stringify(source);
+  assert.equal(build(source).status,'unavailable');
+  const draft=work.createSilentDraft(source,{source_sha256:hash(raw),display_kind:'fixture'});assert.equal(draft.timing_locked_warning,true);
+  work.setSilentCaption(draft,source,'shot_01',Array(80).fill('word').join(' '));const artifact=await work.finalizeSilentDraft(draft,source,raw,'accept');
+  assert.deepEqual(clone(artifact.payload.shots.map(s=>s.duration_seconds)),[9.5,9.5,9.5,9.5]);
+  assert.equal(artifact.payload.local_checks.caption_reading_estimates[0].may_not_fit,true);assert.equal(artifact.payload.variant_verification.understandability_status,'requires_author_review');
+});
+test('silent parent changes, incorrect original bytes and concurrent corrections fail closed',async()=>{
+  let c=silentCase();c.source.brief.synopsis+=' Changed.';
+  assert.throws(()=>work.setSilentCaption(c.draft,c.source,'shot_01','New words'),/parent changed/);
+  c=silentCase();await assert.rejects(()=>work.finalizeSilentDraft(c.draft,c.source,c.raw+' ','accept'),/bytes\/hash/);
+  c=silentCase();let pending=work.finalizeSilentDraft(c.draft,c.source,c.raw,'accept');c.source.brief.synopsis+=' Changed during hash.';await assert.rejects(pending,/parent changed/);
+  c=silentCase();pending=work.finalizeSilentDraft(c.draft,c.source,c.raw,'accept');work.setSilentCaption(c.draft,c.source,'shot_01','Changed during hash.');await assert.rejects(pending,/text changed/);
+});
+test('silent helper refuses changes to image timing, aspect, assets or transfer attribution',()=>{
+  for(const mutate of [s=>s.start_seconds=2,s=>s.end_seconds=20,s=>s.aspect_ratio='9:16',s=>s.assets.push('new footage'),s=>s.transfer.proposed_on_screen_text='Invented baseline']){
+    const c=silentCase();mutate(c.draft.shots[0]);assert.throws(()=>work.inspectSilentDraft(c.draft,c.source),/draft structure changed/);
+  }
+});
+test('silent frontend correction, acceptance and exact download preserve parent sound mode and free-text attribution',async()=>{
+  const source=gardeningSource();source.brief.shots[0].on_screen_text='A beginning';const before=JSON.stringify(source);
+  const b=browser({inputSource:source});await b.qa.renderEditorialWorkbench();await b.qa.prepareSilentAdaptation();
+  assert.match(b.element('silentShotEditors').innerHTML,/Start with a seed/);
+  b.qa.updateSilentCaption('shot_01','Exact author screen text.\nSecond line.');b.element('silentDecisionNote').value='Keep the essential step.';
+  await b.qa.decideSilentAdaptation('accept');await b.qa.downloadSilentAdaptation();assert.equal(b.downloads.length,1);
+  const artifact=JSON.parse(await b.downloads[0].blob.text());assert.equal(artifact.payload.shots[0].on_screen_text,'Exact author screen text.\nSecond line.');assert.equal(artifact.payload.author_decision.note,'Keep the essential step.');
+  assert.equal(artifact.parent_original_export_utf8,b.raw);assert.equal(JSON.stringify(source),before);assert.equal(artifact.payload.variant_verification.native_status,'not_executed');
+  b.qa.updateSilentCaption('shot_01','Another local edit.');assert.equal(b.qa.state.silentExport,null);assert.equal(b.element('downloadSilentBtn').disabled,true);await assert.rejects(()=>b.qa.downloadSilentAdaptation(),/Accept or reject/);
+});
+test('silent frontend can reject and cannot export after a parent change; fixed timing remains adaptable',async()=>{
+  const source=gardeningSource();source.brief.user_constraints.timing_locked=true;
+  const b=browser({inputSource:source});await b.qa.renderEditorialWorkbench();assert.equal(b.qa.state.editorial.status,'unavailable');
+  await b.qa.prepareSilentAdaptation();assert.match(b.element('silentConstraintSummary').textContent,/fixes individual timing/);
+  await b.qa.decideSilentAdaptation('reject');await b.qa.downloadSilentAdaptation();assert.equal(JSON.parse(await b.downloads[0].blob.text()).payload.author_decision.status,'reject');
+  b.qa.invalidate();assert.equal(b.qa.state.silentDraft,null);assert.equal(b.element('downloadSilentBtn').disabled,true);await assert.rejects(()=>b.qa.downloadSilentAdaptation(),/Accept or reject/);assert.equal(b.downloads.length,1);
 });
