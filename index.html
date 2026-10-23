@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cultural Launch Director — Qloo Agentic Hackathon</title>
-<meta name="description" content="Choose explainable cultural references for a book, then turn the selected references into a traceable creative brief.">
+<meta name="description" content="Inspect Qloo-informed references, then choose between two local edits of the same received book-trailer brief.">
 <meta property="og:title" content="Cultural Launch Director"><meta property="og:description" content="From a book brief to cultural references you can inspect, question and use.">
 <style>
 :root{color-scheme:dark;--bg:#0c0f1a;--panel:#151b2b;--inset:#0e1422;--line:#344056;--gold:#e3c38c;--text:#f4f1e9;--muted:#b3bdce;--green:#78d5aa;--amber:#f3c57b;--red:#ffaba3}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}a{color:var(--gold)}button,input,select,textarea{font:inherit}button,select,input,textarea{border:1px solid var(--line);border-radius:9px}button{padding:.7rem 1rem;background:var(--gold);color:#141925;font-weight:650;cursor:pointer}button.secondary{background:transparent;color:var(--gold)}button:disabled{opacity:.45;cursor:not-allowed}input,select,textarea{width:100%;background:var(--inset);color:var(--text);padding:.7rem}textarea{resize:vertical;min-height:120px}input[type=checkbox],input[type=radio]{width:auto}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #97baff;outline-offset:3px}header,main,footer{max-width:1180px;margin:auto;padding:1.5rem}header{padding-top:2.2rem}h1,h2,h3{line-height:1.2}h1{font:clamp(2.1rem,5vw,3.8rem)/1.08 Georgia,serif;margin:.8rem 0}h2{font:1.45rem/1.25 Georgia,serif;margin:0 0 1rem}h3{font-size:1.05rem;margin:.1rem 0 .6rem}p{margin:.5rem 0 1rem}.eyebrow{color:var(--gold);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em}.lede{max-width:720px;font-size:1.15rem;color:var(--muted)}.topline,.row,.actions,.cardhead{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}.topline{justify-content:space-between}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1.3rem;align-items:start}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.25rem}.panel{margin-bottom:1.3rem}.card{background:var(--inset);padding:1rem;border-radius:10px;margin:.7rem 0}.cardhead{justify-content:space-between;align-items:start}.field{margin:1rem 0}label,.label{display:block;margin-bottom:.4rem;font-weight:600;font-size:.9rem}.help,.muted{color:var(--muted);font-size:.87rem}.help{margin-top:.35rem}details{border-top:1px solid var(--line);margin-top:1rem;padding-top:.7rem}summary{cursor:pointer;color:var(--gold);font-size:.88rem}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,SFMono-Regular,monospace;color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:.2rem .65rem;font-size:.76rem;font-weight:600;color:var(--muted)}.pill.good{color:var(--green);border-color:#347455}.pill.warn{color:var(--amber);border-color:#876237}.pill.bad{color:var(--red);border-color:#945249}.status{padding:.8rem 1rem;border-left:3px solid var(--line);background:var(--inset);margin:1rem 0;border-radius:5px}.status.good{border-color:var(--green)}.status.warn{border-color:var(--amber)}.status.bad{border-color:var(--red)}.smallgrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.referencegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.7rem}.referencegrid .card{margin:0}.score{font:1.3rem Georgia,serif;color:var(--gold)}.shot{border-left:3px solid var(--gold)}.shot.invalid{border-color:var(--amber);opacity:.7}.empty{color:var(--muted);padding:1rem 0}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}[hidden]{display:none!important}footer{color:var(--muted);font-size:.8rem;padding-bottom:3rem}ul{padding-left:1.2rem}.constraint{display:flex;gap:.5rem;align-items:start;font-weight:400}.constraint input{margin-top:.35rem}.confirmation-choice{display:block;padding:.5rem;border:1px solid var(--line);border-radius:5px;margin:.4rem 0;font-weight:400}.runid{font:12px ui-monospace,monospace;overflow-wrap:anywhere}.sticky{position:sticky;top:1rem}@media(max-width:850px){.grid{grid-template-columns:1fr}.sticky{position:static}header,main,footer{padding:1rem}.smallgrid{grid-template-columns:1fr}}@media(prefers-reduced-motion:no-preference){button{transition:opacity .12s}}
+.editorial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.editorial-grid>*{min-width:0}.edit-timeline{display:flex;gap:3px;margin:.7rem 0}.edit-timeline span{min-width:0;background:#304560;color:var(--text);font-size:.75rem;padding:.4rem .2rem;text-align:center;overflow-wrap:anywhere}.edit-compare{border-left:3px solid var(--gold);padding-left:.8rem}.edit-shot{overflow-wrap:anywhere}fieldset{border:1px solid var(--line);border-radius:9px;min-width:0}.editorial-option{display:flex;gap:.5rem;align-items:center;margin:.6rem 0}#editorialReason{min-height:70px}@media(max-width:600px){.editorial-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><div class="topline"><span class="eyebrow">Qloo Agentic Hackathon · Working prototype</span><a href="https://github.com/yannabadie/taste-matched-trailer">Source &amp; setup ↗</a></div><h1>References you can explain.<br>A brief you can act on.</h1><p class="lede">Start with a book. Let Qloo inform the cultural reference choices, then inspect how those choices shape a creative trailer brief.</p><p class="help">Aggregate affinities are associations. They do not establish sales, individual preferences or a marketing forecast.</p></header>
-<main><section class="panel" aria-labelledby="recordedHeading"><div class="cardhead"><div><h2 id="recordedHeading">Inspect a real, recorded example</h2><p class="help">Captured 20 October 2026 · version 2.6.3. The recorded choices and four-shot brief are supplied by a separate reader, independently of the live Mac backend. Reader availability or access restrictions may still prevent loading. This static site's source contains no recording data. No video is generated by this example.</p></div><button id="viewRecordingBtn" class="secondary" type="button">View recorded result</button></div><p id="recordingStatus" class="help" role="status">Checking access to the saved example. No new analysis is requested.</p><details id="workflowGuide"><summary>How to read the demonstration · static guide</summary><ol><li>Start with a book brief and public cultural references. Resolve uncertain titles before using their identifiers.</li><li>Read the movie affinities actually returned by Qloo. Missing affinity is not zero, and association does not establish commercial performance.</li><li>Inspect which references the selection rule retained and how each is linked to the four creative plans. Framing, words, pacing and sound remain editorial interpretations.</li><li>Review the sources and limitations, then download the received document. A dated recording is distinct from a new live analysis; neither is a rendered video.</li></ol><p class="help">This guide remains readable if either service is unavailable. It does not contain or replace the Qloo response. Opening the recorded example requires the separate reader; a new live analysis requires the protected live backend, Qloo and model workflow. Live writing language is not guaranteed: the saved run returned French despite an English synopsis. Its English reading aid is an attributed editorial translation.</p></details></section><div class="grid"><section class="panel sticky" aria-labelledby="inputHeading"><h2 id="inputHeading">1. Start a new live analysis</h2>
+<header><div class="topline"><span class="eyebrow">Qloo Agentic Hackathon · Working prototype</span><a href="https://github.com/yannabadie/taste-matched-trailer">Source &amp; setup ↗</a></div><h1>One book. Two edits.<br>Your direction.</h1><p class="lede">Inspect the cultural references behind a received four-shot brief. Compare two local edits of those same images and words, then choose the pacing that serves your book.</p><p class="help">Aggregate affinities are associations. They do not establish sales, individual preferences or a marketing forecast.</p></header>
+<main><section class="panel" aria-labelledby="recordedHeading"><div class="cardhead"><div><h2 id="recordedHeading">Inspect a real, recorded example</h2><p class="help">Captured 20 October 2026 · version 2.6.3. The recorded choices and four-shot brief are supplied by a separate reader, independently of the live Mac backend. Reader availability or access restrictions may still prevent loading. This static site's source contains no recording data. No video is generated by this example.</p></div><button id="viewRecordingBtn" class="secondary" type="button">View recorded result</button></div><p id="recordingStatus" class="help" role="status">Checking access to the saved example. No new analysis is requested.</p><details id="workflowGuide"><summary>How to read the demonstration · static guide</summary><ol><li>Start with a book brief and public cultural references. Resolve uncertain titles before using their identifiers.</li><li>Read the movie affinities actually returned by Qloo. Missing affinity is not zero, and association does not establish commercial performance.</li><li>Inspect which references the selection rule retained and how each is linked to the four creative plans. Framing, words, pacing and sound remain editorial interpretations.</li><li>Compare two local edits of the received shots, keep the story constraints, and record your choice — including a tie or neither. Download the original result and the separate editing decision. Neither is a rendered video.</li></ol><p class="help">This guide remains readable if either service is unavailable. It does not contain or replace the Qloo response. Opening the recorded example requires the separate reader; a new live analysis requires the protected live backend, Qloo and model workflow. Live writing language is not guaranteed: the saved run returned French despite an English synopsis. Its English reading aid is an attributed editorial translation.</p></details></section><div class="grid"><section class="panel sticky" aria-labelledby="inputHeading"><h2 id="inputHeading">1. Start a new live analysis</h2>
 <div class="field"><label for="presetSelect">Start with</label><select id="presetSelect"><option value="custom">Your own brief</option><option value="qualified-demo">The Turn of the Screw · three historical input references</option><optgroup label="Eight frozen evaluation cases"><option value="C01">C01 · Memory and civilizations</option><option value="C02">C02 · Psychological uncertainty</option><option value="C03">C03 · A warm, non-violent mystery</option><option value="C04">C04 · Ambiguous references</option><option value="C05">C05 · An unknown, invented title</option><option value="C06">C06 · An obvious reference — no gain assumed</option><option value="C07">C07 · A tightly constrained delivery</option><option value="C08">C08 · Incomplete and untrusted input</option></optgroup></select><p id="presetNote" class="help">Use a short synopsis and public cultural references. No reader identities or API keys are needed.</p></div>
 <div id="caseTranslation" class="card" hidden></div>
 <div class="field"><label for="synopsisInput">Book brief</label><textarea id="synopsisInput" maxlength="12000" placeholder="What is the story, what should the audience feel, and what must the trailer preserve?"></textarea></div>
@@ -26,8 +27,105 @@
 </section>
 <div><section class="panel" aria-labelledby="resultHeading"><div class="cardhead"><h2 id="resultHeading">2. Inspect the choices</h2><span id="modeBadge" class="pill">No run yet</span></div><div id="recordingNotice" class="status warn" hidden></div><div id="statusNotice" class="status" role="status" aria-live="polite">Choose a starting point, review the brief, then create a result.</div><div id="publicLimitations" class="help" hidden></div><p id="runId" class="runid"></p><p id="budgetSummary" class="help"></p><div id="clarificationPanel" hidden></div><div id="candidateConfirmationsRow" class="referencegrid"></div><div id="decisionSummary"></div><details id="sourceDetails" hidden><summary>Sources, decisions and limitations</summary><p class="help">This public document includes source identifiers, used items and budgets. Private payloads and analyst/planner messages are not exposed.</p><div id="evidenceCards"></div><pre id="redactedProofBox"></pre></details></section>
 <section class="panel" aria-labelledby="briefHeading"><div class="cardhead"><h2 id="briefHeading">3. Use the creative brief</h2><span id="verifierBadge" class="pill">Not reviewed</span></div><div id="directionsRow"></div><div id="shotsGrid" class="empty">No current plans. A new result will replace this space.</div></section>
+<section class="panel" id="editorialPanel" aria-labelledby="editorialHeading" hidden><h2 id="editorialHeading">4. Choose an edit for your book</h2><p id="editorialAttribution" class="help"></p><div id="editorialOptions"></div><div id="editorialChoice" hidden><fieldset><legend>Which edit helps your intention?</legend><div id="editorialRadios"></div><label for="editorialReason">Why this choice? <span class="help">Optional · no preference is also useful</span></label><textarea id="editorialReason" maxlength="2000" rows="2" placeholder="What does this edit preserve or improve for your book?"></textarea></fieldset><p id="editorialChoiceStatus" class="help" role="status">Choose explicitly before exporting. Nothing is sent to a server.</p><button id="exportEditorialBtn" type="button" class="secondary" disabled>Download my edit decision (.json)</button></div><p class="help">Timing is an estimate, not received narration or a rendered film. The original result keeps its own writer review; that review does not certify these edits. Author usefulness and advantage over other tools remain unmeasured.</p></section>
 <details class="panel"><summary>Historical video illustration · 17 October 2026</summary><p class="help">This pre-existing render illustrates the format. It is not a new output of the current run or evidence of the current Qloo response.</p><a href="https://yannabadie.github.io/taste-matched-trailer/assets/teaser-horla-v1-16x9.mp4">View the dated Le Horla illustration ↗</a></details></div></div></main>
 <footer>Built for the Qloo Agentic Hackathon. Reference selection is evidence-informed; shot language, pacing and sound descriptions remain creative interpretations. You can inspect the received document and its provenance.</footer>
+<script id="editorialWorkbenchCore">
+/* EDITORIAL_WORKBENCH_START */
+// A local edit decision over received material, not another Qloo/model result.
+const EditorialWorkbench = (() => {
+  const sourceBindings = new WeakMap();
+  const copy = value => JSON.parse(JSON.stringify(value));
+  const words = value => String(value || '').trim().split(/\s+/u).filter(Boolean).length;
+  const fail = reason => ({status:'unavailable', reason, directions:[]});
+  const profiles = [
+    {id:'images_lead', title:'Let the images lead', weights:[34,29,22,15],
+      intent:'Give the opening images more time; let the received words enter after the image.',
+      voice:'Leave the opening beat unspoken, then read only the received narration. No additional line or character.', delay:1},
+    {id:'words_lead', title:'Let the words lead', weights:[18,22,28,32],
+      intent:'Start with the received words; build toward longer later beats without changing the story order.',
+      voice:'Begin the received narration on the cut. Use a measured, direct reading; no added explanation or claim.', delay:0}
+  ];
+  function allocate(total, weights) {
+    const ticks = Math.round(total * 100), minimum = 100;
+    if(ticks < minimum * 4) throw Error('At least four seconds are required.');
+    const remaining = ticks - minimum * 4;
+    const lengths = weights.map(weight => minimum + Math.floor(remaining * weight / 100));
+    for(let n=0;lengths.reduce((a,b)=>a+b,0)<ticks;n++) lengths[n%4]++;
+    return lengths.map(value => value/100);
+  }
+  function build(source, context) {
+    if(!context || !/^[a-f0-9]{64}$/.test(context.source_sha256 || '')) return fail('A hash of the received source bytes is required.');
+    if(!['recorded','live','recovered','fixture'].includes(context.display_kind)) return fail('Identify this as a dated recording, received live result or synthetic fixture.');
+    const brief=source && source.brief, shots=brief && brief.shots, constraints=brief && brief.user_constraints;
+    if(!brief || source.workflow_status!=='ok' || brief.completeness!=='complete' || !Array.isArray(shots) || shots.length!==4 || !constraints || typeof constraints!=='object') return fail('A complete, accepted four-shot source is needed. Failed or incomplete results cannot become edit options.');
+    if(source.mode!=='fixture' && source.qloo_api_verified!==true) return fail('The source does not carry verified Qloo evidence.');
+    if(Object.keys(source.gate_reasons || {}).length || brief.verification?.deterministic_status!=='pass' || brief.verification?.llm_status!=='accept') return fail('Resolve the source result’s coverage or review reasons first.');
+    if(constraints.timing_locked || constraints.fixed_shot_durations || constraints.shot_durations) return fail('This brief fixes individual shot timing. These pacing alternatives would violate it; keep the original timing.');
+    if(new Set(shots.map(s=>s.id)).size!==4 || shots.some(s=>s.line_status!=='active' || typeof s.visual_prompt!=='string' || !s.visual_prompt.trim() || !Number.isFinite(s.duration_seconds) || s.duration_seconds<=0)) return fail('Each source shot must be active, complete and have a finite positive duration.');
+    const total=shots.reduce((sum,s)=>sum+s.duration_seconds,0);
+    if(!Number.isFinite(total) || total<4 || total>300 || Math.abs(total-(brief.total_duration_seconds ?? total))>.011 || (constraints.duration_seconds!==undefined && Math.abs(total-constraints.duration_seconds)>.011)) return fail('The received total and duration constraint disagree. Resolve the source timing before recomposing it.');
+    const silent=constraints.sound_off===true;
+    if(!shots.some(s=>String(s.on_screen_text || s.voiceover || '').trim())) return fail('There are no received words to build a words-led alternative. Add an author-approved text first; this tool will not invent it.');
+    const directions=profiles.map(profile=>{
+      const durations=allocate(total,profile.weights); let cursor=0; const warnings=[];
+      const edited=shots.map((shot,i)=>{
+        const duration=durations[i], start=cursor; cursor=Math.round((cursor+duration)*100)/100;
+        const caption=String(shot.on_screen_text || (silent ? shot.voiceover || '' : ''));
+        const voiceover=silent?'':String(shot.voiceover || '');
+        const delay=!silent && voiceover ? Math.min(profile.delay,duration/4) : 0;
+        const available=Math.max(.01,duration-delay);
+        const voiceEstimate=words(voiceover)/2.5, captionEstimate=words(caption)/3;
+        if(voiceEstimate>available || captionEstimate>duration) warnings.push({shot_id:shot.id,kind:'text_may_not_fit',voice_seconds_estimate:Math.round(voiceEstimate*100)/100,voice_seconds_available:Math.round(available*100)/100,caption_seconds_estimate:Math.round(captionEstimate*100)/100,duration_seconds:duration});
+        return {...copy(shot), source_shot_id:shot.id, source_duration_seconds:shot.duration_seconds,
+          start_seconds:start,end_seconds:cursor,duration_seconds:duration,
+          voiceover,on_screen_text:caption,sonic_direction:silent?'No soundtrack.':String(shot.sonic_direction || ''),
+          editorial_delivery:{origin:'local_deterministic_edit_not_qloo',voice_start_seconds:Math.round((start+delay)*100)/100,
+            voice_direction:silent?'No spoken track.':profile.voice,
+            sound_direction:silent?'No soundtrack. Received words may be shown verbatim as captions.':String(shot.sonic_direction || 'No new sound proposed.'),
+            caption_origin:shot.on_screen_text?'received_on_screen_text':silent && shot.voiceover?'verbatim_received_narration':'no_caption',
+            source_narration_omitted:silent && Boolean(shot.voiceover) && caption!==shot.voiceover,
+            image_direction:'Use the received visual composition unchanged. No additional scene, figure, reveal or cutaway.'}};
+      });
+      return {id:profile.id,title:profile.title,intent:profile.intent,
+        readiness:warnings.length?'needs_timing_review':'timing_estimate_only',
+        total_duration_seconds:Math.round(total*100)/100,shots:edited,warnings,
+        spoken_track_planned:edited.some(shot=>Boolean(shot.voiceover)),
+        interpretation_origin:'local_deterministic_recomposition_not_native_writer_output'};
+    });
+    if(directions[0].shots.every((shot,i)=>shot.duration_seconds===directions[1].shots[i].duration_seconds && shot.editorial_delivery.voice_start_seconds===directions[1].shots[i].editorial_delivery.voice_start_seconds)) return fail('The timing constraint leaves no meaningful contrast between these edits. Keep the original or approve a longer duration.');
+    const result={schema:'local-editorial-workbench-v1',status:'ready_for_author_choice',
+      source:{run_id:source.run_id,director_version:source.director_version,created_at:brief.created_at,
+        source_sha256:context.source_sha256,sha256_scope:'original_received_export_utf8',display_kind:context.display_kind,captured_at:context.captured_at || null},
+      preserved:{synopsis:brief.synopsis,user_constraints:copy(constraints),shot_order:shots.map(s=>s.id),
+        original_visuals_unchanged:true,used_words_are_verbatim:true,reference_bindings_unchanged:true,
+        source_narration_may_be_omitted_in_silent_edit:silent},
+      attribution:'Local editorial recomposition of the received result. No new Qloo request, model generation, rendered video or native verification of these edits.',
+      timing_method:'Heuristic only: 2.5 spoken words/second and 3 caption words/second. Not measured audio, reading comfort or semantic verification.',
+      language:'Received creative words are preserved in their original language. English editing instructions are not a translation.',
+      directions};
+    sourceBindings.set(result,JSON.stringify(source));
+    return result;
+  }
+  function choose(workbench, source, choice, reason='', decidedAt='', sourceRaw=JSON.stringify(source)) {
+    if(workbench.status!=='ready_for_author_choice') throw Error('No usable options are available.');
+    if(sourceBindings.get(workbench)!==JSON.stringify(source)) throw Error('The source changed after these options were built. Build current options and choose again.');
+    if(!['images_lead','words_lead','tie','neither'].includes(choice)) throw Error('Choose an option, a tie, or neither.');
+    if(typeof reason!=='string' || reason.length>2000) throw Error('The choice note must be at most 2000 characters.');
+    if(JSON.stringify(JSON.parse(sourceRaw))!==JSON.stringify(source)) throw Error('The original source bytes do not match the displayed document.');
+    const selected=workbench.directions.find(d=>d.id===choice) || null;
+    return {schema:'author-editorial-decision-v1',choice,reason:reason.trim() || null,decided_at:decidedAt,
+      source:copy(workbench.source),attribution:workbench.attribution,
+      author_preference_is_not_a_measured_quality_gain:true,
+      decision_readiness:selected?selected.readiness:'no_direction_selected',
+      selected_direction:copy(selected),alternatives:copy(workbench.directions),
+      preserved:copy(workbench.preserved),timing_method:workbench.timing_method,language:workbench.language,
+      original_received_document:copy(source),original_received_export_utf8:sourceRaw};
+  }
+  return {build,choose};
+})();
+/* EDITORIAL_WORKBENCH_END */
+</script>
 <script>
 'use strict';
 const FROZEN_CASES = [
@@ -183,7 +281,7 @@ const RECORDING_RUN_ID='run-public-928b9561-7216-4dac-b091-2a660f0f3a1d';
 const RECORDING_ARCHIVE_SHA256='2cb4293e46b7018b35c9bf96a10c4076301fd4428dc9d2e4fc74dc96361bfe9c';
 const RECORDING_ORIGINAL_EXPORT_SHA256='53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d';
 const PENDING_STORAGE_KEY='cultural-launch-director.pending.v1';
-const state={bundle:null,snapshot:null,revision:0,busy:false,actionChecking:false,controller:null,confirmed:[],resolutionChoices:{},parentJobId:null,parentApiBase:null,unresolved:null,configurationReady:false,apiBase:null,configurationCheckedAt:0,configurationError:'Loading live configuration…',displayKind:null,recording:null};
+const state={bundle:null,snapshot:null,revision:0,busy:false,actionChecking:false,controller:null,confirmed:[],resolutionChoices:{},parentJobId:null,parentApiBase:null,unresolved:null,configurationReady:false,apiBase:null,configurationCheckedAt:0,configurationError:'Loading live configuration…',displayKind:null,recording:null,editorial:null,editChoice:null};
 const $=id=>document.getElementById(id);
 const esc=value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const list=value=>Array.isArray(value)?value:[];
@@ -198,6 +296,7 @@ function exportable(){return current()&&!['error','failed','blocked','degraded',
 function status(message,kind=''){ $('statusNotice').textContent=message;$('statusNotice').className='status '+kind; }
 function buttons(){ const unknown=state.unresolved&&state.unresolved.resumeOnly&&!state.unresolved.jobId;$('runServerBtn').disabled=state.busy||state.actionChecking||unknown||(!state.unresolved&&!state.configurationReady);$('runServerBtn').textContent=unknown?'Earlier request needs verification':state.unresolved?'Check pending request':'Run a new live analysis';$('viewRecordingBtn').disabled=state.busy||state.actionChecking;$('exportJsonBtn').disabled=state.busy||!exportable();$('exportJsonBtn').textContent=state.displayKind==='recorded'?'Download recorded result (.json)':'Download received document';$('pendingNotice').hidden=!state.unresolved;$('pendingNotice').textContent=unknown?'An earlier submission has no known job identifier. This page will not submit it again or start a duplicate. The operator must verify the earlier outcome. The static guide remains available.':state.unresolved?'An earlier request is still being tracked. Check pending request follows that same operation; it does not start another analysis.':''; }
 function clearResults(){
+  state.editorial=null;state.editChoice=null;$('editorialPanel').hidden=true;$('editorialOptions').innerHTML='';$('editorialChoice').hidden=true;$('exportEditorialBtn').disabled=true;$('editorialReason').value='';
   for(const id of ['candidateConfirmationsRow','decisionSummary','directionsRow','evidenceCards','clarificationPanel'])$(id).innerHTML='';
   $('clarificationPanel').hidden=true;$('publicLimitations').innerHTML='';$('publicLimitations').hidden=true;$('sourceDetails').hidden=true;$('sourceDetails').open=false;$('redactedProofBox').textContent='';
   $('runId').textContent='';$('budgetSummary').textContent='';$('modeBadge').textContent='No current run';$('modeBadge').className='pill';$('verifierBadge').textContent='Not reviewed';$('verifierBadge').className='pill';
@@ -205,6 +304,7 @@ function clearResults(){
   $('shotsGrid').className='empty';$('shotsGrid').textContent='No current plans. Create a result for the current brief.';
 }
 function invalidate(message='Inputs changed. Create a new result for this brief.'){
+  if(state.editChoice)message+=' The earlier local edit decision belongs to its dated source. Make a new choice after loading a result.';
   state.revision++;if(state.controller)state.controller.abort();state.controller=null;state.bundle=null;state.snapshot=null;state.displayKind=null;state.confirmed=[];state.resolutionChoices={};state.parentJobId=null;state.parentApiBase=null;state.busy=false;clearResults();status(message);buttons();
 }
 function selectedCase(){return FROZEN_CASES.find(c=>c.id===$('presetSelect').value);}
@@ -313,7 +413,7 @@ function renderBundle(){
   $('decisionSummary').innerHTML=(recorded&&recordedTranslation()&&recordedTranslation().selection_explanation?'<p><strong>English reading aid · selection</strong></p><p>'+esc(recordedTranslation().selection_explanation)+'</p>':'')+list(b.decisions).map(d=>'<details><summary>'+esc(d.action||d.id)+' · '+esc(d.status)+'</summary><p>'+esc(d.rationale||'No rationale supplied.')+'</p><pre>'+esc(JSON.stringify(d,null,2))+'</pre></details>').join('');
   $('directionsRow').innerHTML=list(b.directions).map(renderDirection).join('');
   $('shotsGrid').className='';$('shotsGrid').innerHTML=list(b.brief.shots).map(renderShot).join('')||'<p class="empty">No plans were supplied.</p>';
-  buttons();
+  renderEditorialWorkbench();buttons();
 }
 let recordingRequest=null;
 async function loadRecording(){
@@ -444,6 +544,42 @@ function downloadReceived(){
   if(state.busy)return;if(!current()){invalidate('Inputs changed. Create a new result before downloading.');return;}if(!exportable())return;
   const recorded=state.displayKind==='recorded',blob=new Blob([recorded?state.recording.originalRaw:JSON.stringify(state.bundle,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cultural-launch-director-'+(recorded?'recorded-20261020-':'')+state.bundle.run_id.replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);
 }
+function editorialSourceRaw(){return state.displayKind==='recorded' && state.recording?state.recording.originalRaw:JSON.stringify(state.bundle,null,2);}
+async function editorialHash(raw){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw)))).map(x=>x.toString(16).padStart(2,'0')).join('');}
+function renderEditDirection(direction){
+  const silent=!direction.spoken_track_planned;
+  return '<article class="card"><h3>'+esc(direction.title)+'</h3><p>'+esc(direction.intent)+'</p><div class="edit-timeline" aria-label="Shot durations">'+direction.shots.map(s=>'<span style="flex:'+s.duration_seconds+'">'+esc(s.source_shot_id)+'<br>'+s.duration_seconds+' s</span>').join('')+'</div><p class="help">'+direction.total_duration_seconds+' s total · '+(silent?'No spoken track':'Received narration only')+'</p>'+(direction.warnings.length?'<p class="status warn">Timing review needed: the text may not fit '+esc(direction.warnings.map(w=>w.shot_id).join(', '))+'. Shorten it explicitly or revise the duration before producing audio.</p>':'<p class="help">The simple text-length estimate fits. No audio or reading test has been received.</p>')+'<details><summary>Read this complete editing proposal</summary>'+direction.shots.map(s=>'<div class="edit-shot"><h3>'+esc(s.source_shot_id)+' · '+s.start_seconds+'–'+s.end_seconds+' s</h3><p><strong>Received image:</strong> '+esc(s.visual_prompt)+'</p><p><strong>Spoken words:</strong> '+esc(s.voiceover || 'None')+'</p><p><strong>On screen:</strong> '+esc(s.on_screen_text || 'None')+'</p><p class="help">'+esc(s.editorial_delivery.voice_direction)+(s.voiceover?' Voice starts at '+s.editorial_delivery.voice_start_seconds+' s. ':' ')+esc(s.editorial_delivery.sound_direction)+'</p><p class="help">'+esc(s.editorial_delivery.image_direction)+(s.editorial_delivery.source_narration_omitted?' Source narration is omitted in this silent edit; see the original document.':'')+'</p></div>').join('')+'</details></article>';
+}
+async function renderEditorialWorkbench(){
+  const source=state.bundle,revision=state.revision,raw=editorialSourceRaw();
+  $('editorialPanel').hidden=false;$('editorialAttribution').textContent='Preparing two local edits of the received material. No request is sent.';
+  try{
+    const hash=await editorialHash(raw);if(revision!==state.revision || source!==state.bundle || !current())return;
+    const work=EditorialWorkbench.build(source,{source_sha256:hash,display_kind:state.displayKind,captured_at:state.displayKind==='recorded'?state.recording.manifest.captured_at:null});
+    state.editorial=work;state.editChoice=null;
+    if(work.status!=='ready_for_author_choice'){$('editorialAttribution').textContent=work.reason;return;}
+    $('editorialAttribution').textContent=(state.displayKind==='recorded'?'Local editorial recomposition of the dated result · '+(source.brief.created_at || 'date unavailable')+'. ':'Local editorial recomposition of the received result. ')+work.attribution+' '+work.language;
+    $('editorialOptions').innerHTML='<p class="edit-compare">Same received visuals, shot order, reference bindings and total duration. Silent edits may omit narration while keeping used words verbatim; the original remains attached. Opening: '+work.directions[0].shots[0].duration_seconds+' s versus '+work.directions[1].shots[0].duration_seconds+' s; closing: '+work.directions[0].shots[3].duration_seconds+' s versus '+work.directions[1].shots[3].duration_seconds+' s. No Qloo score recommends either edit.</p><div class="editorial-grid">'+work.directions.map(renderEditDirection).join('')+'</div><details><summary>What is preserved, and what is only estimated?</summary><pre>'+esc(JSON.stringify({preserved:work.preserved,source:work.source,timing_method:work.timing_method},null,2))+'</pre></details>';
+    $('editorialRadios').innerHTML=[...work.directions.map(d=>[d.id,d.title]),['tie','Both serve me equally'],['neither','Neither helps this book']].map(([value,label])=>'<label class="editorial-option"><input type="radio" name="editorialChoice" value="'+value+'">'+esc(label)+'</label>').join('');
+    $('editorialChoiceStatus').textContent='Choose explicitly before exporting. Nothing is sent to a server.';$('editorialChoice').hidden=false;
+  }catch(error){if(revision===state.revision){state.editorial=null;$('editorialAttribution').textContent='Local editing options are unavailable: '+error.message;}}
+}
+function chooseEditorialOption(){
+  const checked=document.querySelector('input[name="editorialChoice"]:checked');
+  if(!checked || !state.editorial || !current())return;
+  state.editChoice=checked.value;$('exportEditorialBtn').disabled=false;
+  const chosen=state.editorial.directions.find(d=>d.id===checked.value);$('editorialChoiceStatus').textContent='Local choice: '+checked.parentElement.textContent.trim()+'. '+(chosen?.readiness==='needs_timing_review'?'Timing review required before production. ':'')+'The original result is unchanged; this preference is not a measured quality gain.';
+}
+async function downloadEditorialDecision(){
+  if(state.busy || !current() || !exportable() || !state.editorial || !state.editChoice)return;
+  const work=state.editorial,source=state.bundle,revision=state.revision,raw=editorialSourceRaw(),choice=state.editChoice,reason=$('editorialReason').value;
+  const hash=await editorialHash(raw);
+  if(revision!==state.revision || source!==state.bundle || work!==state.editorial || !current() || hash!==work.source.source_sha256){$('exportEditorialBtn').disabled=true;$('editorialChoiceStatus').textContent='The source changed. Load its current result and choose again; the earlier decision remains historical.';return;}
+  const document=EditorialWorkbench.choose(work,source,choice,reason,new Date().toISOString(),raw);
+  const blob=new Blob([JSON.stringify(document,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=window.document.createElement('a');
+  link.href=url;link.download='local-edit-decision-'+source.run_id.replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';window.document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  $('editorialChoiceStatus').textContent='Edit decision downloaded with the original document, source hash, timing estimates and your note. '+(document.decision_readiness==='needs_timing_review'?'Timing review is still required before production. ':'')+'No video or narration has been rendered.';
+}
 function validApiBase(raw){const u=new URL(raw,window.location.origin);if(u.username||u.password||u.search||u.hash)throw Error('The public backend address must not contain credentials, query parameters or fragments.');if(u.protocol!=='https:'&&!(u.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(u.hostname)))throw Error('The public backend must use HTTPS.');return u.href.replace(/\/$/,'');}
 let configurationRequest=null;
 async function loadConfiguration(){
@@ -469,6 +605,7 @@ $('presetSelect').addEventListener('change',loadPreset);
 for(const id of FORM_IDS)if(id!=='presetSelect'){ $(id).addEventListener('input',()=>invalidate());$(id).addEventListener('change',()=>invalidate()); }
 $('runServerBtn').addEventListener('click',()=>runCurrent());$('exportJsonBtn').addEventListener('click',downloadReceived);
 $('viewRecordingBtn').addEventListener('click',viewRecording);
+$('editorialRadios').addEventListener('change',chooseEditorialOption);$('exportEditorialBtn').addEventListener('click',()=>downloadEditorialDecision().catch(error=>{$('editorialChoiceStatus').textContent=error.message;}));
 $('candidateConfirmationsRow').addEventListener('click',event=>{const button=event.target.closest&&event.target.closest('[data-remove-id]');if(button)removeReference(button.getAttribute('data-remove-id'));});
 window.addEventListener('focus',refreshAfterReturn);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshAfterReturn();});
 loadPreset();restorePending();loadConfiguration();viewRecording();

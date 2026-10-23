@@ -72,6 +72,30 @@ affinities and returned order establish this data dependency; they do not
 establish that the resulting creative text is better than a model-only brief.
 Reading this chain in the recording makes no new Qloo request or model call.
 
+## Make a local editorial choice first
+
+Once the recorded example or an accepted live result is visible, open **Choose
+an edit for your book**. Compare **Let the images lead** and **Let the words lead**:
+their full timelines use the source's actual images and words, with different
+shot durations and voice entrance. Neither option is recommended by an affinity
+score. These are local deterministic recompositions of the displayed source, not
+two model runs. A dated source stays dated.
+
+Inspect the complete proposals and any timing warning. Choose an option, a tie,
+or neither, optionally explain why, then download the editing decision. The file
+keeps the original document and exact UTF-8 export, source hash, constraints,
+alternatives, sound state and your note. The original result can still be
+downloaded separately with its original bytes. No preference is recorded on a
+server. Changing inputs clears the current choice; an earlier exported choice
+belongs to its historical source.
+
+Original creative words keep their original language; English edit instructions
+are not a translation. Sound-off edits may omit narration rather than invent
+new captions. Timing uses an explicit word-rate estimate, not a received audio
+render. Fixed individual shot timing or missing words can prevent these two
+options; an explicit refusal is preferable to a generic invented trailer.
+Author benefit and A/B/C superiority have not been measured.
+
 ## Try a new live analysis
 
 1. Use the default custom brief and **The Turn of the Screw (book)** as the

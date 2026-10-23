@@ -6,6 +6,19 @@ Start with the [jury guide](JURY-GUIDE.md). To request fresh evidence, use the d
 
 The separate **View recorded result** action reads one dated, authentic positive control from the [hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/). It makes no new API or model call. The interface preserves the original input, provenance and export; a separate English editorial translation helps read the original French creative text. This recorded read path uses Sites server storage and does not call the live Mac gateway. A new live analysis still needs the Mac, Qloo and the native model route.
 
+After receiving a complete accepted result, **Choose an edit for your book**
+offers two local editing proposals made from those same four shots. Their pacing
+and voice entrance differ; images, story order, original words and reference
+bindings remain inspectable. A silent adaptation can omit narration and reuse
+existing words as captions. The author can choose either proposal, a tie, or
+neither, then download a separate decision with the exact original UTF-8 export,
+source hash, timing estimates and note. An input change requires a new choice.
+These are deterministic local recompositions of a received result, including a
+dated recording, not two new Qloo/Qwen generations or rendered trailers. The
+original writer review does not certify the edits. The live engine and runtime
+below keep their received versions; this frontend layer does not requalify them.
+See the [delivered scope and unrun A/B/C protocol](docs/EDITORIAL-COMPARISON-PROTOCOL.md).
+
 ## Current workflow
 
 The live engine is now **2.6.3**. It keeps an unseen phenomenon off-screen,
