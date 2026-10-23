@@ -80,6 +80,11 @@ their full timelines use the source's actual images and words, with different
 shot durations and voice entrance. Neither option is recommended by an affinity
 score. These are local deterministic recompositions of the displayed source, not
 two model runs. A dated source stays dated.
+These are two cadences of the same scenario, not two separate narrative angles.
+Use either **Play / replay** button to see four received image descriptions and
+progressive received words over the selected timeline. Stop ends that playback;
+replay starts from the beginning. This text storyboard produces no image, video
+or spoken voice and does not choose your export.
 
 Inspect the complete proposals and any timing warning. Choose an option, a tie,
 or neither, optionally explain why, then download the editing decision. The file

@@ -89,6 +89,18 @@ const EditorialWorkbench = (() => {
       preserved:copy(workbench.preserved),timing_method:workbench.timing_method,language:workbench.language,
       original_received_document:copy(source),original_received_export_utf8:sourceRaw};
   }
-  return {build,choose};
+  function frameAt(direction, elapsed) {
+    const time=Math.min(direction.total_duration_seconds,Math.max(0,elapsed));
+    const index=direction.shots.findIndex(shot=>time<shot.end_seconds);
+    if(index<0)return {completed:true,elapsed_seconds:direction.total_duration_seconds,shot_id:null,voice_cue:false,visible_text:'',text_origin:'none'};
+    const shot=direction.shots[index],spoken=Boolean(shot.voiceover),cue=spoken?shot.editorial_delivery.voice_start_seconds:shot.start_seconds;
+    const text=spoken?shot.voiceover:shot.on_screen_text;
+    const cueActive=time>=cue,rate=spoken?2.5:3;
+    const shown=cueActive?Math.min(words(text),Math.floor((time-cue)*rate)+1):0;
+    return {completed:false,elapsed_seconds:Math.round(time*100)/100,shot_id:shot.id,
+      voice_cue:spoken && cueActive,visible_text:String(text || '').trim().split(/\s+/u).filter(Boolean).slice(0,shown).join(' '),
+      text_origin:spoken?'received_narration_text_no_audio':'received_caption_text_no_audio'};
+  }
+  return {build,choose,frameAt};
 })();
 /* EDITORIAL_WORKBENCH_END */

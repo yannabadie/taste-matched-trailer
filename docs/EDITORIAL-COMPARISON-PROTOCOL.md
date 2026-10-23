@@ -12,6 +12,17 @@ actual images, captions, narration, shot order, assets and reference bindings.
 The durations and voice entrance change; it adds no plot event, reveal, scene,
 character or measured claim. This is a deterministic editing layer written by
 Codex, not another native Qwen generation and not a Qloo recommendation.
+These are two cadences of one received scenario, not two different narrative
+angles. The stronger recommendation to offer distinct author directions is
+therefore only partly addressed; no claim of complete resolution is made.
+
+The local text storyboard makes the contrast perceptible over time. Play either
+cadence to see four actual received image descriptions and progressively revealed
+received words, with an image hold before narration in the images-led edit.
+Stop and replay operate locally and do not select an export. This is a reading
+preview, not generated imagery, spoken audio, a video or a quality measurement.
+Real wall-clock callback reception under an isolated DOM is kept separate from
+the root operator's rendered-browser reception.
 
 The same total duration, synopsis, spoiler rules and off-screen constraint remain
 in both choices. A source fixing individual shot lengths is refused. Sound-off

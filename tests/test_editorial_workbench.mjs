@@ -74,16 +74,16 @@ test('both delivered HTML copies contain exactly the tested core and parse witho
   for(const match of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
 });
 
-function browser(){
+function browser({realTimers=false}={}){
   const elements=new Map(),downloads=[],blobs=new Map();
   const element=id=>elements.get(id)||elements.set(id,{id,value:'',checked:false,hidden:false,disabled:false,innerHTML:'',textContent:'',className:'',addEventListener(){},appendChild(){}}).get(id);
   const document={getElementById:element,querySelector(){return document.selected || null;},addEventListener(){},body:{appendChild(){}},createElement(){return{remove(){},click(){downloads.push({filename:this.download,blob:blobs.get(this.href)});}};}};
   class LocalURL extends URL{static createObjectURL(blob){const id='blob:test-'+blobs.size;blobs.set(id,blob);return id;}static revokeObjectURL(){}}
   const window={document,location:{origin:'http://localhost',href:'http://localhost/index.html'},addEventListener(){}};
-  const context=vm.createContext({document,window,crypto:webcrypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},console});
+  const context=vm.createContext({document,window,crypto:webcrypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},setInterval:realTimers?setInterval:()=>1,clearInterval:realTimers?clearInterval:()=>{},performance:realTimers?performance:{now:()=>0},console});
   const html=fs.readFileSync(new URL('index.html',root),'utf8');let script=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   script=script.replace('loadPreset();restorePending();loadConfiguration();viewRecording();','');
-  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate};',context);
+  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview};',context);
   const source=gardeningSource(),raw=JSON.stringify(source);Object.assign(context.qa.state,{bundle:source,displayKind:'recorded',recording:{originalRaw:raw,manifest:{captured_at:'2026-10-20T13:41:27Z'}}});context.qa.state.snapshot=context.qa.snapshot();
   return{qa:context.qa,document,element,downloads,raw};
 }
@@ -97,4 +97,31 @@ test('real frontend choice downloads a separate dated recomposition; original by
 test('an input change during source-hash verification blocks download of a stale local choice',async()=>{
   const b=browser();await b.qa.renderEditorialWorkbench();b.document.selected={value:'words_lead',parentElement:{textContent:'Let the words lead'}};b.qa.chooseEditorialOption();
   const pending=b.qa.downloadEditorialDecision();b.qa.invalidate();await pending;assert.equal(b.downloads.length,0);
+});
+test('text storyboard follows source timing and distinguishes held image from narration cue',()=>{
+  const source=gardeningSource(),out=build(source),a=out.directions[0],b=out.directions[1];
+  assert.equal(work.frameAt(a,0).voice_cue,false);assert.equal(work.frameAt(a,.9).visible_text,'');
+  assert.equal(work.frameAt(b,0).voice_cue,true);assert.equal(work.frameAt(b,0).visible_text,'Start');
+  assert.equal(work.frameAt(a,8).shot_id,'shot_01');assert.equal(work.frameAt(b,8).shot_id,'shot_02');
+  assert.equal(work.frameAt(a,38).completed,true);assert.equal(work.frameAt(b,38).completed,true);
+});
+test('stop, replay and source invalidation manage one local timer without choosing an export',async()=>{
+  const b=browser();await b.qa.renderEditorialWorkbench();b.qa.startEditorialPreview('images_lead');
+  assert.equal(b.qa.state.preview.playing,true);assert.equal(b.qa.state.editChoice,null);
+  b.qa.stopEditorialPreview(true);assert.equal(b.qa.state.preview.playing,false);assert.equal(b.qa.state.preview.timer,null);
+  b.qa.startEditorialPreview('words_lead');assert.equal(b.qa.state.preview.directionId,'words_lead');assert.equal(b.qa.state.preview.events[0].elapsed_seconds,0);
+  b.qa.invalidate();assert.equal(b.qa.state.preview,null);assert.equal(b.element('editorialPreview').hidden,true);
+});
+test('actual wall-clock frontend callbacks show different image and text entries, without media or a model',async()=>{
+  const a=browser({realTimers:true}),b=browser({realTimers:true});await Promise.all([a.qa.renderEditorialWorkbench(),b.qa.renderEditorialWorkbench()]);
+  const started=performance.now();a.qa.startEditorialPreview('images_lead');b.qa.startEditorialPreview('words_lead');
+  try{
+    await new Promise(resolve=>setTimeout(resolve,13900));
+    const eventsA=clone(a.qa.state.preview.events),eventsB=clone(b.qa.state.preview.events);
+    const nextA=eventsA.find(e=>e.shot_id==='shot_02'),nextB=eventsB.find(e=>e.shot_id==='shot_02');
+    assert.ok(nextA && nextB);assert.ok(nextB.elapsed_seconds<nextA.elapsed_seconds);
+    assert.equal(eventsA[0].event,'image_or_caption_cue');assert.equal(eventsB[0].event,'voice_text_cue');
+    assert.ok(eventsA.some(e=>e.shot_id==='shot_01' && e.event==='voice_text_cue' && e.elapsed_seconds>=1));
+    console.log('EDITORIAL_CHRONOLOGY_RECEIPT '+JSON.stringify({kind:'actual_wall_clock_frontend_callbacks_isolated_DOM_not_rendered_browser',source:'synthetic_gardening_38_second_control',observed_elapsed_seconds:Math.round((performance.now()-started)/10)/100,images_lead_events:eventsA,words_lead_events:eventsB,no_audio_video_network_or_model:true}));
+  }finally{a.qa.stopEditorialPreview(false);b.qa.stopEditorialPreview(false);}
 });

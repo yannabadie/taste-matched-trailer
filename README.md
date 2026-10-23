@@ -15,7 +15,10 @@ neither, then download a separate decision with the exact original UTF-8 export,
 source hash, timing estimates and note. An input change requires a new choice.
 These are deterministic local recompositions of a received result, including a
 dated recording, not two new Qloo/Qwen generations or rendered trailers. The
-original writer review does not certify the edits. The live engine and runtime
+two cadences keep one scenario; distinct narrative angles remain an open product
+improvement. Play either local text storyboard to inspect the image holds and
+progressive received words, then stop or replay it. No audio or imagery is rendered.
+The original writer review does not certify the edits. The live engine and runtime
 below keep their received versions; this frontend layer does not requalify them.
 See the [delivered scope and unrun A/B/C protocol](docs/EDITORIAL-COMPARISON-PROTOCOL.md).
 
