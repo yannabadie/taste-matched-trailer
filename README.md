@@ -45,7 +45,15 @@ change separately. It is a technical operator exercise, not an author study.
 
 ## Current workflow
 
-The live engine is now **2.6.3**. It keeps an unseen phenomenon off-screen,
+Source **2.6.4** adds a certainty-preserving shot purpose and a distinct narrow
+visual-negation guard repair. The [framing and delivery report](docs/CREATIVE-FRAMING-2.6.4.md)
+separates the first failed deliveries, repaired replay and limited Codex comparison.
+Source publication and activation on the Mac are different steps. The last native
+creative qualification remains **2.6.3**;2.6.4 does not inherit it, and its Qwen
+creative quality has not been re-evaluated. Runtime1.1.3 and runner settings stay
+unchanged. The hosted recording still shows the historical2.6.3 result.
+
+The historically qualified **2.6.3** engine keeps an unseen phenomenon off-screen,
 including blurred or peripheral body shapes, while permitting an ordinary
 narrator's face when the brief allows it. Evidence requirements follow each
 shot's actual claim: a purely editorial shot can have no Qloo reference; a
