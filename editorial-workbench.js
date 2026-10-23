@@ -161,9 +161,13 @@ const EditorialWorkbench = (() => {
     shot.on_screen_text=text;draft.revision++;return inspectSilentDraft(draft,source);
   }
   function canonicalJSON(value) {
-    if(Array.isArray(value))return '['+value.map(canonicalJSON).join(',')+']';
-    if(value && typeof value==='object')return '{'+Object.keys(value).sort().map(key=>JSON.stringify(key)+':'+canonicalJSON(value[key])).join(',')+'}';
-    return JSON.stringify(value);
+    const normalized=copy(value);
+    const encode=item=>{
+      if(Array.isArray(item))return '['+item.map(encode).join(',')+']';
+      if(item && typeof item==='object')return '{'+Object.keys(item).sort().map(key=>JSON.stringify(key)+':'+encode(item[key])).join(',')+'}';
+      return JSON.stringify(item);
+    };
+    return encode(normalized);
   }
   async function digestText(text) {
     return Array.from(new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))).map(n=>n.toString(16).padStart(2,'0')).join('');
@@ -176,17 +180,17 @@ const EditorialWorkbench = (() => {
     if(JSON.stringify(JSON.parse(sourceRaw))!==binding.sourceJSON || await digestText(sourceRaw)!==binding.parentHash)throw Error('The original parent bytes/hash do not match this adaptation.');
     silentBinding(draft,source);
     if(draft.revision!==revision || JSON.stringify(draft)!==snapshot)throw Error('The local text changed during verification. Decide again on the current draft.');
-    const payload={parent:copy(draft.parent),transformation:{kind:'local_sound_off_adaptation',author:'deterministic received-text transfer plus explicitly attributed local author corrections',base:'original_received_timing',revision},
+    const payload=copy({parent:copy(draft.parent),transformation:{kind:'local_sound_off_adaptation',author:'deterministic received-text transfer plus explicitly attributed local author corrections',base:'original_received_timing',revision},
       local_delivery_constraint:copy(draft.local_delivery_constraint),
       author_decision:{status:decision,note,decided_at:decidedAt,use_adaptation:decision==='accept',scope:'Local author decision, not a native or independent canon/spoiler verdict.'},
       shots:copy(draft.shots).map(shot=>({...shot,text_origin:shot.on_screen_text===shot.transfer.proposed_on_screen_text?'deterministic_verbatim_parent_text_transfer':'author_free_edit_unverified'})),
       local_checks:checks,
       variant_verification:{native_status:'not_executed',canon_spoiler_status:'not_verified',understandability_status:'requires_author_review'},
-      historical_qloo_evidence_scope:'Parent only. These edits and free author text have no new Qloo or model validation.'};
+      historical_qloo_evidence_scope:'Parent only. These edits and free author text have no new Qloo or model validation.'});
     const hash=await digestText(canonicalJSON(payload));silentBinding(draft,source);
     if(draft.revision!==revision || JSON.stringify(draft)!==snapshot)throw Error('The local text changed during identity calculation. Decide again.');
     return {schema:'local-silent-adaptation-v1',derived_id:'local-silent-'+hash,payload_sha256:hash,
-      identity_method:'SHA-256 of canonical sorted compact JSON of payload; parent original bytes are linked by payload.parent.document_sha256.',
+      identity_method:'SHA-256 of JSON-normalized payload with recursively sorted object keys and compact JSON encoding; application format, not RFC8785. Parent bytes are linked by payload.parent.document_sha256.',
       payload,parent_original_document:copy(source),parent_original_export_utf8:sourceRaw,
       parent_attachment_scope:'Unchanged historical parent. Its verification and Qloo flags apply only to it, never to this derivative.'};
   }

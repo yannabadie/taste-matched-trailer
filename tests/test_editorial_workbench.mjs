@@ -149,6 +149,15 @@ test('silent author correction and decision have their own reproducible hash, ex
   assert.equal('verification' in artifact.payload,false);assert.equal('qloo_api_verified' in artifact.payload,false);assert.equal('user_constraints' in artifact.payload,false);
   assert.equal(artifact.parent_original_document.brief.verification.llm_status,'accept');assert.equal(artifact.parent_original_document.brief.user_constraints.sound_off,false);
 });
+test('silent optional metadata omission keeps the downloaded payload hash reproducible',async()=>{
+  const source=gardeningSource();delete source.director_version;for(const shot of source.brief.shots)delete shot.aspect_ratio;
+  const raw=JSON.stringify(source),draft=work.createSilentDraft(source,{source_sha256:hash(raw),display_kind:'fixture'});
+  const artifact=await work.finalizeSilentDraft(draft,source,raw,'accept');const downloaded=JSON.parse(JSON.stringify(artifact));
+  assert.equal('director_version' in downloaded.payload.parent,false);assert.equal('aspect_ratio' in downloaded.payload.shots[0],false);
+  assert.equal(hash(work.canonicalJSON(downloaded.payload)),artifact.payload_sha256);assert.equal(artifact.derived_id,'local-silent-'+artifact.payload_sha256);
+  assert.equal(work.canonicalJSON({missing:undefined,array:[undefined,2],present:1}),' {"array":[null,2],"present":1}'.trim());
+  assert.match(artifact.identity_method,/not RFC8785/);assert.equal(JSON.stringify(source),raw);
+});
 test('silent missing text prevents local acceptance, while rejection preserves the exact unresolved draft',async()=>{
   const {source,raw,draft}=silentCase();work.setSilentCaption(draft,source,'shot_01','');
   await assert.rejects(()=>work.finalizeSilentDraft(draft,source,raw,'accept'),/no silent text/);
