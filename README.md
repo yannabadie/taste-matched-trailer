@@ -23,6 +23,14 @@ The native parent's sound constraint and verdict are not rewritten. Native
 verification of the derivative has not run; free author text is not checked for
 canon, spoilers or comprehension. Local word-rate checks do not establish those
 properties. Editing again invalidates the local decision.
+**Resume a saved local decision** reopens an exported sound-off decision for the
+exact received parent (up to1MiB). It checks the file schema, derived identity,
+payload hash, parent UTF-8 bytes and protected shot fields before restoring only
+captions and the note. They return as an undecided draft: accept or reject again
+before downloading. Invalid files leave the current draft and decision intact.
+No URL from the file is followed. This is local integrity checking, not source
+authentication or semantic/native verification; a saved historical decision is
+not a current approval.
 These are deterministic local recompositions of a received result, including a
 dated recording, not two new Qloo/Qwen generations or rendered trailers. The
 two cadences keep one scenario; distinct narrative angles remain an open product
@@ -30,7 +38,10 @@ improvement. Play either local text storyboard to inspect the image holds and
 progressive received words, then stop or replay it. No audio or imagery is rendered.
 The original writer review does not certify the edits. The live engine and runtime
 below keep their received versions; this frontend layer does not requalify them.
-See the [delivered scope and unrun A/B/C protocol](docs/EDITORIAL-COMPARISON-PROTOCOL.md).
+See the [delivered scope and original A/B/C protocol](docs/EDITORIAL-COMPARISON-PROTOCOL.md).
+The [local editing comparison](docs/LOCAL-UTILITY-COMPARISON.md) records the
+prepared editor's initial reopening advantage and the bounded local resume
+change separately. It is a technical operator exercise, not an author study.
 
 ## Current workflow
 

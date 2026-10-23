@@ -194,6 +194,32 @@ const EditorialWorkbench = (() => {
       payload,parent_original_document:copy(source),parent_original_export_utf8:sourceRaw,
       parent_attachment_scope:'Unchanged historical parent. Its verification and Qloo flags apply only to it, never to this derivative.'};
   }
-  return {build,choose,frameAt,createSilentDraft,setSilentCaption,inspectSilentDraft,finalizeSilentDraft,canonicalJSON};
+  async function resumeSilentDraft(artifact,source,sourceRaw,context) {
+    // A local file is input, never authority. Validate everything before returning
+    // a new bound draft; only its captions and note can enter the current editor.
+    if(!artifact || typeof artifact!=='object' || !context || typeof context!=='object')throw Error('Select a local sound-off decision exported by this application.');
+    artifact=copy(artifact);context=copy(context);
+    const sourceJSON=JSON.stringify(source),payload=artifact.payload;
+    if(artifact?.schema!=='local-silent-adaptation-v1' || payload?.transformation?.kind!=='local_sound_off_adaptation' || payload.transformation.base!=='original_received_timing' || !Number.isInteger(payload.transformation.revision) || payload.transformation.revision<0)throw Error('Select a local sound-off decision exported by this application.');
+    if(!/^[a-f0-9]{64}$/.test(artifact.payload_sha256 || '') || artifact.derived_id!=='local-silent-'+artifact.payload_sha256 || await digestText(canonicalJSON(payload))!==artifact.payload_sha256)throw Error('The saved decision identity or payload hash does not match.');
+    if(typeof sourceRaw!=='string' || artifact.parent_original_export_utf8!==sourceRaw || JSON.stringify(artifact.parent_original_document)!==sourceJSON || JSON.stringify(JSON.parse(sourceRaw))!==sourceJSON || payload.parent?.document_sha256!==context?.source_sha256 || await digestText(sourceRaw)!==context?.source_sha256)throw Error('The saved decision belongs to different parent bytes. Load its exact received parent first.');
+    if(JSON.stringify(source)!==sourceJSON)throw Error('The current parent changed during import. Try again on its received result.');
+    const draft=createSilentDraft(source,context),decision=payload.author_decision;
+    if(!['accept','reject'].includes(decision?.status) || typeof decision.note!=='string' || decision.note.length>2000 || decision.use_adaptation!==(decision.status==='accept') || payload.local_delivery_constraint?.sound_off!==true || payload.variant_verification?.native_status!=='not_executed' || payload.variant_verification?.canon_spoiler_status!=='not_verified' || payload.variant_verification?.understandability_status!=='requires_author_review')throw Error('The file does not carry a supported local editing decision.');
+    for(const key of ['run_id','director_version','created_at','document_sha256'])if(payload.parent[key]!==draft.parent[key])throw Error('The saved parent identity does not match the current result.');
+    if(!Array.isArray(payload.shots) || payload.shots.length!==draft.shots.length)throw Error('The saved shot inventory does not match this parent.');
+    for(let i=0;i<draft.shots.length;i++){
+      const saved=payload.shots[i],expected=draft.shots[i];
+      if(!saved || typeof saved.on_screen_text!=='string' || saved.on_screen_text.length>6000)throw Error('Each saved caption must contain at most6000 characters.');
+      const protectedSaved=copy(saved),protectedExpected=copy(expected);delete protectedSaved.on_screen_text;delete protectedSaved.text_origin;delete protectedExpected.on_screen_text;
+      if(canonicalJSON(protectedSaved)!==canonicalJSON(protectedExpected))throw Error('The saved images, timing, audio or source lineage changed. Only captions and a note can be resumed.');
+      if(saved.text_origin!==(saved.on_screen_text===expected.transfer.proposed_on_screen_text?'deterministic_verbatim_parent_text_transfer':'author_free_edit_unverified'))throw Error('The saved caption attribution is inconsistent.');
+      if(saved.on_screen_text!==expected.on_screen_text)setSilentCaption(draft,source,expected.id,saved.on_screen_text);
+    }
+    inspectSilentDraft(draft,source);
+    return {draft,note:decision.note,history:{derived_id:artifact.derived_id,previous_decision:decision.status},
+      scope:'Captions and note restored into an undecided local draft. Historical decisions and native verdicts are not inherited.'};
+  }
+  return {build,choose,frameAt,createSilentDraft,setSilentCaption,inspectSilentDraft,finalizeSilentDraft,resumeSilentDraft,canonicalJSON};
 })();
 /* EDITORIAL_WORKBENCH_END */

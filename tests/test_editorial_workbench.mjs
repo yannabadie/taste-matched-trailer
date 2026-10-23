@@ -83,7 +83,7 @@ function browser({realTimers=false,inputSource=null}={}){
   const context=vm.createContext({document,window,crypto:webcrypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},setInterval:realTimers?setInterval:()=>1,clearInterval:realTimers?clearInterval:()=>{},performance:realTimers?performance:{now:()=>0},console});
   const html=fs.readFileSync(new URL('index.html',root),'utf8');let script=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   script=script.replace('loadPreset();restorePending();loadConfiguration();viewRecording();','');
-  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision};',context);
+  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision,resumeSilentDecisionFile,silentImportFailure};',context);
   const source=inputSource || gardeningSource(),raw=JSON.stringify(source);Object.assign(context.qa.state,{bundle:source,displayKind:'recorded',recording:{originalRaw:raw,manifest:{captured_at:'2026-10-20T13:41:27Z'}}});context.qa.state.snapshot=context.qa.snapshot();
   return{qa:context.qa,document,element,downloads,raw};
 }
@@ -201,4 +201,61 @@ test('silent frontend can reject and cannot export after a parent change; fixed 
   await b.qa.prepareSilentAdaptation();assert.match(b.element('silentConstraintSummary').textContent,/fixes individual timing/);
   await b.qa.decideSilentAdaptation('reject');await b.qa.downloadSilentAdaptation();assert.equal(JSON.parse(await b.downloads[0].blob.text()).payload.author_decision.status,'reject');
   b.qa.invalidate();assert.equal(b.qa.state.silentDraft,null);assert.equal(b.element('downloadSilentBtn').disabled,true);await assert.rejects(()=>b.qa.downloadSilentAdaptation(),/Accept or reject/);assert.equal(b.downloads.length,1);
+});
+
+const localFile=text=>({size:Buffer.byteLength(text),text:async()=>text});
+async function savedSilentCase(){
+  const c=silentCase();work.setSilentCaption(c.draft,c.source,'shot_02','Exact resumed caption.\nSecond line.');
+  c.artifact=await work.finalizeSilentDraft(c.draft,c.source,c.raw,'accept','Exact saved note.','2026-10-23T17:00:00Z');return c;
+}
+test('silent resume restores only captions and note; a fresh decision is required after a page restart',async()=>{
+  const source=gardeningSource(),a=browser({inputSource:source});await a.qa.renderEditorialWorkbench();await a.qa.prepareSilentAdaptation();
+  a.qa.updateSilentCaption('shot_02','Exact resumed caption.\nSecond line.');a.element('silentDecisionNote').value='Exact saved note.';
+  await a.qa.decideSilentAdaptation('accept');await a.qa.downloadSilentAdaptation();const bytes=await a.downloads[0].blob.text();
+  const b=browser({inputSource:source});await b.qa.renderEditorialWorkbench();assert.equal(b.qa.state.silentDraft,null);
+  await b.qa.resumeSilentDecisionFile(localFile(bytes));
+  assert.equal(b.qa.state.silentDraft.shots[1].on_screen_text,'Exact resumed caption.\nSecond line.');assert.equal(b.element('silentDecisionNote').value,'Exact saved note.');
+  assert.equal(b.qa.state.silentExport,null);assert.equal(b.element('downloadSilentBtn').disabled,true);assert.match(b.element('silentStatus').textContent,/UNDECIDED/);
+  await assert.rejects(()=>b.qa.downloadSilentAdaptation(),/Accept or reject/);
+  await b.qa.decideSilentAdaptation('reject');await b.qa.downloadSilentAdaptation();const resumed=JSON.parse(await b.downloads[0].blob.text());
+  assert.equal(resumed.payload.author_decision.status,'reject');assert.equal(resumed.payload.shots[1].on_screen_text,'Exact resumed caption.\nSecond line.');
+  assert.equal(resumed.payload.variant_verification.native_status,'not_executed');assert.equal(resumed.parent_original_export_utf8,b.raw);
+});
+test('silent resume verifies kind identity exact parent and protected fields, even if tampering is rehashed',async()=>{
+  const c=await savedSilentCase(),context={source_sha256:hash(c.raw),display_kind:'fixture'};
+  for(const mutate of [a=>a.schema='another-export',a=>a.derived_id='local-silent-'+'0'.repeat(64),a=>a.payload.shots[1].on_screen_text='Changed without new hash']){
+    const a=clone(c.artifact);mutate(a);await assert.rejects(()=>work.resumeSilentDraft(a,c.source,c.raw,context));
+  }
+  for(const mutate of [a=>a.payload.shots[1].duration_seconds=11,a=>a.payload.shots[1].assets.push('https://not-fetched.invalid/asset'),a=>a.payload.variant_verification.native_status='accept',a=>a.payload.shots[1].text_origin='native_verified']){
+    const a=clone(c.artifact);mutate(a);a.payload_sha256=hash(work.canonicalJSON(a.payload));a.derived_id='local-silent-'+a.payload_sha256;
+    await assert.rejects(()=>work.resumeSilentDraft(a,c.source,c.raw,context));
+  }
+  await assert.rejects(()=>work.resumeSilentDraft(c.artifact,c.source,c.raw+' ',{...context,source_sha256:hash(c.raw+' ')}),/different parent bytes/);
+  const changed=clone(c.source);changed.brief.synopsis+=' Different parent.';const changedRaw=JSON.stringify(changed);
+  await assert.rejects(()=>work.resumeSilentDraft(c.artifact,changed,changedRaw,{...context,source_sha256:hash(changedRaw)}),/different parent bytes/);
+});
+test('silent resume invalid oversized or wrong-parent files leave the existing draft and decision intact',async()=>{
+  const b=browser();await b.qa.renderEditorialWorkbench();await b.qa.prepareSilentAdaptation();b.qa.updateSilentCaption('shot_01','Current work must survive.');b.element('silentDecisionNote').value='Current note.';await b.qa.decideSilentAdaptation('reject');
+  const before=JSON.stringify(b.qa.state.silentDraft),decision=b.qa.state.silentExport,attempt=b.qa.state.silentAttempt;
+  const c=await savedSilentCase(),bad=clone(c.artifact);bad.derived_id='bad';
+  for(const file of [localFile('{bad json'),localFile(JSON.stringify(bad)),localFile(JSON.stringify(c.artifact)),{size:1048577,text(){throw Error('Oversized file must not be read.');}}]){
+    await assert.rejects(()=>b.qa.resumeSilentDecisionFile(file));
+    assert.equal(JSON.stringify(b.qa.state.silentDraft),before);assert.equal(b.qa.state.silentExport,decision);assert.equal(b.qa.state.silentAttempt,attempt);assert.equal(b.element('silentDecisionNote').value,'Current note.');assert.equal(b.element('downloadSilentBtn').disabled,false);
+  }
+  b.qa.silentImportFailure(Error('Refused test input.'));assert.equal(b.qa.state.silentExport,decision);assert.match(b.element('silentStatus').textContent,/not replaced/);
+});
+test('silent resume preserves rejected missing text and optional metadata without importing authority or markup',async()=>{
+  const c=silentCase();delete c.source.director_version;for(const s of c.source.brief.shots)delete s.aspect_ratio;
+  const raw=JSON.stringify(c.source),context={source_sha256:hash(raw),display_kind:'fixture'},draft=work.createSilentDraft(c.source,context);
+  work.setSilentCaption(draft,c.source,'shot_02','');const artifact=await work.finalizeSilentDraft(draft,c.source,raw,'reject','<img src=x onerror=alert(1)>');
+  const b=browser({inputSource:c.source});await b.qa.renderEditorialWorkbench();await b.qa.resumeSilentDecisionFile(localFile(JSON.stringify(artifact)));
+  assert.equal(b.qa.state.silentDraft.shots[1].on_screen_text,'');assert.equal(b.element('silentDecisionNote').value,'<img src=x onerror=alert(1)>');assert.equal(b.element('downloadSilentBtn').disabled,true);
+  await assert.rejects(()=>b.qa.decideSilentAdaptation('accept'),/no silent text/);
+  await b.qa.decideSilentAdaptation('reject');await b.qa.downloadSilentAdaptation();assert.equal(JSON.parse(await b.downloads[0].blob.text()).payload.variant_verification.native_status,'not_executed');
+});
+test('silent resume refuses to overwrite a correction made while the selected file is being read',async()=>{
+  const b=browser();await b.qa.renderEditorialWorkbench();await b.qa.prepareSilentAdaptation();await b.qa.decideSilentAdaptation('accept');await b.qa.downloadSilentAdaptation();const bytes=await b.downloads[0].blob.text();
+  let release;const file={size:Buffer.byteLength(bytes),text:()=>new Promise(resolve=>{release=()=>resolve(bytes);})};
+  const pending=b.qa.resumeSilentDecisionFile(file);b.qa.updateSilentCaption('shot_02','Newer current edit.');release();
+  await assert.rejects(pending,/changed during import/);assert.equal(b.qa.state.silentDraft.shots[1].on_screen_text,'Newer current edit.');assert.equal(b.element('downloadSilentBtn').disabled,true);
 });
