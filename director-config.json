@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://palace-niagara-movies-lil.trycloudflare.com",
+  "api_base_url": "https://after-clearing-alexandria-ride.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.3",
-  "revision": "runtime-f4288f8f08a0487d97f88c134cecd5f9",
-  "runtime_status": "offline",
-  "updated_at": "2026-10-22T23:04:28.355679Z",
-  "expires_at": "2026-10-23T23:04:28.355679Z"
+  "revision": "runtime-f045e74d4b344fa4a4ae5e431a1dfb56",
+  "runtime_status": "ready",
+  "updated_at": "2026-10-23T08:33:48.450426Z",
+  "expires_at": "2026-10-24T08:33:48.450426Z"
 }
