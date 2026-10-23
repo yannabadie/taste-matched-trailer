@@ -1,0 +1,27 @@
+{
+  "schema": "prospective-scaffold-cases-v2",
+  "state": "SYNTHETIC_CONTRASTS_NOT_NEW_CULTURAL_ACQUISITIONS",
+  "scope": "One historical cultural context reused identically. Only the first synopsis matches the authentic original. No role1 inference; its supplied theme context is frozen for this writer-stage comparison.",
+  "analysis": {"themes": ["perceptual uncertainty"]},
+  "common_constraints": {"duration_seconds": 38, "aspect_ratio": "16:9", "language": "en", "no_visible_monster": true},
+  "cases": [
+    {
+      "id": "perception_only",
+      "synopsis": "A narrator doubts their perceptions and senses an unseen presence. Preserve the uncertainty without showing a creature. Create an intimate, tense trailer brief.",
+      "constraints": {"sound_off": false},
+      "canon": {"established": ["The narrator doubts their perceptions", "The narrator senses an unseen presence"], "unestablished": ["An external presence exists", "A physical trace exists", "An intruder caused an event"]}
+    },
+    {
+      "id": "established_physical_clue",
+      "synopsis": "A narrator finds a handprint in dust on a table. The handprint is real, but its author and age are unknown. The narrator senses an unseen presence and doubts whether it relates to the mark. Preserve this uncertainty without showing a creature.",
+      "constraints": {"sound_off": false},
+      "canon": {"established": ["A handprint in dust on a table exists", "Its author and age are unknown", "The narrator senses a presence and doubts the connection"], "unestablished": ["A present intruder made the print", "The presence has a visible body", "A supernatural cause is proven"]}
+    },
+    {
+      "id": "silent_subjective_presence",
+      "synopsis": "A narrator reading alone senses someone nearby, then questions their own perception. No external event or physical evidence confirms the feeling. Keep the sensed presence subjective and the ending unresolved.",
+      "constraints": {"sound_off": true, "assets": ["objects", "typography"]},
+      "canon": {"established": ["A narrator reads alone", "They sense someone nearby and question their perception", "No external event or physical evidence confirms the feeling"], "unestablished": ["Someone is physically present", "An object moves by itself", "A new physical trace appears"], "delivery": ["The uncertainty and felt proximity must be expressible with images and captions", "No voice, sound, people, hands or faces in the proposed shots"]}
+    }
+  ]
+}

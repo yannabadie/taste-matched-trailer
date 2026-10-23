@@ -45,7 +45,7 @@ from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.3-invisible-presence-editorial-contract-20261020"
+DIRECTOR_VERSION = "2.6.4-scaffold-certainty-negation-contract-20261023"
 RULE_VERSION = "det-select-v1.5"
 REQUIRED_NODE_MIN = "22.19.0"
 REQUIRED_HARNESS_MIN = "0.1.26"
@@ -1382,7 +1382,16 @@ def _shot_plan(constraints: dict[str, Any], bindings: list[dict[str, Any]]) -> l
     if ratio not in ("16:9","9:16","1:1","4:5"): raise ValueError("Unsupported aspect_ratio")
     quarter=round(float(duration)/4,3)
     durations=[quarter,quarter,quarter,round(float(duration)-3*quarter,3)]
-    beats=["Ouvrir un mystère propre au synopsis","Faire évoluer une trace matérielle","Créer un basculement émotionnel","Conclure par une invitation à lire"]
+    beats=[
+        "Ouvrir un mystère propre au synopsis",
+        ("Préserver le degré de certitude du synopsis. Lorsqu'une présence est seulement ressentie, "
+         "garder cette perception subjective ; aucun indice physique n'est obligatoire. "
+         "Un indice physique n'est proposé que s'il est cohérent avec le canon et n'établit pas "
+         "une intrusion absente du synopsis. Rendre cette perception lisible dans les captions "
+         "sans transformer le ressenti en fait établi."),
+        "Créer un basculement émotionnel",
+        "Conclure par une invitation à lire",
+    ]
     plans=[]
     for idx in range(4):
         binding=(bindings[0] if idx<2 else bindings[min(1,len(bindings)-1)]) if bindings and idx<3 else None
@@ -1390,6 +1399,85 @@ def _shot_plan(constraints: dict[str, Any], bindings: list[dict[str, Any]]) -> l
             "aspect_ratio":ratio,"assets":copy.deepcopy(constraints.get("assets") or []),
             "retained_reference":copy.deepcopy(binding),"sound_off":bool(constraints.get("sound_off"))})
     return plans
+
+
+_PERSON_VISUAL_NOUN = r"(?:people|persons?|humans?|man|men|woman|women|child|children|characters?|actors?|actress(?:es)?|faces?|hands?|narrators?|personnes?|personnages?|humains?|humaines?|hommes?|femmes?|enfants?|acteurs?|actrices?|visages?|mains?|narrateurs?|narratrices?)"
+_NEGATABLE_VISUAL_NOUN = _PERSON_VISUAL_NOUN + r"|figures?|silhouettes?|contours?|outlines?|formes?|shapes?|ombres?|shadows?|bodies|body|corps|monsters?|monstres?|creatures?|apparitions?"
+
+
+def _without_negated_visual_nominals(text: str) -> str:
+    """Mask only explicit negative nominal spans, never their whole clause.
+
+    A small EN/FR list grammar, not semantic validation. Unknown one-word list
+    heads can carry negation to a later visual noun (no furniture or people).
+    Contrast words, new sentences and new subjects after commas stop the scope.
+    """
+    tokens = list(re.finditer(r"[a-z]+(?:[-'][a-z]+)*|[,.;:!?()]", text))
+    values = [m.group() for m in tokens]
+    articles = {"a", "an", "the", "any", "de", "des", "du", "un", "une", "le", "la", "les", "aucun", "aucune", "aucuns", "aucunes"}
+    modifiers = {"other", "ordinary", "visible", "human", "humanoid", "human-shaped", "body-shaped", "figure-shaped", "blurry", "blurred", "shadowy", "spectral", "ghostly", "distinct", "additional", "autre", "autres", "ordinaire", "ordinaires", "visible", "visibles", "humain", "humaine", "humains", "humaines", "humanoide", "humanoides", "flou", "floue", "flous", "floues", "spectral", "spectrale", "spectrales", "spectraux"}
+    contrasts = {"but", "except", "however", "yet", "although", "rather", "instead", "mais", "sauf", "pourtant", "cependant", "puis", "alors", "tandis", "when", "while", "then", "until"}
+    joins = {"or", "nor", "ou", "ni", "and", "et"}
+    stop = contrasts | joins | {"no", "not", "without", "neither", "sans", "pas", "is", "are", "was", "were", "appears", "appear", "stands", "stand", "enters", "enter", "emerges", "emerge", "se", "est", "sont", "apparait", "apparaissent", "entre", "entrent"}
+    masks = []
+
+    def nominal(index, allow_article):
+        start = index
+        if index >= len(values) or (not allow_article and values[index] in articles): return None
+        count = 0
+        while index < len(values) and values[index] in articles | modifiers and count < 4:
+            if re.fullmatch(_NEGATABLE_VISUAL_NOUN, values[index]) and (index + 1 >= len(values) or values[index + 1] in modifiers | stop or not values[index + 1][0].isalpha()): break
+            index += 1; count += 1
+        if index >= len(values): return None
+        head = values[index]
+        if not re.fullmatch(r"[a-z]+(?:[-'][a-z]+)*", head) or head in stop | articles: return None
+        base = head.removesuffix("'s")
+        if base.startswith("d'"): base = base[2:]
+        known = bool(re.fullmatch(_NEGATABLE_VISUAL_NOUN, base))
+        known = known or any(re.fullmatch(_NEGATABLE_VISUAL_NOUN, value) for value in values[start:index])
+        index += 1
+        if head.endswith("'s") and index < len(values) and re.fullmatch(_NEGATABLE_VISUAL_NOUN, values[index]):
+            index += 1
+        count = 0
+        while index < len(values) and values[index] in modifiers and count < 3:
+            index += 1; count += 1
+        if known and index + 1 < len(values) and values[index] in {"of", "de", "du"}:
+            owner = index + 1
+            while owner < len(values) and values[owner] in articles | modifiers and owner < index + 5: owner += 1
+            if owner < len(values) and re.fullmatch(_PERSON_VISUAL_NOUN, values[owner]): index = owner + 1
+        return index, (tokens[start].start(), tokens[index - 1].end()) if known else None
+
+    for i, word in enumerate(values):
+        if word not in {"no", "not", "without", "neither", "sans", "aucun", "aucune", "aucuns", "aucunes", "pas", "ni"}: continue
+        if i and values[i - 1] in {"not", "pas"} and word in {"no", "without", "sans", "aucun", "aucune", "aucuns", "aucunes", "ni"}: continue
+        if word == "pas" and i + 1 < len(values) and values[i + 1] in {"aucun", "aucune", "aucuns", "aucunes"}: continue
+        current = nominal(i + 1, True)
+        if current is None: continue
+        end, mask = current
+        if mask: masks.append(mask)
+        while end < len(values):
+            separator = values[end]
+            if separator not in joins | {","}: break
+            next_index = end + 1
+            if separator == "," and next_index < len(values) and values[next_index] in joins:
+                separator = values[next_index]; next_index += 1
+            nxt = nominal(next_index, separator in {"or", "nor", "ou", "ni"})
+            if nxt is None: break
+            next_end, next_mask = nxt
+            # A bare subject after a comma followed by a predicate is ambiguous;
+            # keep it visible to the guard rather than suppressing an assertion.
+            if separator == "," and next_end < len(values) and values[next_end] not in joins | {",", ".", ";", ":", "!", "?", ")"}: break
+            if next_mask: masks.append(next_mask)
+            end = next_end
+    chars = list(text)
+    for start, end in masks:
+        chars[start:end] = " " * (end - start)
+    return "".join(chars)
+
+
+def _visible_person_form(visual: str) -> bool:
+    text = "".join(c for c in unicodedata.normalize("NFKD", visual.casefold()) if not unicodedata.combining(c)).replace("’", "'")
+    return bool(re.search(r"\b" + _PERSON_VISUAL_NOUN + r"\b", _without_negated_visual_nominals(text)))
 
 
 def _visible_phenomenon_form(visual: str) -> bool:
@@ -1401,17 +1489,14 @@ def _visible_phenomenon_form(visual: str) -> bool:
     text="".join(c for c in unicodedata.normalize("NFKD",visual.casefold()) if not unicodedata.combining(c)).replace("’", "'")
     noun=r"(?:silhouettes?|figures?|contours?|outlines?|formes?|shapes?|ombres?|shadows?)"
     modifier=r"(?:visible|flou\w*|blur\w*|humain\w*|human\w*|humanoid\w*|human-shaped|ghostly|spectral|shadowy)"
-    # Remove only explicitly negated shape phrases, including a negative list.
-    shape=r"(?:"+modifier+r"\s+){0,2}"+noun+r"(?:\s+"+modifier+r"){0,2}"
-    negative=r"\b(?:sans|aucune?|without|no|pas de|ni|nor)\s+(?:(?:any|aucune?)\s+)?"
-    text=re.sub(negative+shape+r"(?:\s*(?:,|or|nor|ou|ni)\s+"+shape+r")*","",text)
+    text = _without_negated_visual_nominals(text)
     actor=r"(?:narrateur|narratrice|narrator|protagoniste|protagonist)"
     # An explicitly attributed ordinary actor shape is not the unseen phenomenon.
     text=re.sub(noun+r"(?:\s+"+modifier+r")?\s+(?:du|de la|of the|of)\s+"+actor+r"\b","",text)
     text=re.sub(r"\b(?:the\s+)?"+actor+r"'s\s+(?:"+modifier+r"\s+)?"+noun+r"\b","",text)
     if re.search(r"\b(?:humanoid|humanoide|human|human-shaped|humanlike|ghostly|spectral)\s+"+noun+r"\b|\b"+noun+r"\s+(?:humain\w*|humanoide\w*)\b",text):return True
     if re.search(r"\b(?:blurry|blurred|shadowy)\s+(?:silhouette|figure)\b|\b(?:silhouette|figure)\s+(?:flou\w*|fantomatique\w*)\b",text):return True
-    appearance=r"(?:apparait|disparait|surgit|se dessine|traverse|appears?|emerges?|vanishes?|lurks?|materiali[sz]es?)"
+    appearance=r"(?:apparait|disparait|surgit|se dessine|se tient|est visible|traverse|appears?|emerges?|vanishes?|lurks?|stands?|sits?|waits?|is visible|materiali[sz]es?)"
     return bool(re.search(r"\b(?:silhouette|figure)\b[^.!?;\n]{0,75}\b"+appearance+r"\b|\b"+appearance+r"\b[^.!?;\n]{0,75}\b(?:silhouette|figure)\b",text))
 
 def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
@@ -1441,7 +1526,7 @@ def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
             errors.append(f"{label}: visible apparition shape conflicts with an invisible phenomenon")
         if constraints.get("no_graphic_violence") and re.search(r"\b(?:sang|blood|gore|démembr|dismember)",text):
             errors.append(f"{label}: explicit graphic violence conflicts with constraint")
-        if set(constraints.get("assets") or [])=={"objects","typography"} and re.search(r"\b(?:personne|personnage|acteur|actrice|visage|mains|hands|face|actor|woman|man|people)\b",text):
+        if set(constraints.get("assets") or [])=={"objects","typography"} and _visible_person_form(visual):
             errors.append(f"{label}: visible person conflicts with objects+typography")
     return errors
 
