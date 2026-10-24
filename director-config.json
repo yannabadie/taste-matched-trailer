@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://after-clearing-alexandria-ride.trycloudflare.com",
+  "api_base_url": "https://mozilla-banners-blue-prizes.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.3",
-  "revision": "runtime-0aea2a12c564437caf46a39e93026c58",
+  "revision": "runtime-07ab277469e24fedbaf68e9502288d9c",
   "runtime_status": "ready",
-  "updated_at": "2026-10-24T00:45:16.555006Z",
-  "expires_at": "2026-10-25T00:45:16.555006Z"
+  "updated_at": "2026-10-24T05:28:03.743566Z",
+  "expires_at": "2026-10-25T05:28:03.743566Z"
 }
