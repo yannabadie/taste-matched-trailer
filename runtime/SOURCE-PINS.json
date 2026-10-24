@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-23T19:33:49.552297+00:00",
-  "release": "2.6.4",
+  "generated_at": "2026-10-24T00:38:27.887152+00:00",
+  "release": "2.6.5",
   "runtime": "1.1.3-pointer-expiry",
-  "scope": "Source clarification of shot2 certainty plus a distinct narrow EN/FR nominal-negation guard fix. Six first Codex outputs replayed through real Role2; no new native Qwen or Qloo run. Runtime1.1.3 and runner unchanged. Recorded928 and native2.6.3 qualification are historical and do not certify this source.",
+  "scope": "Prospective writer-message correction only: remove rank-position artistic obligations in per-shot input and SYSTEM/USER contracts; catalogue and canonical constraints unchanged. Existing exported positional source links remain compatibility provenance with explicit limitation. No new Qloo/model run or native creative qualification. Runtime1.1.3 and inference settings unchanged.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/cultural_launch_director.py": "17481743204c75b04a1c82886364c3340b83e5b779fad51723db694b511c0d63",
-    "taste-matched-trailer/guarded_qwen_runner.py": "8e37963a6e1915e23f1b9b0cc7aec1cbd0c7c31d68e5cda11ba2f51da8284736",
+    "taste-matched-trailer/cultural_launch_director.py": "98c356df0857ce1d456934437d0de8ed2e3ed1e745a5d16bbd4fe68db43289b4",
+    "taste-matched-trailer/guarded_qwen_runner.py": "fe3133f64559397ddda9f4d6ed31974807a7a2b90b8ae4fd9f06edaaa7845c05",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
     "taste-matched-trailer/bridge/cpu_counter.py": "bcda630e2d17904b6969f9820efc7481858db5a8c6f266cd1e6291c2e0d737c7",
@@ -17,7 +17,7 @@
     "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
     "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9"
   },
-  "previous_source_pins_sha256": "3540ba42ebcd7b1e5284004d554b04c929c69758e70a01e8d2f2df9892b6feb7",
+  "previous_source_pins_sha256": "759f6bfe2736a0f5580bf009dc637bcc8de0606cde5eec04e9d1b9685066882c",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
   "recorded_capture": {
     "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -37,14 +37,16 @@
     },
     "application_e2e_rerun": false
   },
-  "candidate_manifest_scope": "Historical2.6.3 candidate manifest retained unchanged for compatibility; not a2.6.4 native acceptance.",
-  "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.4.",
+  "candidate_manifest_scope": "Historical2.6.3 manifest retained unchanged; not a2.6.5 native acceptance.",
+  "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.5.",
   "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
   "qualification_scope": {
-    "current_source": "Role2 input capture, first Codex writer responses, saved-output Core replay, narrow guard tests and existing semantic regressions",
+    "current_source": "Actual prospective Role2/context/build_messages before-after capture; ten owner and five independent targeted offline checks, with no-reference synthetic writer text accepted by real core. No generation or creative preference.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
-    "runtime": "1.1.3-pointer-expiry"
-  }
+    "runtime": "1.1.3-pointer-expiry",
+    "native_Qwen_2_6_5": "not_executed"
+  },
+  "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7"
 }
