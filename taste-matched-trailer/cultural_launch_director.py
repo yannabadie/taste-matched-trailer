@@ -45,7 +45,9 @@ from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.4-scaffold-certainty-negation-contract-20261023"
+DIRECTOR_VERSION = "2.6.5-documentary-reference-context-20261024"
+REFERENCE_LINK_LIMITATION = ("Per-shot reference links are compatibility provenance of received sources, "
+    "not instructions to the writer or evidence that a reference caused any scene.")
 RULE_VERSION = "det-select-v1.5"
 REQUIRED_NODE_MIN = "22.19.0"
 REQUIRED_HARNESS_MIN = "0.1.26"
@@ -1550,10 +1552,14 @@ def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[s
     if llm_runner is not None:
         if budget["llm_calls_used"]>=budget["llm_call_limit"]: raise RuntimeError("LLM budget exhausted before Role2")
         budget["llm_calls_used"]+=1
+        # Keep source links in the existing export for compatibility, but do
+        # not turn their rank-based positions into artistic assignments.
+        writer_plans=[{key:copy.deepcopy(value) for key,value in plan.items() if key!="retained_reference"}
+                      for plan in plans]
         out=llm_runner("role_2_creative_redactor",{"run_id":run_id,"mode":mode,
             "synopsis":validated_brief["synopsis"],"themes":analysis.get("themes") or [],
-            "retained_references":bindings,"user_constraints":constraints,"shot_plan":plans,
-            "creative_contract":"Write all four complete, distinct shots. Interpret ranked references artistically; no copying, sales or audience prediction. Preserve supplied bindings. An independent editorial shot has no Qloo lineage; never invent it. Keep the phenomenon strictly invisible when requested; an ordinary narrator face remains allowed unless assets forbid people. Follow the requested delivery language, otherwise the synopsis language, not internal planning labels."})
+            "retained_references":bindings,"user_constraints":constraints,"shot_plan":writer_plans,
+            "creative_contract":"Write all four complete, distinct shots. Retained references are documentary source context only, not mandatory artistic borrowings. Rank alone assigns neither a shot nor a brief-wide reference. Do not invent a cultural reason or causal link. No copying, sales or audience prediction. An independent editorial shot has no Qloo lineage; never invent it. Keep the phenomenon strictly invisible when requested; an ordinary narrator face remains allowed unless assets forbid people. Follow the requested delivery language, otherwise the synopsis language, not internal planning labels."})
         if not isinstance(out,dict): raise ValueError("Role2 output must be an object")
         overrides=out.get("shot_overrides")
         if not isinstance(overrides,dict) or set(overrides)!={p["shot_id"] for p in plans}:
@@ -1583,7 +1589,7 @@ def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[s
         "total_duration_seconds":sum(p["duration_seconds"] for p in plans),"aspect_ratio":plans[0]["aspect_ratio"],
         "completeness":"complete" if generated else "not_generated",
         "verification":{"deterministic_status":"not_run","llm_status":"not_run","unresolved_claims":[]},
-        "limitations":[PRODUCT_PROMISE_STATEMENT,"Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices."]}
+        "limitations":[PRODUCT_PROMISE_STATEMENT,"Cultural ranking informs artistic references only. Visual text, framing, timing and sound are editorial choices.",REFERENCE_LINK_LIMITATION]}
     if not generated: brief["limitations"].append("No creative model ran; no production shots were generated.")
     if mode=="fixture": brief["limitations"].append("Qloo fixture data only; this run cannot qualify the real API.")
     if mode=="recorded_live": brief["limitations"].append("Historical replay; this run cannot qualify current API availability.")

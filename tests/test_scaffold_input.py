@@ -14,7 +14,6 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "comparisons"))
 from capture_scaffold_inputs import capture, diff_paths, load
-from replay_scaffold_output import replay
 
 
 def offline_only(event, args):
@@ -64,34 +63,52 @@ class WriterInputContract(unittest.TestCase):
         self.assertEqual(runner.ROLE_OUTPUT_CAPS["role_2_creative_redactor"], 1200)
         self.assertNotIn("author_decision", system)
 
-    def test_duration_bindings_assets_and_editorial_fourth_shot_are_preserved(self):
+    def test_duration_assets_and_documentary_catalogue_do_not_assign_shots(self):
         result = capture(core, runner, document["cases"][2], document, synthetic_parent)
         plans = result["payload"]["shot_plan"]
         self.assertEqual([s["duration_seconds"] for s in plans], [9.5] * 4)
         self.assertEqual([s["aspect_ratio"] for s in plans], ["16:9"] * 4)
-        self.assertEqual([s["retained_reference"]["entity_id"] if s["retained_reference"] else None for s in plans], ["synthetic-ref-a", "synthetic-ref-a", "synthetic-ref-b", None])
+        self.assertTrue(all("retained_reference" not in s for s in plans))
+        self.assertEqual([s["entity_id"] for s in result["payload"]["retained_references"]], ["synthetic-ref-a", "synthetic-ref-b"])
         self.assertTrue(all(s["assets"] == ["objects", "typography"] for s in plans))
-        self.assertEqual(core.DIRECTOR_VERSION, "2.6.4-scaffold-certainty-negation-contract-20261023")
+        self.assertEqual(core.DIRECTOR_VERSION, "2.6.5-documentary-reference-context-20261024")
 
-    def test_saved_synthetic_output_returns_through_real_core_without_new_inference(self):
+    def test_synthetic_response_without_reference_fields_is_consumed_without_new_inference(self):
         case = document["cases"][2]
         captured = capture(core, runner, case, document, synthetic_parent)
         fields = {"visual_prompt": "An empty reading table.", "voiceover": "", "sonic_direction": "", "on_screen_text": "Is someone near, or only a feeling?"}
         response = {"directions": [{"title": "Synthetic check", "angle": "Synthetic fixture, not a received creative result."}], "shot_overrides": {f"shot_{i:02d}": copy.deepcopy(fields) for i in range(1, 5)}}
-        result = replay(core, runner, case, document, synthetic_parent, json.dumps(response), captured)
-        self.assertEqual(result["schema_status"], "pass")
-        self.assertEqual(result["deterministic_status"], "pass")
-        self.assertEqual(result["callback_count"], 1)
-        self.assertEqual(result["model_calls_in_this_replay"], 0)
-        self.assertFalse(result["brief"]["qloo_api_verified"])
-        self.assertEqual(result["brief"]["verification"]["llm_status"], "not_run")
-        self.assertNotIn("model_route_version", result["brief"])
+        callbacks = []
+        def consume_fixture():
+            normalized = runner.validate_role_output("role_2_creative_redactor", runner.strict_json_object(json.dumps(response)))
+            normalized.pop("model_route_version", None)  # synthetic fixture, never a native route observation
+            def fixture_callback(role, payload):
+                self.assertEqual(role, "role_2_creative_redactor")
+                self.assertEqual(payload, captured["payload"])
+                callbacks.append(role)
+                return copy.deepcopy(normalized)
+            validated = core.validate_brief(case["synopsis"], ["The Turn of the Screw (book)"],
+                {**document["common_constraints"], **case["constraints"]})
+            budget = core.make_initial_run_budget("run-scaffold-" + case["id"], 0, 1)
+            return core.llm_role_2_creative_redactor(budget["run_id"], "recorded_live", validated,
+                copy.deepcopy(document["analysis"]), [], copy.deepcopy(synthetic_parent["decisions"]), budget, False, fixture_callback)
+        brief, _ = consume_fixture()
+        self.assertEqual(core.validate_constraint_fidelity(brief), [])
+        self.assertEqual(len(callbacks), 1)
+        self.assertFalse(brief["qloo_api_verified"])
+        self.assertEqual(brief["verification"]["llm_status"], "not_run")
+        self.assertNotIn("model_route_version", brief)
+        self.assertIn(core.REFERENCE_LINK_LIMITATION, brief["limitations"])
+        # Existing source links remain compatibility metadata. Their presence
+        # was not requested or authored in the fixture's four text fields.
+        self.assertEqual([s["retained_entity_refs"] for s in brief["shots"]],
+                         [["synthetic-ref-a"], ["synthetic-ref-a"], ["synthetic-ref-b"], []])
         response["shot_overrides"]["shot_01"]["voiceover"] = "Forbidden by sound_off."
-        result = replay(core, runner, case, document, synthetic_parent, json.dumps(response), captured)
-        self.assertEqual(result["deterministic_status"], "fail")
+        bad_brief, _ = consume_fixture()
+        self.assertTrue(core.validate_constraint_fidelity(bad_brief))
         response["shot_overrides"]["shot_01"]["visual_prompt"] = "x" * 241
         with self.assertRaises(runner.AdapterContractError):
-            replay(core, runner, case, document, synthetic_parent, json.dumps(response), captured)
+            consume_fixture()
 
 
 if __name__ == "__main__":

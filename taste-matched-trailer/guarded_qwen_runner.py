@@ -155,7 +155,7 @@ def build_messages(role: str, payload: dict[str, Any], context: dict[str, Any] |
                    "Write distinct coherent scenes and a readable caption for every shot. Use the requested language (user_constraints.language/output_language or the brief); otherwise use the synopsis language, not internal planning labels. "
                    "Respect exact duration, aspect, tone and allowed assets. If sound_off is true, voiceover and sonic_direction must both be empty strings, story must work through images and captions. "
                    "For objects+typography show only objects and text, no people/hands/faces. If no_visible_monster is true, the phenomenon stays strictly invisible: no silhouette, humanoid outline, body or face of that phenomenon, even blurred, peripheral, reflected or uncertain. "
-                   "Use indirect material, light or sound changes. The ordinary narrator's face is allowed unless other constraints forbid people. Preserve the supplied shot_plan bindings; an independent editorial shot must not claim invented Qloo proof. "
+                   "Use indirect material, light or sound changes. The ordinary narrator's face is allowed unless other constraints forbid people. Treat retained references as documentary source context only. List position requires no artistic use in any shot or throughout the brief; an independent editorial shot must not claim invented Qloo proof. "
                    "Do not return an incomplete subset or generic numbered templates. Entire output must fit1200 tokens.")
     if role == "role_3_verifier":
         system += (" Check all four complete shots, duration sum, aspect ratio, constraints including no visible monster, sound_off, objects+typography, and retained-reference lineage. "
