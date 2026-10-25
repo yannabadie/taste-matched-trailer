@@ -45,7 +45,7 @@ from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.5-documentary-reference-context-20261024"
+DIRECTOR_VERSION = "2.6.6-creature-negation-20261025"
 REFERENCE_LINK_LIMITATION = ("Per-shot reference links are compatibility provenance of received sources, "
     "not instructions to the writer or evidence that a reference caused any scene.")
 RULE_VERSION = "det-select-v1.5"
@@ -1449,6 +1449,20 @@ def _without_negated_visual_nominals(text: str) -> str:
             if owner < len(values) and re.fullmatch(_PERSON_VISUAL_NOUN, values[owner]): index = owner + 1
         return index, (tokens[start].start(), tokens[index - 1].end()) if known else None
 
+    def closed_nominal_tail(end):
+        # Look through an entire coordinated subject before masking any of it.
+        # A following predicate/unknown structure makes comma-and/et a clause
+        # boundary; only a tail ending at punctuation/end is a nominal list.
+        while end < len(values) and values[end] in joins | {","}:
+            separator = values[end]
+            index = end + 1
+            if separator == "," and index < len(values) and values[index] in joins:
+                separator = values[index]; index += 1
+            nxt = nominal(index, separator in {"or", "nor", "ou", "ni"})
+            if nxt is None: return False
+            end = nxt[0]
+        return end == len(values) or values[end] in {".", ";", ":", "!", "?", ")"}
+
     for i, word in enumerate(values):
         if word not in {"no", "not", "without", "neither", "sans", "aucun", "aucune", "aucuns", "aucunes", "pas", "ni"}: continue
         if i and values[i - 1] in {"not", "pas"} and word in {"no", "without", "sans", "aucun", "aucune", "aucuns", "aucunes", "ni"}: continue
@@ -1461,13 +1475,16 @@ def _without_negated_visual_nominals(text: str) -> str:
             separator = values[end]
             if separator not in joins | {","}: break
             next_index = end + 1
+            comma_before_join = separator == ","
             if separator == "," and next_index < len(values) and values[next_index] in joins:
                 separator = values[next_index]; next_index += 1
             nxt = nominal(next_index, separator in {"or", "nor", "ou", "ni"})
             if nxt is None: break
             next_end, next_mask = nxt
-            # A bare subject after a comma followed by a predicate is ambiguous;
-            # keep it visible to the guard rather than suppressing an assertion.
+            # A comma-and/et can introduce a new affirmative clause, not just
+            # continue the negative list. Preserve that bare subject/predicate.
+            # Explicitly negative nor/ni joins retain their negative scope.
+            if comma_before_join and separator in {"and", "et"} and not closed_nominal_tail(next_end): break
             if separator == "," and next_end < len(values) and values[next_end] not in joins | {",", ".", ";", ":", "!", "?", ")"}: break
             if next_mask: masks.append(next_mask)
             end = next_end
@@ -1522,7 +1539,9 @@ def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
         # A deterministic guard catches explicit violations; the verifier still judges semantics.
         text=visual.lower()
         text=re.sub(r"(?:sans|aucun[e]?|no|without|pas de)\s+(?:visible\s+)?(?:créature|creature|monstre|monster|sang|blood|violence)(?:\s+(?:visible|graphique|graphic))?","",text)
-        if constraints.get("no_visible_monster") and re.search(r"\b(?:monstr\w*|monster\w*|créature\w*|creature\w*)\b",text):
+        creature_text = "".join(c for c in unicodedata.normalize("NFKD", visual.casefold()) if not unicodedata.combining(c)).replace("’", "'")
+        creature_text = _without_negated_visual_nominals(creature_text)
+        if constraints.get("no_visible_monster") and re.search(r"\b(?:monstr\w*|monster\w*|creature\w*)\b", creature_text):
             errors.append(f"{label}: explicit creature conflicts with no_visible_monster")
         if constraints.get("no_visible_monster") and _visible_phenomenon_form(visual):
             errors.append(f"{label}: visible apparition shape conflicts with an invisible phenomenon")

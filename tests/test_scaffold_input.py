@@ -71,7 +71,7 @@ class WriterInputContract(unittest.TestCase):
         self.assertTrue(all("retained_reference" not in s for s in plans))
         self.assertEqual([s["entity_id"] for s in result["payload"]["retained_references"]], ["synthetic-ref-a", "synthetic-ref-b"])
         self.assertTrue(all(s["assets"] == ["objects", "typography"] for s in plans))
-        self.assertEqual(core.DIRECTOR_VERSION, "2.6.5-documentary-reference-context-20261024")
+        self.assertEqual(core.DIRECTOR_VERSION, "2.6.6-creature-negation-20261025")
 
     def test_synthetic_response_without_reference_fields_is_consumed_without_new_inference(self):
         case = document["cases"][2]
