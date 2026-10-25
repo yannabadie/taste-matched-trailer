@@ -45,7 +45,7 @@ change separately. It is a technical operator exercise, not an author study.
 
 ## Current workflow
 
-Source **2.6.6** corrects a narrow lexical false rejection of explicit creature-exclusion lists. It reuses the scoped nominal-negation mask and preserves affirmative clauses introduced by comma-and/et, while explicitly negative nor/ni joins retain scope. Targeted regressions cover exclusions, affirmative clauses, contrasts and double negatives. The targeted checks are pure offline regressions, not semantic validation, a new creative comparison or a production-time qualification.
+Source **2.6.6** corrects a narrow lexical false rejection of explicit creature-exclusion lists. It reuses the scoped nominal-negation mask and preserves affirmative clauses introduced by comma-and/et, including coordinated subjects, while explicitly negative nor/ni joins retain scope. Targeted regressions cover exclusions, affirmative clauses, contrasts and double negatives. The targeted checks are pure offline regressions, not semantic validation, a new creative comparison or a production-time qualification.
 
 Source **2.6.5** removes rank-position artistic obligations from the next writer’s complete SYSTEM/USER messages and per-shot input. The ranked catalogue remains documentary context, without an automatic whole-brief replacement. [The message-contract reception](docs/DOCUMENTARY-REFERENCE-CONTEXT-2.6.5.md) compares the actual constructed documents before and after, with no model call. Exported positional links remain compatibility provenance, explicitly limited; they do not prove an artistic cause. The canonical synopsis and delivery constraints are unchanged.
 

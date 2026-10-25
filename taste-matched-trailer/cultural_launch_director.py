@@ -1449,6 +1449,20 @@ def _without_negated_visual_nominals(text: str) -> str:
             if owner < len(values) and re.fullmatch(_PERSON_VISUAL_NOUN, values[owner]): index = owner + 1
         return index, (tokens[start].start(), tokens[index - 1].end()) if known else None
 
+    def closed_nominal_tail(end):
+        # Look through an entire coordinated subject before masking any of it.
+        # A following predicate/unknown structure makes comma-and/et a clause
+        # boundary; only a tail ending at punctuation/end is a nominal list.
+        while end < len(values) and values[end] in joins | {","}:
+            separator = values[end]
+            index = end + 1
+            if separator == "," and index < len(values) and values[index] in joins:
+                separator = values[index]; index += 1
+            nxt = nominal(index, separator in {"or", "nor", "ou", "ni"})
+            if nxt is None: return False
+            end = nxt[0]
+        return end == len(values) or values[end] in {".", ";", ":", "!", "?", ")"}
+
     for i, word in enumerate(values):
         if word not in {"no", "not", "without", "neither", "sans", "aucun", "aucune", "aucuns", "aucunes", "pas", "ni"}: continue
         if i and values[i - 1] in {"not", "pas"} and word in {"no", "without", "sans", "aucun", "aucune", "aucuns", "aucunes", "ni"}: continue
@@ -1470,8 +1484,8 @@ def _without_negated_visual_nominals(text: str) -> str:
             # A comma-and/et can introduce a new affirmative clause, not just
             # continue the negative list. Preserve that bare subject/predicate.
             # Explicitly negative nor/ni joins retain their negative scope.
-            clause_after_comma = separator == "," or (comma_before_join and separator in {"and", "et"})
-            if clause_after_comma and next_end < len(values) and values[next_end] not in joins | {",", ".", ";", ":", "!", "?", ")"}: break
+            if comma_before_join and separator in {"and", "et"} and not closed_nominal_tail(next_end): break
+            if separator == "," and next_end < len(values) and values[next_end] not in joins | {",", ".", ";", ":", "!", "?", ")"}: break
             if next_mask: masks.append(next_mask)
             end = next_end
     chars = list(text)
