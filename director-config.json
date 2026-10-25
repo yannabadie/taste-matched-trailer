@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://mozilla-banners-blue-prizes.trycloudflare.com",
+  "api_base_url": "https://regardless-bicycle-extract-normal.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.3",
-  "revision": "runtime-a35297e7330c4c4e9f6eee783747fc47",
+  "revision": "runtime-22f930505e0c45fe9f7155f2edcdcf40",
   "runtime_status": "ready",
-  "updated_at": "2026-10-25T00:55:09.914222Z",
-  "expires_at": "2026-10-26T00:55:09.914222Z"
+  "updated_at": "2026-10-25T10:38:37.639037Z",
+  "expires_at": "2026-10-26T10:38:37.639037Z"
 }
