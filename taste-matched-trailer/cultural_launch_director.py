@@ -1461,14 +1461,17 @@ def _without_negated_visual_nominals(text: str) -> str:
             separator = values[end]
             if separator not in joins | {","}: break
             next_index = end + 1
+            comma_before_join = separator == ","
             if separator == "," and next_index < len(values) and values[next_index] in joins:
                 separator = values[next_index]; next_index += 1
             nxt = nominal(next_index, separator in {"or", "nor", "ou", "ni"})
             if nxt is None: break
             next_end, next_mask = nxt
-            # A bare subject after a comma followed by a predicate is ambiguous;
-            # keep it visible to the guard rather than suppressing an assertion.
-            if separator == "," and next_end < len(values) and values[next_end] not in joins | {",", ".", ";", ":", "!", "?", ")"}: break
+            # A comma-and/et can introduce a new affirmative clause, not just
+            # continue the negative list. Preserve that bare subject/predicate.
+            # Explicitly negative nor/ni joins retain their negative scope.
+            clause_after_comma = separator == "," or (comma_before_join and separator in {"and", "et"})
+            if clause_after_comma and next_end < len(values) and values[next_end] not in joins | {",", ".", ";", ":", "!", "?", ")"}: break
             if next_mask: masks.append(next_mask)
             end = next_end
     chars = list(text)

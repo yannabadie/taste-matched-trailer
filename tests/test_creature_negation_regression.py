@@ -57,5 +57,21 @@ class CreatureNegationRegressionTests(unittest.TestCase):
                 self.assertEqual(bool(creature_errors(text)), expected)
 
 
+    def test_comma_and_clauses_remain_affirmative_while_explicit_negative_joins_stay_negative(self):
+        for text, expected in [
+            ("No music, and monsters emerge from the dark.", True),
+            ("No creature, and monsters appear.", True),
+            ("Sans musique, et monstres apparaissent.", True),
+            ("No creature, nor monsters appear.", False),
+            ("Sans creature, ni monstres apparaissent.", False),
+            ("No music, and no creature appears.", False),
+            ("No person, face, hand, silhouette, creature, or reflection.", False),
+            ("No people, hands, faces, and creatures.", False),
+        ]:
+            with self.subTest(text=text):
+                self.assertEqual(bool(creature_errors(text)), expected)
+        self.assertTrue(core._visible_person_form("No music, and people stand by the door."))
+        self.assertTrue(core._visible_phenomenon_form("No music, and humanoid figures appear."))
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

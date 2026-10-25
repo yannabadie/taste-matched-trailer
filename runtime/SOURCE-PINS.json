@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-25T05:20:12.078885+00:00",
+  "generated_at": "2026-10-25T11:33:11.906956+00:00",
   "release": "2.6.6",
   "runtime": "1.1.3-pointer-expiry",
-  "scope": "Source-only narrow lexical fix: explicit creature-exclusion lists use the existing scoped nominal-negation mask with EN/FR normalization. Affirmative clauses, contrasts and double negatives remain checked. No change to writer messages, schemas, model route, runtime1.1.3, budgets, recorded captures or native creative qualification.",
+  "scope": "Source-only narrow lexical fix for explicit creature-exclusion lists with EN/FR normalization, plus a shared-mask boundary that preserves affirmative clauses after comma-and/et. Explicitly negative nor/ni joins retain scope. No writer-message/schema/model-route/runtime1.1.3/budget/recorded-capture or native qualification change.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/cultural_launch_director.py": "b2990384196b18938a7fad00679ee0ad6c3f5e806393089e7e5d1f9a5fc97072",
+    "taste-matched-trailer/cultural_launch_director.py": "8a3da2ab111aedf3cd514bb481c2ba9d60e093d7aed38859909bb19855344ff0",
     "taste-matched-trailer/guarded_qwen_runner.py": "fe3133f64559397ddda9f4d6ed31974807a7a2b90b8ae4fd9f06edaaa7845c05",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
@@ -41,7 +41,7 @@
   "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.6.",
   "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
   "qualification_scope": {
-    "current_source": "Two targeted pure offline regression checks for explicit creature-exclusion lists, local negation scope, affirmative clauses, contrasts and double negatives. No model/API call, semantic or creative-quality qualification.",
+    "current_source": "Targeted pure offline creature and directly affected shared-mask regressions, plus the version assertion reception. First exclusion false positive and comma-and affirmative false negative are preserved. No model/API, semantic or creative-quality qualification.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
