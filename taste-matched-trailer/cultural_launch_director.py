@@ -45,7 +45,7 @@ from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.5-documentary-reference-context-20261024"
+DIRECTOR_VERSION = "2.6.6-creature-negation-20261025"
 REFERENCE_LINK_LIMITATION = ("Per-shot reference links are compatibility provenance of received sources, "
     "not instructions to the writer or evidence that a reference caused any scene.")
 RULE_VERSION = "det-select-v1.5"
@@ -1522,7 +1522,9 @@ def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
         # A deterministic guard catches explicit violations; the verifier still judges semantics.
         text=visual.lower()
         text=re.sub(r"(?:sans|aucun[e]?|no|without|pas de)\s+(?:visible\s+)?(?:créature|creature|monstre|monster|sang|blood|violence)(?:\s+(?:visible|graphique|graphic))?","",text)
-        if constraints.get("no_visible_monster") and re.search(r"\b(?:monstr\w*|monster\w*|créature\w*|creature\w*)\b",text):
+        creature_text = "".join(c for c in unicodedata.normalize("NFKD", visual.casefold()) if not unicodedata.combining(c)).replace("’", "'")
+        creature_text = _without_negated_visual_nominals(creature_text)
+        if constraints.get("no_visible_monster") and re.search(r"\b(?:monstr\w*|monster\w*|creature\w*)\b", creature_text):
             errors.append(f"{label}: explicit creature conflicts with no_visible_monster")
         if constraints.get("no_visible_monster") and _visible_phenomenon_form(visual):
             errors.append(f"{label}: visible apparition shape conflicts with an invisible phenomenon")

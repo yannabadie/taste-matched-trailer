@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-24T00:38:27.887152+00:00",
-  "release": "2.6.5",
+  "generated_at": "2026-10-25T05:20:12.078885+00:00",
+  "release": "2.6.6",
   "runtime": "1.1.3-pointer-expiry",
-  "scope": "Prospective writer-message correction only: remove rank-position artistic obligations in per-shot input and SYSTEM/USER contracts; catalogue and canonical constraints unchanged. Existing exported positional source links remain compatibility provenance with explicit limitation. No new Qloo/model run or native creative qualification. Runtime1.1.3 and inference settings unchanged.",
+  "scope": "Source-only narrow lexical fix: explicit creature-exclusion lists use the existing scoped nominal-negation mask with EN/FR normalization. Affirmative clauses, contrasts and double negatives remain checked. No change to writer messages, schemas, model route, runtime1.1.3, budgets, recorded captures or native creative qualification.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/cultural_launch_director.py": "98c356df0857ce1d456934437d0de8ed2e3ed1e745a5d16bbd4fe68db43289b4",
+    "taste-matched-trailer/cultural_launch_director.py": "b2990384196b18938a7fad00679ee0ad6c3f5e806393089e7e5d1f9a5fc97072",
     "taste-matched-trailer/guarded_qwen_runner.py": "fe3133f64559397ddda9f4d6ed31974807a7a2b90b8ae4fd9f06edaaa7845c05",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
@@ -17,7 +17,7 @@
     "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
     "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9"
   },
-  "previous_source_pins_sha256": "759f6bfe2736a0f5580bf009dc637bcc8de0606cde5eec04e9d1b9685066882c",
+  "previous_source_pins_sha256": "a667828284bf8c96fb4336bd0068b63d8592916cef1ce4a9612e61f817d222fa",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
   "recorded_capture": {
     "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -37,16 +37,17 @@
     },
     "application_e2e_rerun": false
   },
-  "candidate_manifest_scope": "Historical2.6.3 manifest retained unchanged; not a2.6.5 native acceptance.",
-  "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.5.",
+  "candidate_manifest_scope": "Historical2.6.3 manifest retained unchanged; not a2.6.6 native acceptance.",
+  "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.6.",
   "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
   "qualification_scope": {
-    "current_source": "Actual prospective Role2/context/build_messages before-after capture; ten owner and five independent targeted offline checks, with no-reference synthetic writer text accepted by real core. No generation or creative preference.",
+    "current_source": "Two targeted pure offline regression checks for explicit creature-exclusion lists, local negation scope, affirmative clauses, contrasts and double negatives. No model/API call, semantic or creative-quality qualification.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
     "runtime": "1.1.3-pointer-expiry",
-    "native_Qwen_2_6_5": "not_executed"
+    "native_Qwen_2_6_5": "not_executed",
+    "native_Qwen_2_6_6": "not_executed"
   },
   "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7"
 }

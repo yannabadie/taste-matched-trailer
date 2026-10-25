@@ -45,9 +45,11 @@ change separately. It is a technical operator exercise, not an author study.
 
 ## Current workflow
 
+Source **2.6.6** corrects a narrow lexical false rejection of explicit creature-exclusion lists. It reuses the existing scoped nominal-negation mask; affirmative creature clauses after a denial, contrasts and double negatives remain detectable. The targeted checks are pure offline regressions, not semantic validation, a new creative comparison or a production-time qualification.
+
 Source **2.6.5** removes rank-position artistic obligations from the next writer’s complete SYSTEM/USER messages and per-shot input. The ranked catalogue remains documentary context, without an automatic whole-brief replacement. [The message-contract reception](docs/DOCUMENTARY-REFERENCE-CONTEXT-2.6.5.md) compares the actual constructed documents before and after, with no model call. Exported positional links remain compatibility provenance, explicitly limited; they do not prove an artistic cause. The canonical synopsis and delivery constraints are unchanged.
 
-The certainty-preserving purpose and narrow visual-negation guard from **2.6.4** remain. Their [framing report](docs/CREATIVE-FRAMING-2.6.4.md) retains the failed deliveries, repaired replay and limited Codex comparison. Source publication and Mac activation are separate receptions. The last native creative qualification remains **2.6.3**; neither 2.6.4 nor 2.6.5 inherits it. Runtime 1.1.3 and inference settings remain unchanged. The hosted recording is still the historical 2.6.3 result.
+The certainty-preserving purpose and narrow visual-negation guard from **2.6.4** remain. Their [framing report](docs/CREATIVE-FRAMING-2.6.4.md) retains the failed deliveries, repaired replay and limited Codex comparison. Source publication and Mac activation are separate receptions. The last native creative qualification remains **2.6.3**; 2.6.4, 2.6.5 and 2.6.6 do not inherit it. Runtime 1.1.3 and inference settings remain unchanged. The hosted recording is still the historical 2.6.3 result.
 
 The historically qualified **2.6.3** engine keeps an unseen phenomenon off-screen,
 including blurred or peripheral body shapes, while permitting an ordinary
