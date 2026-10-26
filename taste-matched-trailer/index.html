@@ -795,7 +795,11 @@ function handleShotAmendmentAction(action){
 }
 function prepareShotAmendment(){
   if(state.busy || !current() || !exportable() || state.silentContext?.source!==state.bundle)throw Error('Load a current accepted parent before amending a shot.');
-  const source=state.bundle,draft=EditorialWorkbench.createShotAmendment(source,state.silentContext.context,$('amendmentShotSelect').value);
+  const source=state.bundle,shotId=$('amendmentShotSelect').value;
+  if(state.amendmentDraft?.shot_id===shotId && state.amendmentDraft.parent.document_sha256===state.silentContext.context.source_sha256){
+    EditorialWorkbench.inspectShotAmendment(state.amendmentDraft,source);$('amendmentIntention').focus?.({preventScroll:true});return;
+  }
+  const draft=EditorialWorkbench.createShotAmendment(source,state.silentContext.context,shotId);
   state.amendmentDraft=draft;invalidateShotAmendmentDecision();$('amendmentIntention').value='';
   $('amendmentSynopsis').textContent=source.brief.synopsis;$('amendmentConstraints').textContent=JSON.stringify(source.brief.user_constraints,null,2);
   const shot=source.brief.shots.find(item=>item.id===draft.shot_id),fields=[['visual_prompt','Image description'],['voiceover','Narration'],['on_screen_text','Screen text'],['sonic_direction','Sound direction']];

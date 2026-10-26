@@ -352,3 +352,30 @@ test('single-shot amendment real click handler preserves a newer decision when a
   b.qa.updateShotAmendment('intention','');await b.element('chooseOriginalBtn').listeners.click();
   assert.equal(b.qa.state.amendmentExport,null);assert.equal(b.element('downloadAmendmentBtn').disabled,true);assert.match(b.element('amendmentStatus').textContent,/intention/);
 });
+test('same-shot Compare listener preserves the exact draft and decision; another shot or parent starts undecided',async()=>{
+  const b=browser();await b.qa.renderEditorialWorkbench();const source=b.qa.state.bundle;
+  let focusCount=0;b.element('amendmentIntention').focus=()=>{focusCount++;};
+  b.element('amendmentShotSelect').value='shot_02';b.element('prepareAmendmentBtn').listeners.click();
+  const intention='Keep the planting choice open.',texts={visual_prompt:'An unmarked pot beside a blank label.',voiceover:'Which herb belongs here?',on_screen_text:'A choice still open.',sonic_direction:'Quiet room. No contact sound.'};
+  b.element('amendmentIntention').value=intention;b.element('amendmentIntention').listeners.input({target:b.element('amendmentIntention')});
+  for(const [field,text] of Object.entries(texts)){
+    const input=b.element('amendmentText-'+field);input.value=text;input.dataset={amendmentField:field};b.element('amendmentComparison').listeners.input({target:input});
+  }
+  await b.element('chooseAmendmentBtn').listeners.click();await b.element('downloadAmendmentBtn').listeners.click();
+  const draft=b.qa.state.amendmentDraft,before=JSON.stringify(draft),artifact=b.qa.state.amendmentExport,attempt=b.qa.state.amendmentAttempt,exportRevision=b.qa.state.amendmentExportRevision;
+  const status=b.element('amendmentStatus').textContent,comparison=b.element('amendmentComparison').innerHTML,focusBefore=focusCount,bytes=await b.downloads[0].blob.text();
+  b.element('prepareAmendmentBtn').listeners.click();
+  assert.equal(b.qa.state.amendmentDraft,draft);assert.equal(JSON.stringify(b.qa.state.amendmentDraft),before);assert.equal(b.qa.state.amendmentExport,artifact);
+  assert.equal(b.qa.state.amendmentAttempt,attempt);assert.equal(b.qa.state.amendmentExportRevision,exportRevision);assert.equal(b.element('downloadAmendmentBtn').disabled,false);
+  assert.equal(b.element('amendmentStatus').textContent,status);assert.equal(b.element('amendmentComparison').innerHTML,comparison);assert.equal(b.element('amendmentIntention').value,intention);assert.equal(focusCount,focusBefore+1);
+  for(const [field,text] of Object.entries(texts))assert.equal(b.element('amendmentText-'+field).value,text);
+  await b.element('downloadAmendmentBtn').listeners.click();assert.equal(await b.downloads[1].blob.text(),bytes);
+  b.element('amendmentShotSelect').value='shot_03';b.element('amendmentShotSelect').listeners.change();
+  assert.notEqual(b.qa.state.amendmentDraft,draft);assert.equal(b.qa.state.amendmentDraft.shot_id,'shot_03');assert.equal(b.qa.state.amendmentDraft.intention,'');assert.equal(b.qa.state.amendmentDraft.revision,0);assert.equal(b.qa.state.amendmentExport,null);assert.equal(b.element('downloadAmendmentBtn').disabled,true);
+  const replacement=gardeningSource();replacement.brief.synopsis+=' This is a different brief with the same synthetic run ID.';
+  b.qa.state.bundle=replacement;b.qa.state.recording={originalRaw:JSON.stringify(replacement),manifest:{captured_at:'2026-10-20T13:41:27Z'}};
+  await b.qa.renderEditorialWorkbench();assert.equal(b.qa.state.amendmentDraft,null);
+  b.element('amendmentShotSelect').value='shot_02';b.element('prepareAmendmentBtn').listeners.click();
+  assert.equal(b.qa.state.amendmentDraft.shot_id,'shot_02');assert.equal(b.qa.state.amendmentDraft.intention,'');assert.equal(b.qa.state.amendmentDraft.revision,0);assert.equal(b.qa.state.amendmentExport,null);
+  assert.notEqual(b.qa.state.amendmentDraft.parent.document_sha256,artifact.payload.parent.document_sha256);assert.equal(JSON.stringify(source),b.raw);
+});
