@@ -43,6 +43,17 @@ The [local editing comparison](docs/LOCAL-UTILITY-COMPARISON.md) records the
 prepared editor's initial reopening advantage and the bounded local resume
 change separately. It is a technical operator exercise, not an author study.
 
+**Change what one shot reveals** compares one received shot with a local author
+amendment, guided by the author's own intention. Image description, narration,
+screen text and sound can change together; the other three shots and every
+duration stay unchanged. Choose the amendment, the original or neither, then
+download the selected/proposed four-shot production texts and the exact parent
+separately. Choosing neither leaves no adopted storyboard. Every edit or shot/source change
+requires a fresh choice. This distinct local export is not accepted by the
+caption-only sound-off resume action. Qloo links and native acceptance apply to
+the parent only; local canon, spoilers, constraints and comprehension still need
+author review. No new generation or human/creative advantage is established.
+
 ## Current workflow
 
 Source **2.6.6** corrects a narrow lexical false rejection of explicit creature-exclusion lists. It reuses the scoped nominal-negation mask and preserves affirmative clauses introduced by comma-and/et, including coordinated subjects, while explicitly negative nor/ni joins retain scope. Targeted regressions cover exclusions, affirmative clauses, contrasts and double negatives. The targeted checks are pure offline regressions, not semantic validation, a new creative comparison or a production-time qualification.

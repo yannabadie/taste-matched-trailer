@@ -3,6 +3,8 @@
 const EditorialWorkbench = (() => {
   const sourceBindings = new WeakMap();
   const silentBindings = new WeakMap();
+  const amendmentBindings = new WeakMap();
+  const amendmentFields = ['visual_prompt','voiceover','on_screen_text','sonic_direction'];
   const copy = value => JSON.parse(JSON.stringify(value));
   const words = value => String(value || '').trim().split(/\s+/u).filter(Boolean).length;
   const fail = reason => ({status:'unavailable', reason, directions:[]});
@@ -220,6 +222,68 @@ const EditorialWorkbench = (() => {
     return {draft,note:decision.note,history:{derived_id:artifact.derived_id,previous_decision:decision.status},
       scope:'Captions and note restored into an undecided local draft. Historical decisions and native verdicts are not inherited.'};
   }
-  return {build,choose,frameAt,createSilentDraft,setSilentCaption,inspectSilentDraft,finalizeSilentDraft,resumeSilentDraft,canonicalJSON};
+  function createShotAmendment(source,context,shotId) {
+    const brief=source?.brief,shots=brief?.shots;
+    if(!/^[a-f0-9]{64}$/.test(context?.source_sha256 || '') || !['recorded','live','recovered','fixture'].includes(context?.display_kind))throw Error('Identify and hash the received parent before amending a shot.');
+    if(typeof source?.run_id!=='string' || !source.run_id || brief?.run_id!==source.run_id || source.workflow_status!=='ok' || brief?.completeness!=='complete' || !brief.user_constraints || !Array.isArray(shots) || shots.length!==4 || Object.keys(source.gate_reasons || {}).length || brief.verification?.deterministic_status!=='pass' || brief.verification?.llm_status!=='accept')throw Error('A complete accepted parent is required; a local amendment cannot repair its qualification.');
+    if(source.mode!=='fixture' && source.qloo_api_verified!==true)throw Error('The parent does not carry verified historical Qloo evidence.');
+    if(new Set(shots.map(s=>s.id)).size!==4 || shots.some(s=>typeof s.id!=='string' || !s.id || s.line_status!=='active' || typeof s.visual_prompt!=='string' || !s.visual_prompt.trim() || !Number.isFinite(s.duration_seconds) || s.duration_seconds<=0 || amendmentFields.some(field=>s[field]!==undefined && typeof s[field]!=='string')))throw Error('The parent must contain four active shots with complete images, text fields and positive durations.');
+    const total=shots.reduce((sum,s)=>sum+s.duration_seconds,0);
+    if(total<4 || total>300 || Math.abs(total-(brief.total_duration_seconds ?? total))>.011 || (brief.user_constraints.duration_seconds!==undefined && Math.abs(total-brief.user_constraints.duration_seconds)>.011))throw Error('Resolve the parent duration error before amending a shot.');
+    const shot=shots.find(s=>s.id===shotId);if(!shot)throw Error('Select an existing received shot.');
+    const draft={schema:'local-shot-amendment-draft-v1',revision:0,
+      parent:{run_id:source.run_id,director_version:source.director_version,created_at:brief.created_at,document_sha256:context.source_sha256,display_kind:context.display_kind,captured_at:context.captured_at || null},
+      shot_id:shotId,intention:'',texts:Object.fromEntries(amendmentFields.map(field=>[field,shot[field] ?? '']))};
+    amendmentBindings.set(draft,{sourceJSON:JSON.stringify(source),parentHash:context.source_sha256,snapshot:JSON.stringify(draft)});
+    return draft;
+  }
+  function amendmentBinding(draft,source) {
+    const binding=amendmentBindings.get(draft);
+    if(!binding || binding.sourceJSON!==JSON.stringify(source))throw Error('The parent changed. Load its current result and amend again.');
+    if(binding.snapshot!==JSON.stringify(draft))throw Error('The local draft changed outside its editor. Prepare the shot again.');
+    return binding;
+  }
+  function inspectShotAmendment(draft,source) {
+    amendmentBinding(draft,source);
+    const original=source.brief.shots.find(shot=>shot.id===draft.shot_id);
+    return {changed_fields:amendmentFields.filter(field=>draft.texts[field] !== (original[field] ?? '')),
+      original_timing_and_other_shots_unchanged:true,native_status:'not_executed',canon_spoilers_and_constraints:'requires_author_review'};
+  }
+  function setShotAmendment(draft,source,field,text) {
+    const binding=amendmentBinding(draft,source);
+    if(!['intention',...amendmentFields].includes(field))throw Error('Only intention and the four shot text fields are editable.');
+    if(typeof text!=='string' || text.length>(field==='intention'?2000:6000))throw Error('Use at most 2000 characters for intention and 6000 per shot text field.');
+    if(field==='intention')draft.intention=text;else draft.texts[field]=text;
+    draft.revision++;binding.snapshot=JSON.stringify(draft);return inspectShotAmendment(draft,source);
+  }
+  function productionShot(shot,texts=null) {
+    // Only production fields cross into a local storyboard. Historical claims,
+    // evidence links, purposes and native review stay in the parent attachment.
+    return copy({id:shot.id,shot_id:shot.shot_id,duration_seconds:shot.duration_seconds,aspect_ratio:shot.aspect_ratio,assets:copy(shot.assets || []),
+      ...Object.fromEntries(amendmentFields.map(field=>[field,texts?texts[field]:shot[field] ?? ''])),
+      text_origin:texts?'local_author_draft_unverified':'received_parent_text_not_reverified'});
+  }
+  async function finalizeShotAmendment(draft,source,sourceRaw,choice,decidedAt='') {
+    const binding=amendmentBinding(draft,source),revision=draft.revision,snapshot=JSON.stringify(draft),checks=inspectShotAmendment(draft,source);
+    if(!draft.intention.trim())throw Error('State your author intention before choosing a version.');
+    if(!['amendment','original','neither'].includes(choice))throw Error('Choose the amendment, the received original or neither.');
+    if(choice==='amendment' && (!checks.changed_fields.length || !draft.texts.visual_prompt.trim()))throw Error('To adopt an amendment, change at least one field and keep a complete image description.');
+    if(typeof sourceRaw!=='string' || JSON.stringify(JSON.parse(sourceRaw))!==binding.sourceJSON || await digestText(sourceRaw)!==binding.parentHash)throw Error('The original parent bytes/hash do not match this amendment.');
+    amendmentBinding(draft,source);if(draft.revision!==revision || JSON.stringify(draft)!==snapshot)throw Error('The local draft changed during the decision. Choose again.');
+    const original={shots:source.brief.shots.map(shot=>productionShot(shot)),original_timing_retained:true};
+    const proposed={shots:source.brief.shots.map(shot=>productionShot(shot,shot.id===draft.shot_id?draft.texts:null)),original_timing_retained:true};
+    const payload=copy({parent:draft.parent,draft_revision:revision,amended_shot_id:draft.shot_id,
+      author_decision:{choice,intention:draft.intention,decided_at:decidedAt,adopts_storyboard:choice!=='neither',scope:'Local author choice only; no native or independent artistic approval.'},
+      changed_fields:checks.changed_fields,proposed_storyboard:proposed,selected_storyboard:choice==='neither'?null:choice==='original'?original:proposed,
+      review_status:{native_status:'not_executed',canon_spoiler_status:'not_verified',constraints_status:'requires_author_review',comprehension_status:'requires_author_review'},
+      historical_evidence_scope:'Qloo, reference links and native acceptance belong only to the separately attached parent. No artistic cause or validation transfers to this local storyboard.'});
+    const hash=await digestText(canonicalJSON(payload));amendmentBinding(draft,source);
+    if(draft.revision!==revision || JSON.stringify(draft)!==snapshot)throw Error('The local draft changed during identity calculation. Choose again.');
+    return {schema:'local-shot-amendment-v1',derived_id:'local-shot-amendment-'+hash,payload_sha256:hash,
+      identity_method:'SHA-256 of JSON-normalized payload with recursively sorted object keys; local application identity, not source authentication or RFC8785.',
+      payload,parent_original_document:copy(source),parent_original_export_utf8:sourceRaw,
+      parent_attachment_scope:'Unchanged historical parent. Its flags, review and evidence do not certify the local storyboard.'};
+  }
+  return {build,choose,frameAt,createSilentDraft,setSilentCaption,inspectSilentDraft,finalizeSilentDraft,resumeSilentDraft,canonicalJSON,createShotAmendment,setShotAmendment,inspectShotAmendment,finalizeShotAmendment};
 })();
 /* EDITORIAL_WORKBENCH_END */
