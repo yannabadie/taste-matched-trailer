@@ -74,16 +74,16 @@ test('both delivered HTML copies contain exactly the tested core and parse witho
   for(const match of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
 });
 
-function browser({realTimers=false,inputSource=null}={}){
+function browser({realTimers=false,inputSource=null,crypto=webcrypto}={}){
   const elements=new Map(),downloads=[],blobs=new Map();
-  const element=id=>elements.get(id)||elements.set(id,{id,value:'',checked:false,hidden:false,disabled:false,innerHTML:'',textContent:'',className:'',addEventListener(){},appendChild(){}}).get(id);
+  const element=id=>elements.get(id)||elements.set(id,{id,value:'',checked:false,hidden:false,disabled:false,innerHTML:'',textContent:'',className:'',listeners:{},addEventListener(type,listener){this.listeners[type]=listener;},appendChild(){}}).get(id);
   const document={getElementById:element,querySelector(){return document.selected || null;},addEventListener(){},body:{appendChild(){}},createElement(){return{remove(){},click(){downloads.push({filename:this.download,blob:blobs.get(this.href)});}};}};
   class LocalURL extends URL{static createObjectURL(blob){const id='blob:test-'+blobs.size;blobs.set(id,blob);return id;}static revokeObjectURL(){}}
   const window={document,location:{origin:'http://localhost',href:'http://localhost/index.html'},addEventListener(){}};
-  const context=vm.createContext({document,window,crypto:webcrypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},setInterval:realTimers?setInterval:()=>1,clearInterval:realTimers?clearInterval:()=>{},performance:realTimers?performance:{now:()=>0},console});
+  const context=vm.createContext({document,window,crypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},setInterval:realTimers?setInterval:()=>1,clearInterval:realTimers?clearInterval:()=>{},performance:realTimers?performance:{now:()=>0},console});
   const html=fs.readFileSync(new URL('index.html',root),'utf8');let script=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   script=script.replace('loadPreset();restorePending();loadConfiguration();viewRecording();','');
-  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision,resumeSilentDecisionFile,silentImportFailure};',context);
+  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision,resumeSilentDecisionFile,silentImportFailure,prepareShotAmendment,updateShotAmendment,decideShotAmendment,downloadShotAmendment};',context);
   const source=inputSource || gardeningSource(),raw=JSON.stringify(source);Object.assign(context.qa.state,{bundle:source,displayKind:'recorded',recording:{originalRaw:raw,manifest:{captured_at:'2026-10-20T13:41:27Z'}}});context.qa.state.snapshot=context.qa.snapshot();
   return{qa:context.qa,document,element,downloads,raw};
 }
@@ -258,4 +258,97 @@ test('silent resume refuses to overwrite a correction made while the selected fi
   let release;const file={size:Buffer.byteLength(bytes),text:()=>new Promise(resolve=>{release=()=>resolve(bytes);})};
   const pending=b.qa.resumeSilentDecisionFile(file);b.qa.updateSilentCaption('shot_02','Newer current edit.');release();
   await assert.rejects(pending,/changed during import/);assert.equal(b.qa.state.silentDraft.shots[1].on_screen_text,'Newer current edit.');assert.equal(b.element('downloadSilentBtn').disabled,true);
+});
+
+function amendmentCase(){
+  const source=gardeningSource(),raw=JSON.stringify(source);
+  return{source,raw,draft:work.createShotAmendment(source,{source_sha256:hash(raw),display_kind:'fixture'},'shot_02')};
+}
+test('single-shot amendment exports exact four-field production texts with parent authority separate',async()=>{
+  const c=amendmentCase(),texts={visual_prompt:'An unmarked pot beside its label.',voiceover:'Choose a name before writing it.',on_screen_text:'Which herb will grow here?',sonic_direction:'Quiet room, no music.'};
+  work.setShotAmendment(c.draft,c.source,'intention','Keep the planting choice open.');
+  for(const [field,text] of Object.entries(texts))work.setShotAmendment(c.draft,c.source,field,text);
+  const a=await work.finalizeShotAmendment(c.draft,c.source,c.raw,'amendment','2026-10-26T01:00:00Z');
+  assert.equal(a.schema,'local-shot-amendment-v1');assert.equal(a.parent_original_export_utf8,c.raw);assert.equal(JSON.stringify(c.source),c.raw);
+  assert.equal(a.payload.parent.document_sha256,hash(c.raw));assert.equal(a.payload.amended_shot_id,'shot_02');
+  assert.equal(a.payload.author_decision.intention,'Keep the planting choice open.');
+  assert.equal(a.payload.proposed_storyboard.shots.length,4);assert.deepEqual(clone(a.payload.selected_storyboard),clone(a.payload.proposed_storyboard));
+  for(let i=0;i<4;i++){
+    const shot=a.payload.selected_storyboard.shots[i],parent=c.source.brief.shots[i];
+    assert.equal(shot.id,parent.id);assert.equal(shot.duration_seconds,parent.duration_seconds);assert.equal(shot.aspect_ratio,parent.aspect_ratio);
+    for(const field of Object.keys(texts))assert.equal(shot[field],i===1?texts[field]:parent[field]);
+    for(const field of ['purpose','verification','qloo_api_verified','decision_refs','evidence_refs','retained_entity_refs','interpretation_labels','generation_origin','line_status'])assert.equal(field in shot,false);
+  }
+  assert.equal(a.payload.review_status.native_status,'not_executed');assert.equal(a.payload.review_status.constraints_status,'requires_author_review');
+  assert.equal('verification' in a.payload,false);assert.equal('qloo_api_verified' in a.payload,false);
+  assert.equal(hash(work.canonicalJSON(a.payload)),a.payload_sha256);assert.equal(a.derived_id,'local-shot-amendment-'+a.payload_sha256);
+  assert.equal(a.parent_original_document.brief.verification.llm_status,'accept');
+});
+test('single-shot amendment requires intention and explicit choice; original and neither remain valid',async()=>{
+  const c=amendmentCase();await assert.rejects(()=>work.finalizeShotAmendment(c.draft,c.source,c.raw,'original'),/intention/);
+  work.setShotAmendment(c.draft,c.source,'intention','Retain the practical sequence.');
+  await assert.rejects(()=>work.finalizeShotAmendment(c.draft,c.source,c.raw,'automatic'),/Choose/);
+  await assert.rejects(()=>work.finalizeShotAmendment(c.draft,c.source,c.raw,'amendment'),/change/);
+  work.setShotAmendment(c.draft,c.source,'on_screen_text','An alternative label.');
+  const original=await work.finalizeShotAmendment(c.draft,c.source,c.raw,'original');
+  assert.equal(original.payload.selected_storyboard.shots[1].on_screen_text,c.source.brief.shots[1].on_screen_text);
+  assert.equal(original.payload.proposed_storyboard.shots[1].on_screen_text,'An alternative label.');
+  const neither=await work.finalizeShotAmendment(c.draft,c.source,c.raw,'neither');
+  assert.equal(neither.payload.selected_storyboard,null);assert.equal(neither.payload.author_decision.adopts_storyboard,false);
+  assert.equal(neither.payload.proposed_storyboard.shots.length,4);
+});
+test('single-shot amendment binds source bytes and revision and rejects protected or asynchronous changes',async()=>{
+  let c=amendmentCase();work.setShotAmendment(c.draft,c.source,'intention','Keep the label undecided.');
+  assert.throws(()=>work.setShotAmendment(c.draft,c.source,'duration_seconds','12'),/field/);
+  await assert.rejects(()=>work.finalizeShotAmendment(c.draft,c.source,c.raw+' ','original'),/bytes|hash/);
+  c.draft.shot_id='shot_03';assert.throws(()=>work.inspectShotAmendment(c.draft,c.source),/draft changed/);
+  c=amendmentCase();work.setShotAmendment(c.draft,c.source,'intention','Keep the label undecided.');
+  let pending=work.finalizeShotAmendment(c.draft,c.source,c.raw,'original');work.setShotAmendment(c.draft,c.source,'voiceover','A newer correction.');
+  await assert.rejects(pending,/changed/);
+  c=amendmentCase();work.setShotAmendment(c.draft,c.source,'intention','Keep the label undecided.');
+  pending=work.finalizeShotAmendment(c.draft,c.source,c.raw,'original');c.source.brief.shots[2].duration_seconds=12;
+  await assert.rejects(pending,/parent changed/);
+});
+test('single-shot amendment frontend compares and downloads one exact correction then invalidates every new edit or parent',async()=>{
+  const b=browser();await b.qa.renderEditorialWorkbench();b.element('amendmentShotSelect').value='shot_02';b.qa.prepareShotAmendment();
+  assert.match(b.element('amendmentComparison').innerHTML,/Received original/);assert.match(b.element('amendmentComparison').innerHTML,/Local author draft/);
+  b.qa.updateShotAmendment('intention','Keep the planting choice open.');b.qa.updateShotAmendment('visual_prompt','A blank label beside the pot.');
+  await b.qa.decideShotAmendment('amendment');await b.qa.downloadShotAmendment();
+  assert.equal(b.downloads.length,1);const a=JSON.parse(await b.downloads[0].blob.text());assert.equal(a.payload.selected_storyboard.shots[1].visual_prompt,'A blank label beside the pot.');
+  assert.equal(a.parent_original_export_utf8,b.raw);
+  b.qa.updateShotAmendment('intention','Leave the choice to the reader.');assert.equal(b.qa.state.amendmentExport,null);assert.equal(b.element('downloadAmendmentBtn').disabled,true);
+  await assert.rejects(()=>b.qa.downloadShotAmendment(),/Choose/);
+  await b.qa.decideShotAmendment('original');b.element('amendmentShotSelect').value='shot_03';b.qa.prepareShotAmendment();
+  assert.equal(b.qa.state.amendmentDraft.shot_id,'shot_03');assert.equal(b.qa.state.amendmentExport,null);assert.equal(b.qa.state.amendmentDraft.intention,'');
+  b.qa.updateShotAmendment('intention','Keep the watering step.');await b.qa.decideShotAmendment('neither');
+  const pending=b.qa.downloadShotAmendment();b.qa.invalidate();await assert.rejects(pending,/changed/);
+  assert.equal(b.downloads.length,1);assert.equal(b.qa.state.amendmentDraft,null);
+});
+test('single-shot amendment frontend refuses an old async decision after another edit',async()=>{
+  const b=browser();await b.qa.renderEditorialWorkbench();b.element('amendmentShotSelect').value='shot_01';b.qa.prepareShotAmendment();
+  b.qa.updateShotAmendment('intention','Keep the first step clear.');
+  const pending=b.qa.decideShotAmendment('original');b.qa.updateShotAmendment('on_screen_text','Newer first step.');
+  await assert.rejects(pending,/changed/);assert.equal(b.qa.state.amendmentExport,null);assert.equal(b.element('downloadAmendmentBtn').disabled,true);
+});
+test('single-shot amendment real click handler preserves a newer decision when an older hash rejects late',async()=>{
+  let holdNext=false,release;
+  const crypto={subtle:{digest(...args){
+    if(holdNext){holdNext=false;return new Promise(resolve=>{release=()=>webcrypto.subtle.digest(...args).then(resolve);});}
+    return webcrypto.subtle.digest(...args);
+  }}};
+  const b=browser({crypto});await b.qa.renderEditorialWorkbench();b.element('amendmentShotSelect').value='shot_01';b.element('prepareAmendmentBtn').listeners.click();
+  b.qa.updateShotAmendment('intention','Keep the first step clear.');
+  holdNext=true;const olderClick=b.element('chooseOriginalBtn').listeners.click();assert.equal(typeof release,'function');
+  b.qa.updateShotAmendment('on_screen_text','Newer first step.');await b.element('chooseAmendmentBtn').listeners.click();
+  const newer=b.qa.state.amendmentExport,status=b.element('amendmentStatus').textContent;
+  assert.equal(newer.payload.author_decision.choice,'amendment');assert.equal(b.element('downloadAmendmentBtn').disabled,false);
+  await release();await olderClick;
+  assert.equal(b.qa.state.amendmentExport,newer);assert.equal(b.element('downloadAmendmentBtn').disabled,false);assert.equal(b.element('amendmentStatus').textContent,status);
+  holdNext=true;const olderDownload=b.element('downloadAmendmentBtn').listeners.click();
+  b.qa.updateShotAmendment('on_screen_text','A still newer first step.');await b.element('chooseOriginalBtn').listeners.click();
+  const latest=b.qa.state.amendmentExport,latestStatus=b.element('amendmentStatus').textContent;
+  await release();await olderDownload;
+  assert.equal(b.qa.state.amendmentExport,latest);assert.equal(b.element('downloadAmendmentBtn').disabled,false);assert.equal(b.element('amendmentStatus').textContent,latestStatus);assert.equal(b.downloads.length,0);
+  b.qa.updateShotAmendment('intention','');await b.element('chooseOriginalBtn').listeners.click();
+  assert.equal(b.qa.state.amendmentExport,null);assert.equal(b.element('downloadAmendmentBtn').disabled,true);assert.match(b.element('amendmentStatus').textContent,/intention/);
 });
