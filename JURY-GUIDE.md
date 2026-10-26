@@ -4,7 +4,7 @@ Open the application at **https://yannabadie.github.io/taste-matched-trailer/**.
 No Qloo key, local installation or personal account is required in the public
 application.
 
-For the dated result, open the **[hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/)** directly or choose **View recorded result** in the application. Recorded reading makes no new API or model call.
+For the dated result, open the **[hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/)** directly or choose **Try the recorded sound-off example** in the application. Recorded reading makes no new API or model call.
 
 ## What this application produces
 
@@ -18,13 +18,16 @@ The output is a creative brief, not a rendered trailer. Timing, framing, sound
 and captions are editorial choices; the current profile measures movie
 affinities, not music affinities or audience demographics.
 
-The current live engine is version 2.6.3. Its writer and verifier distinguish
-an intentionally editorial shot from a claim of Qloo-backed evidence, and
-keep the unseen phenomenon off-screen. A requested revision remains visible
-as an unqualified result. The saved example below retains its original
-version 2.6.3, execution date and French native creative text. A separate
-English editorial translation helps inspect it; automatic English output
-is not guaranteed for new live runs.
+The published core source is version **2.6.6**, with documented runtime
+**1.1.3**. The last complete native qualification remains the dated **2.6.3**
+run below. Source publication and local editing do not establish a fresh
+complete native 2.6.6 qualification, the current active process or live availability.
+The writer/verifier contract distinguishes an editorial shot from a claim of
+Qloo-backed evidence and keeps the unseen phenomenon off-screen. A requested
+revision remains visible as an unqualified result. The saved example retains
+its original execution date and French native creative text. Its separate
+English editorial translation is a reading aid; automatic English output is
+not guaranteed for new live runs.
 
 ## Inspect the received result
 
@@ -35,7 +38,9 @@ received three finite measured affinities, and produced four complete shots
 with verifier acceptance and structural checks passing. Active time was
 95,282 ms. The English synopsis nevertheless produced French creative text.
 The English reading aid is an attributed editorial translation, not another
-model output or fresh API response.
+model output or fresh API response. In the application, expand **Read the
+complete original four-shot brief** to see it alongside the expandable original
+French. The local amendment editor uses the original received text.
 
 The aggregate receipt is [JURY-RELIABILITY-RECEPTION.json](JURY-RELIABILITY-RECEPTION.json).
 Its run identifier is
@@ -61,21 +66,47 @@ order after eligibility checks; it does not reweight or locally sort the
 numerical affinity values.
 
 Then follow a selected ID into the individual shots. For a two-reference
-result, the first reference is bound to shots 1 and 2, the second to shot 3.
-Shot 4 is an editorial close with no Qloo reference. The exported document
-preserves the decision and evidence links, so the source of a reference can
-be distinguished from the writer's camera, sound and wording choices.
+result, the exported positional links attach the first reference to shots 1
+and 2, the second to shot 3. Shot 4 is an editorial close with no Qloo reference.
+These are documentary compatibility links, not evidence that a reference caused
+a camera, sound or wording choice. From source 2.6.5 onward, the writer receives
+the ranked catalogue as documentary context, without required artistic use.
+The unchanged parent keeps its historical decision and evidence links.
 
-This is the product's useful distinction: I can inspect why a reference was
-selected before deciding whether to use the creative interpretation. Finite
+You can inspect why a reference was selected before deciding whether to use
+the creative interpretation. Finite
 affinities and returned order establish this data dependency; they do not
 establish that the resulting creative text is better than a model-only brief.
 Reading this chain in the recording makes no new Qloo request or model call.
 
-## Make a local editorial choice first
+## Amend one complete shot
 
-For a concrete delivery task, follow **Adapt this received result for sound-off
-viewing** and choose **Prepare a local sound-off adaptation**. For each plan,
+After loading the recorded example or a complete accepted result, open **Change
+what one shot reveals**, choose a received shot and select **Compare this shot**.
+Enter your intention, then compare the
+received original with your editable image description, narration, screen text
+and sound direction. Only these four fields of the selected shot can change;
+every duration and the other three shots stay unchanged.
+
+Choose **Use my amendment**, **Keep the received original** or **Adopt neither
+version**, then **Download decision and four-shot brief (.json)**. The export
+keeps the four-shot proposal and, for amendment or original, the four selected
+production plans. Neither records the proposal without adopting a storyboard.
+The exact original parent document and bytes are attached separately. Historical
+Qloo links, measured affinities and native acceptance belong to that parent;
+they do not validate the local texts or establish an artistic cause.
+
+Canon, spoilers, delivery constraints and comprehension remain unverified and
+need author review. Editing the intention or a text field, choosing another shot
+or changing the source clears the current choice and download; decide again.
+This distinct shot-amendment export is not accepted by the caption-only
+sound-off resume action. No new Qloo or model request is made.
+
+## Adapt captions for sound-off viewing
+
+For the separate caption-only task, **Try the recorded sound-off example** opens
+the dated example at the sound-off desk. To prepare a draft manually after
+loading a result, choose **Start a local sound-off draft**. For each plan,
 inspect the original narration, existing caption and proposed combined screen
 text. The comparison identifies missing spoken word sequences, not semantic
 comprehension. Correct the screen text of the relevant plan, then explicitly
@@ -90,8 +121,8 @@ with canon/spoilers and comprehension **not verified**. Editing the text or note
 requires another decision. The parent's native `sound_off` and original review
 are unchanged; this local goal does not submit another analysis.
 
-Once the recorded example or an accepted live result is visible, open **Choose
-an edit for your book**. Compare **Let the images lead** and **Let the words lead**:
+Once the recorded example or an accepted live result is visible, open **Explore
+two pacing edits of the original**. Compare **Let the images lead** and **Let the words lead**:
 their full timelines use the source's actual images and words, with different
 shot durations and voice entrance. Neither option is recommended by an affinity
 score. These are local deterministic recompositions of the displayed source, not
@@ -121,7 +152,7 @@ Author benefit and A/B/C superiority have not been measured.
 
 1. Use the default custom brief and **The Turn of the Screw (book)** as the
    sole initial reference.
-2. Submit a new live analysis and wait for the asynchronous result.
+2. Choose **Run a new live analysis** and wait for the asynchronous result.
 3. Inspect the measured affinities, selected references and four-shot brief.
 4. Download the public result to inspect the evidence and limitations.
 
@@ -163,8 +194,10 @@ Qloo or model test. No uninterrupted-uptime guarantee is claimed.
 ## Competition references
 
 The current submission deadline is 30 October 2026 at 23:45 EDT
-(31 October at 04:45 in Paris). The judging period ends on 16 November at
-23:45 Eastern Time (17 November at 05:45 in Paris).
+(31 October at 04:45 in Paris). Judging runs from 2 November at 12:00 Eastern
+Time through 5 November at 23:45 Eastern Time (6 November at 05:45 in Paris).
+After the deadline, keep submitted materials unchanged until the applicable
+actual winners announcement; a calendar date alone does not lift that restriction.
 
 The official requirements call for an externally accessible working project,
 free testing access through the end of judging, an open-source repository
@@ -172,7 +205,8 @@ with instructions, and English materials or English translations. A video is
 not required by the current overview.
 
 Sources: [Qloo Agentic Hackathon](https://qloo.devpost.com/) and
-[official rules](https://qloo.devpost.com/rules), checked on 20 October 2026.
+[official rules](https://qloo.devpost.com/rules). The judging dates follow the
+official-rules reading received on 25 October 2026.
 
 The linked [official developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide)
 allows private server-side caching and prohibits storing Qloo response data
