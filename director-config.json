@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://rocks-clubs-side-definitely.trycloudflare.com",
+  "api_base_url": "https://would-firmware-carefully-participate.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.3",
-  "revision": "runtime-1250c9a25a5b40eba95bb267ba270188",
-  "runtime_status": "offline",
-  "updated_at": "2026-10-26T20:55:44.252978Z",
-  "expires_at": "2026-10-27T20:55:44.252978Z"
+  "revision": "runtime-61515d5b5c1d41359824e3ea2dd51bb2",
+  "runtime_status": "ready",
+  "updated_at": "2026-10-26T20:58:12.382485Z",
+  "expires_at": "2026-10-27T20:58:12.382485Z"
 }
