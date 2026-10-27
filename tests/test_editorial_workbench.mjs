@@ -83,10 +83,33 @@ function browser({realTimers=false,inputSource=null,crypto=webcrypto}={}){
   const context=vm.createContext({document,window,crypto,TextEncoder,TextDecoder,Blob,URL:LocalURL,AbortController,setTimeout(){},setInterval:realTimers?setInterval:()=>1,clearInterval:realTimers?clearInterval:()=>{},performance:realTimers?performance:{now:()=>0},console});
   const html=fs.readFileSync(new URL('index.html',root),'utf8');let script=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   script=script.replace('loadPreset();restorePending();loadConfiguration();viewRecording();','');
-  vm.runInContext(script+';globalThis.qa={state,snapshot,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision,resumeSilentDecisionFile,silentImportFailure,prepareShotAmendment,updateShotAmendment,decideShotAmendment,downloadShotAmendment};',context);
+  vm.runInContext(script+';globalThis.qa={state,snapshot,renderCandidate,renderBundle,renderEditorialWorkbench,chooseEditorialOption,downloadEditorialDecision,invalidate,startEditorialPreview,stopEditorialPreview,prepareSilentAdaptation,updateSilentCaption,decideSilentAdaptation,downloadSilentAdaptation,invalidateSilentDecision,resumeSilentDecisionFile,silentImportFailure,prepareShotAmendment,updateShotAmendment,decideShotAmendment,downloadShotAmendment};',context);
   const source=inputSource || gardeningSource(),raw=JSON.stringify(source);Object.assign(context.qa.state,{bundle:source,displayKind:'recorded',recording:{originalRaw:raw,manifest:{captured_at:'2026-10-20T13:41:27Z'}}});context.qa.state.snapshot=context.qa.snapshot();
   return{qa:context.qa,document,element,downloads,raw};
 }
+test('desk clarity: scores and response positions are readable without changing received data',()=>{
+  const b=browser(),candidate={entity_id:'synthetic-film',name:'Synthetic reference',score_value:0.8121439473,score_field:'affinity',returned_order:0},decision={id:'synthetic-decision',selected_entity_ids:['synthetic-film']};
+  const before=JSON.stringify({candidate,decision}),html=b.qa.renderCandidate(candidate,decision);
+  assert.match(html,/>0\.81<\/div>/);assert.match(html,/title="0\.8121439473"/);assert.match(html,/Position in Qloo's response: 1/);
+  assert.equal(JSON.stringify({candidate,decision}),before);
+});
+test('desk clarity: missing scores and invalid response positions do not become measured zero or position zero',()=>{
+  const b=browser(),decision={selected_entity_ids:[]};
+  for(const returned_order of [undefined,null,-1,0.5,Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER+1]){
+    const html=b.qa.renderCandidate({returned_order,score_value:null},decision);
+    assert.match(html,/Position in Qloo's response: not supplied/);assert.match(html,/>not supplied<\/div>/);
+  }
+  assert.match(b.qa.renderCandidate({score_value:0,returned_order:1},decision),/>0\.00<\/div>/);
+});
+test('desk clarity: editorial translation preserves the French source and ignores inherited object keys',()=>{
+  const source=gardeningSource();source.workflow_status='blocked';
+  const french='Références culturelles pour une direction créative et un brief — sans promesse de comparables commerciaux, de conversion, de ventes ou de positionnement éditorial validé.';
+  source.limitations=[french,'constructor','toString','__proto__','<img src=x onerror=alert(1)>'];
+  const b=browser({inputSource:source}),before=JSON.stringify(source);b.qa.state.displayKind='fixture';b.qa.renderBundle();
+  const html=b.element('publicLimitations').innerHTML;
+  assert.ok(html.includes(french));assert.equal((html.match(/English reading aid:/g)||[]).length,1);
+  assert.ok(!html.includes('function Object'));assert.ok(!html.includes('[object Object]'));assert.ok(html.includes('&lt;img'));assert.equal(JSON.stringify(source),before);
+});
 test('real frontend choice downloads a separate dated recomposition; original bytes remain intact',async()=>{
   const b=browser();await b.qa.renderEditorialWorkbench();assert.equal(b.qa.state.editorial.status,'ready_for_author_choice');
   b.document.selected={value:'images_lead',parentElement:{textContent:'Let the images lead'}};b.qa.chooseEditorialOption();b.element('editorialReason').value='Give the first image room.';
