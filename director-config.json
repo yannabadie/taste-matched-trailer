@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://river-any-posing-spas.trycloudflare.com",
+  "api_base_url": "https://inf-sales-seasonal-sheet.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.3",
-  "revision": "runtime-f6ecc4598b0e4b1993860291ab42b241",
-  "runtime_status": "offline",
-  "updated_at": "2026-10-27T03:59:28.413980Z",
-  "expires_at": "2026-10-28T03:59:28.413980Z"
+  "revision": "runtime-b652f4d719254560a4d1bc2dcbeb2b7a",
+  "runtime_status": "ready",
+  "updated_at": "2026-10-27T06:11:14.614671Z",
+  "expires_at": "2026-10-28T06:11:14.614671Z"
 }
