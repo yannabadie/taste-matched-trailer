@@ -309,9 +309,7 @@ export function normalizeHarnessEnvelope(rawEnvelope, { hasServerKey = Boolean(p
       ? sourceDoc.results.entities
       : [];
 
-  const validEntities = rawEntities.filter(
-    (e) => e && typeof e === "object" && String(e.entity_id || e.id || "").trim()
-  );
+  const validEntities = rawEntities.filter(e=>e && typeof e==="object" && typeof (e.entity_id??e.id)==="string" && (e.entity_id??e.id).trim());
   if (rawStatus === "ok" && validEntities.length !== rawEntities.length) {
     return {status:"invalid_contract",authentication_state:authState,results:[],warnings:rawWarnings,
       limitations:[...rawLimitations,"The response contained items without an identity; a filtered subset is not a complete result."],

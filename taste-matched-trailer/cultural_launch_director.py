@@ -1081,7 +1081,7 @@ def build_evidence_from_envelope(
         if note not in limitations: limitations.append(note)
     ignored_ids=_ignored_signal_ids(all_warnings)
     measured_count=sum(1 for item in used_items if item["score_value"] is not None)
-    if tool=="qloo_rank":
+    if tool in ("qloo_rank","qloo_recommend"):
         if used_items and measured_count==0:
             if norm_status=="ok": norm_status="empty"
             limitations.append("No finite measured affinity score was returned. Response/input order is not a qualified ranking; every candidate is non-evaluable.")
@@ -1105,6 +1105,14 @@ def build_evidence_from_envelope(
     has_foreign_provenance = (effective_run_id != run_id) or (
         bool(env_input_hash) and bool(req_input_hash) and env_input_hash != req_input_hash
     )
+    if mode != "fixture" and tool == "qloo_recommend" and norm_status in ("ok", "partial", "degraded"):
+        call = envelope.get("tool_call_provenance") or {}
+        if (call.get("tool") != tool or call.get("run_id") != run_id or call.get("input_hash") != req_input_hash
+                or call.get("source_payload_sha256") != envelope.get("source_payload_sha256")
+                or canonical_json_bytes(call.get("arguments")) != canonical_json_bytes(dict(request_redacted))):
+            has_foreign_provenance = True
+            norm_status = "invalid_contract"
+            limitations.append("The recommendation acquisition does not match its exact tool, arguments, execution and input.")
 
     effective_mode = (
         "fixture"
@@ -1198,6 +1206,16 @@ def build_evidence_from_envelope(
     return ev
 
 
+def _checked_explicit_ids(values, required=False):
+    if values is None and not required:
+        return None
+    if (not isinstance(values, list) or not 1 <= len(values) <= 3
+            or any(not isinstance(value, str) or not value.strip() for value in values)
+            or len({value.casefold() for value in values}) != len(values)):
+        raise ValueError("An explicit choice needs one to three distinct supplied movie IDs")
+    return list(values)
+
+
 def select_from_valid_results(
     decision_id: str,
     run_id: str,
@@ -1217,10 +1235,7 @@ def select_from_valid_results(
     """
     wanted = None
     if explicit_selected_ids is not None:
-        if (not isinstance(explicit_selected_ids, list) or not 1 <= len(explicit_selected_ids) <= 3
-                or any(not isinstance(value, str) or not value.strip() for value in explicit_selected_ids)
-                or len({value.casefold() for value in explicit_selected_ids}) != len(explicit_selected_ids)):
-            raise ValueError("An explicit choice needs one to three distinct supplied movie IDs")
+        explicit_selected_ids = _checked_explicit_ids(explicit_selected_ids)
         wanted = {value.casefold() for value in explicit_selected_ids}
         max_select = len(wanted)
     raw_results_container = evidence["payload_redacted"].get("results")
@@ -1395,7 +1410,8 @@ def select_from_valid_results(
     }
 
 
-def _shot_plan(constraints: dict[str, Any], bindings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _shot_plan(constraints: dict[str, Any], bindings: list[dict[str, Any]],
+        source_bindings: dict[str, str | None] | None = None) -> list[dict[str, Any]]:
     duration=constraints.get("duration_seconds",38)
     if isinstance(duration,bool) or not isinstance(duration,(int,float)) or not math.isfinite(duration) or not 4<=duration<=300:
         raise ValueError("duration_seconds must be between4 and300")
@@ -1414,8 +1430,15 @@ def _shot_plan(constraints: dict[str, Any], bindings: list[dict[str, Any]]) -> l
         "Conclure par une invitation à lire",
     ]
     plans=[]
+    by_id = {str(item["entity_id"]).casefold(): item for item in bindings}
+    if source_bindings is not None and (set(source_bindings) != {f"shot_{i:02d}" for i in range(1,5)}
+            or any(value is not None and (not isinstance(value,str) or value.casefold() not in by_id) for value in source_bindings.values())):
+        raise ValueError("Every shot source must identify a retained reference or be explicitly editorial")
     for idx in range(4):
         binding=(bindings[0] if idx<2 else bindings[min(1,len(bindings)-1)]) if bindings and idx<3 else None
+        if source_bindings is not None:
+            assigned = source_bindings[f"shot_{idx+1:02d}"]
+            binding = by_id[assigned.casefold()] if assigned is not None else None
         plans.append({"shot_id":f"shot_{idx+1:02d}","purpose":beats[idx],"duration_seconds":durations[idx],
             "aspect_ratio":ratio,"assets":copy.deepcopy(constraints.get("assets") or []),
             "retained_reference":copy.deepcopy(binding),"sound_off":bool(constraints.get("sound_off"))})
@@ -1620,11 +1643,12 @@ def retained_source_bindings(run_id: str, decisions: list[dict[str, Any]],
 def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[str, Any],
         analysis: dict[str, Any], evidences: list[dict[str, Any]], decisions: list[dict[str, Any]],
         budget: dict[str, Any], qloo_api_verified: bool,
-        llm_runner: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None
+        llm_runner: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None,
+        source_bindings: dict[str, str | None] | None = None
         ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     constraints=copy.deepcopy(validated_brief["user_constraints"])
     bindings=retained_source_bindings(run_id,decisions,evidences)
-    plans=_shot_plan(constraints,bindings)
+    plans=_shot_plan(constraints,bindings,source_bindings)
     directions=[]; shots=[]; generated=False
     if llm_runner is not None:
         if budget["llm_calls_used"]>=budget["llm_call_limit"]: raise RuntimeError("LLM budget exhausted before Role2")
@@ -1633,6 +1657,9 @@ def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[s
         # not turn their rank-based positions into artistic assignments.
         writer_plans=[{key:copy.deepcopy(value) for key,value in plan.items() if key!="retained_reference"}
                       for plan in plans]
+        if source_bindings is not None:
+            for target,plan in zip(writer_plans,plans):
+                target["source_citation"] = copy.deepcopy(plan["retained_reference"])
         out=llm_runner("role_2_creative_redactor",{"run_id":run_id,"mode":mode,
             "synopsis":validated_brief["synopsis"],"themes":analysis.get("themes") or [],
             "retained_references":bindings,"user_constraints":constraints,"shot_plan":writer_plans,
@@ -2248,6 +2275,13 @@ def _request_resolver(req: dict[str, Any]) -> Callable[[str], list[dict[str, Any
     return resolve
 
 
+def _workflow_input_hash(brief_hash, domains, shortlists, resolution_choices, insights_tool="qloo_rank", selected_ids=None):
+    identity={"brief_input_hash":brief_hash,"rank_domains":list(domains),"shortlist_options":shortlists,"resolution_choices":resolution_choices or {}}
+    if insights_tool != "qloo_rank" or selected_ids is not None:
+        identity.update(insights_tool=insights_tool,explicit_selected_ids=selected_ids)
+    return sha256_canonical(identity)
+
+
 def normalize_run_request(req: dict[str, Any], default_mode: str = "fixture") -> dict[str, Any]:
     """Pure frozen-case normalization. Supplements never overwrite the frozen case."""
     if not isinstance(req,dict): raise ValueError("Run request must be an object")
@@ -2279,6 +2313,12 @@ def normalize_run_request(req: dict[str, Any], default_mode: str = "fixture") ->
         raise ValueError("Invalid active_time_already_used_ms")
     if "explicit_run_id" in out: _allocate_execution_run_id("",mode,out["explicit_run_id"])
     out["rank_domains"],out["shortlist_options"]=_normalize_rank_configuration(out.get("rank_domains",DEFAULT_RANK_DOMAINS),out.get("shortlist_options"))
+    if out.get("insights_tool","qloo_rank") not in ("qloo_rank","qloo_recommend"):
+        raise ValueError("Unsupported insights operation")
+    if out.get("insights_tool") == "qloo_recommend" and out["rank_domains"] != ("movie",):
+        raise ValueError("Movie recommendation only")
+    if "explicit_selected_ids" in out or out.get("insights_tool") == "qloo_recommend":
+        out["explicit_selected_ids"] = _checked_explicit_ids(out.get("explicit_selected_ids"),required=out.get("insights_tool")=="qloo_recommend")
     return out
 
 
@@ -2286,8 +2326,7 @@ def preflight_run_request(req: dict[str, Any]) -> dict[str, Any]:
     """No client construction, model/tokenizer execution or transport access."""
     req=normalize_run_request(req)
     brief=validate_brief(req["synopsis"],req["suggested_public_references"],req["user_constraints"])
-    brief["input_hash"]=sha256_canonical({"brief_input_hash":brief["input_hash"],"rank_domains":list(req["rank_domains"]),
-        "shortlist_options":req["shortlist_options"],"resolution_choices":req.get("resolution_choices") or {}})
+    brief["input_hash"]=_workflow_input_hash(brief["input_hash"],req["rank_domains"],req["shortlist_options"],req.get("resolution_choices"),req.get("insights_tool","qloo_rank"),req.get("explicit_selected_ids"))
     queries=brief["suggested_public_references"]; reasons=[]; supplied=req.get("precollected_describe")
     resolver=_request_resolver(req)
     resolution=resolve_candidates(queries,brief["user_constraints"],req.get("confirmed_entity_ids"),req["mode"],resolver,req.get("resolution_choices"))
@@ -2341,12 +2380,18 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
         shortlist_options: dict[str,list[str]] | None = None,
         qloo_network_attempt_limit: int = 8, llm_call_limit: int = 3,
         resolution_choices: dict[str,str] | None = None, active_time_limit_ms: int = 120000,
-        active_time_already_used_ms: int = 0, request_audit: dict[str,Any] | None = None) -> dict[str,Any]:
+        active_time_already_used_ms: int = 0, request_audit: dict[str,Any] | None = None, *,
+        insights_tool: str = "qloo_rank", explicit_selected_ids: list[str] | None = None) -> dict[str,Any]:
     """Resolve/gate before three native roles. No automatic model or transport retry."""
     if mode not in ALLOWED_MODES: raise ValueError("Unsupported mode")
     rank_domains,shortlist_options=_normalize_rank_configuration(rank_domains,shortlist_options)
+    if insights_tool not in ("qloo_rank","qloo_recommend"):
+        raise ValueError("Unsupported insights operation")
+    if insights_tool == "qloo_recommend" and (rank_domains != ("movie",) or explicit_selected_ids is None):
+        raise ValueError("A movie recommendation requires explicit submitted IDs before writing")
+    explicit_selected_ids = _checked_explicit_ids(explicit_selected_ids,required=insights_tool=="qloo_recommend")
     start=time.monotonic(); validated=validate_brief(synopsis,suggested_public_references,user_constraints)
-    validated["input_hash"]=sha256_canonical({"brief_input_hash":validated["input_hash"],"rank_domains":list(rank_domains),"shortlist_options":shortlist_options,"resolution_choices":resolution_choices or {}})
+    validated["input_hash"]=_workflow_input_hash(validated["input_hash"],rank_domains,shortlist_options,resolution_choices,insights_tool,explicit_selected_ids)
     run_id=_allocate_execution_run_id(validated["input_hash"],mode,explicit_run_id)
     budget=make_initial_run_budget(run_id,qloo_network_attempt_limit,llm_call_limit,active_time_limit_ms,physical_http_attempts_used or 0)
     if isinstance(active_time_already_used_ms,bool) or not isinstance(active_time_already_used_ms,int) or not 0<=active_time_already_used_ms<=active_time_limit_ms:
@@ -2401,7 +2446,9 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
     workflow_status="ok"
     for idx,domain in enumerate(rank_domains,1):
         args=build_canonical_qloo_rank_args(domain,shortlist_options[domain],confirmed_ids,input_hash=validated["input_hash"],run_id=run_id)
-        q_plan["planned_steps"].append({"tool":"qloo_rank","arguments":dict(args),"target_type":f"urn:entity:{domain}"})
+        if insights_tool == "qloo_recommend":
+            args={"target_type":"movie","signals":list(confirmed_ids),"limit":6}
+        q_plan["planned_steps"].append({"tool":insights_tool,"arguments":dict(args),"target_type":f"urn:entity:{domain}"})
         require_time(); requested_at=utc_now_iso()
         if simulated_harness_state:
             ev,workflow_status=_simulate_robustness_state(simulated_harness_state,run_id,mode,confirmed_ids,budget,requested_at,recorded_live_original_at)
@@ -2409,7 +2456,7 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
             if live_transport is not None and mode in ("live","recorded_live"):
                 if physical_http_attempts_used is None and budget["qloo_network_attempts_used"]>=qloo_network_attempt_limit:
                     raise RuntimeError("No physical capacity remains before transport")
-                env=live_transport("qloo_rank",args)
+                env=live_transport(insights_tool,args)
                 if not isinstance(env,dict): raise ValueError("Transport returned a non-object envelope")
                 if env.get("network_attempt_made",False):
                     if mode!="live": raise ValueError("A replay cannot perform current HTTP")
@@ -2422,10 +2469,10 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
                 env={"status":"ok" if items else "empty","results":{"entities":items},"authentication_state":"not_checked"}
             else:
                 env={"status":"error","authentication_state":"not_checked","results":[],"error":{"code":"LIVE_TRANSPORT_NOT_CONFIGURED","retryable":False}}
-            ev=build_evidence_from_envelope(f"ev-{run_id}-{domain}",run_id,mode,"qloo_rank",args,confirmed_ids,env,
+            ev=build_evidence_from_envelope(f"ev-{run_id}-{domain}",run_id,mode,insights_tool,args,confirmed_ids,env,
                  requested_at,utc_now_iso(),recorded_live_original_at=recorded_live_original_at,expected_input_hash=validated["input_hash"])
         evidences.append(ev)
-        decisions.append(select_from_valid_results(f"dec-{run_id}-{idx:02d}-{domain}",run_id,f"select_{domain}_references",ev,f"urn:entity:{domain}",validated["constraints_origin"]))
+        decisions.append(select_from_valid_results(f"dec-{run_id}-{idx:02d}-{domain}",run_id,f"select_{domain}_references",ev,f"urn:entity:{domain}",validated["constraints_origin"],explicit_selected_ids=explicit_selected_ids))
         if ev["status"]!="ok":
             workflow_status=ev["status"]
             reasons.append("ranking_step:"+domain+":"+ev["status"])
@@ -2457,7 +2504,11 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
         return finish("invalid_contract",_unproduced_brief(run_id,mode,validated,"not_generated",reasons))
     try:
         require_time(); analysis=llm_role_1_brief_analyst(validated,budget,llm_runner=llm_runner)
-        require_time(); brief,directions=llm_role_2_creative_redactor(run_id,mode,validated,analysis,evidences,decisions,budget,qloo_verified,llm_runner)
+        source_bindings=None
+        if explicit_selected_ids is not None:
+            source_bindings={f"shot_{i+1:02d}":explicit_selected_ids[i%len(explicit_selected_ids)] for i in range(3)}
+            source_bindings["shot_04"]=None
+        require_time(); brief,directions=llm_role_2_creative_redactor(run_id,mode,validated,analysis,evidences,decisions,budget,qloo_verified,llm_runner,source_bindings)
         require_time(); llm_role_3_verifier(brief,decisions,evidences,budget,llm_runner=llm_runner)
         if brief["verification"]["llm_status"] in ("revise","block") or brief["verification"]["deterministic_status"]=="fail": workflow_status="needs_revision"
         if brief.get("completeness")!="complete": workflow_status="not_generated"
@@ -2583,7 +2634,7 @@ def build_public_export(bundle: dict[str,Any]) -> dict[str,Any]:
     public_brief["shots"]=[take(x,("id","purpose","visual_prompt","voiceover","sonic_direction","on_screen_text","duration_seconds","aspect_ratio","assets","decision_refs","evidence_refs","retained_entity_refs","line_status","interpretation_labels")) for x in brief.get("shots",[])]
     public_decisions=[]
     for dec in bundle.get("decisions",[]):
-        item=take(dec,("id","action","claim_origin","status","selected_entity_ids","evidence_refs","rule_version","rationale","limitations"))
+        item=take(dec,("id","action","claim_origin","status","selected_entity_ids","evidence_refs","rule_version","rationale","constraints_origin","limitations"))
         item["candidates"]=[take(c,("name","entity_id","entity_type","returned_order","is_tie","qualification_state","score_field","score_value")) for c in dec.get("candidates",[])]
         public_decisions.append(item)
     groups=[]
@@ -2848,7 +2899,7 @@ def _cli_main(argv: list[str] | None = None) -> int:
         transport=None
         if isinstance(envelopes,dict):
             def transport(tool,params):
-                domain=_to_short_entity_type(params.get("option_type") or "")
+                domain=_to_short_entity_type(params.get("option_type") or params.get("target_type") or "")
                 env=envelopes.get(domain) or envelopes.get(f"urn:entity:{domain}")
                 if not isinstance(env,dict): return {"status":"error","error":{"code":"MISSING_DOMAIN_ENVELOPE","retryable":False},"results":[]}
                 result=copy.deepcopy(env); result["network_attempt_made"]=False
@@ -2869,7 +2920,8 @@ def _cli_main(argv: list[str] | None = None) -> int:
             req.get("confirmed_entity_ids"),req["mode"],req.get("simulated_harness_state"),req.get("recorded_live_original_at"),
             bool(req.get("cancel_requested",False)),transport,runner,_request_resolver(req),req.get("explicit_run_id"),
             req.get("physical_http_attempts_used"),req["rank_domains"],req["shortlist_options"],req["qloo_network_attempt_limit"],
-            req["llm_call_limit"],req.get("resolution_choices"),req["active_time_limit_ms"],req["active_time_already_used_ms"],audit)
+            req["llm_call_limit"],req.get("resolution_choices"),req["active_time_limit_ms"],req["active_time_already_used_ms"],audit,
+            insights_tool=req.get("insights_tool","qloo_rank"),explicit_selected_ids=req.get("explicit_selected_ids"))
     else:
         parser.print_help(); return 0
     bundle["public_export"]=build_public_export(bundle)

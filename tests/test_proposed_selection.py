@@ -53,6 +53,53 @@ def render_fixture(decision, source, calls):
 
 
 class ProposedSelection(unittest.TestCase):
+    def test_recommendation_without_explicit_choice_is_refused_by_inert_preflight(self):
+        with self.assertRaises(ValueError):
+            core.preflight_run_request({"synopsis": "A gentle book about reading indoors.", "rank_domains": ["movie"],
+                "shortlist_options": {"movie": ["synthetic-a"]}, "insights_tool": "qloo_recommend"})
+
+    def test_recommendation_pipeline_keeps_operation_and_explicit_choices(self):
+        seed = "synthetic-book-for-recommendation"
+        rows = copy.deepcopy(evidence()["payload_redacted"]["results"])
+        calls = []
+        def fake_model(role, payload):
+            calls.append(role)
+            if role == "role_1_brief_analyst":
+                return {}
+            if role == "role_3_verifier":
+                return {"llm_status": "accept", "unresolved_claims": []}
+            return {"directions": [], "shot_overrides": {f"shot_{i:02d}": {
+                "visual_prompt": "A quiet reading table.", "voiceover": "", "sonic_direction": "", "on_screen_text": "Read the page."
+            } for i in range(1, 5)}}
+        with mock.patch.dict(core.FIXTURE_RECOMMENDATIONS_BY_SEED, {seed: {"movie": rows}}):
+            result = core.run_cultural_launch_director("A gentle book about reading indoors.", ["Controlled public reference"],
+                {"duration_seconds": 38, "aspect_ratio": "16:9"}, [seed], mode="fixture",
+                custom_resolver=lambda _query: [{"entity_id": seed, "name": "Controlled book", "entity_type": "urn:entity:book"}],
+                rank_domains=["movie"], shortlist_options={"movie": ["synthetic-c", "synthetic-a"]}, llm_runner=fake_model,
+                insights_tool="qloo_recommend", explicit_selected_ids=["synthetic-c", "synthetic-a"])
+        self.assertEqual(result["workflow_status"], "ok")
+        self.assertEqual(result["question_plan"]["planned_steps"][0]["tool"], "qloo_recommend")
+        self.assertEqual(result["evidences"][0]["tool"], "qloo_recommend")
+        self.assertEqual(result["decisions"][0]["selected_entity_ids"], ["synthetic-a", "synthetic-c"])
+        self.assertEqual(result["brief"]["shots"][0]["retained_entity_refs"], ["synthetic-c"])
+        self.assertEqual(calls, ["role_1_brief_analyst", "role_2_creative_redactor", "role_3_verifier"])
+        self.assertFalse(result["brief"]["qloo_api_verified"])
+        public = core.build_public_export(result)
+        self.assertEqual(public["decisions"][0]["constraints_origin"][-1]["submitted_entity_ids"], ["synthetic-c", "synthetic-a"])
+
+    def test_recommendation_cannot_borrow_another_tool_or_foreign_acquisition(self):
+        args = {"target_type": "movie", "signals": ["synthetic-book"], "limit": 6}
+        for foreign in [False, True]:
+            origin = "run-another-source" if foreign else "run-synthetic-selection"
+            envelope = {"status": "ok", "run_id": origin, "input_hash": "a" * 64,
+                "authentication_state": "authenticated", "source_payload_sha256": "b" * 64,
+                "results": copy.deepcopy(evidence()["payload_redacted"]["results"]),
+                "tool_call_provenance": {"tool": "qloo_recommend" if foreign else "qloo_rank", "arguments": args,
+                    "run_id": origin, "input_hash": "a" * 64, "source_payload_sha256": "b" * 64}}
+            result = core.build_evidence_from_envelope("synthetic-evidence", "run-synthetic-selection", "live", "qloo_recommend",
+                args, ["synthetic-book"], envelope, "2026-10-27T12:00:00Z", "2026-10-27T12:00:01Z", expected_input_hash="a" * 64)
+            self.assertNotEqual(result["authentication_state"], "authenticated")
+
     def test_explicit_choice_preserves_api_order_and_records_author_order_separately(self):
         source = evidence()
         before = copy.deepcopy(source)
