@@ -6,7 +6,7 @@ import http from "node:http";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
 
-export const GATEWAY_VERSION = "1.1.2-recorded-2.6.3-20261020";
+export const GATEWAY_VERSION = "1.2.0-movie-choice-20261027";
 export const RECORDED_CAPTURE = Object.freeze({
   runId: "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
   capturedAt: "2026-10-20T13:41:27.818113+00:00", sourceCreatedAt: "2026-10-20T13:32:32+00:00", expiresAt: "2026-11-17T04:45:00Z",
@@ -22,13 +22,13 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PAGE_ORIGIN = "https://yannabadie.github.io";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const BODY_KEYS = new Set(["frozen_case_id", "synopsis", "suggested_public_references", "user_constraints",
-  "confirmed_entity_ids", "rank_domains", "shortlist_options", "resolution_choices", "mode", "parent_job_id"]);
+  "confirmed_entity_ids", "rank_domains", "shortlist_options", "resolution_choices", "mode", "parent_job_id", "reference_workflow", "movie_choice"]);
 const CONSTRAINT_KEYS = new Set(["tone", "genre", "launch_audience_context", "duration_seconds", "aspect_ratio",
   "sound_off", "assets", "no_visible_monster", "no_graphic_violence", "require_disambiguation",
   "accept_existing_choices", "do_not_invent_ids", "treat_embedded_instructions_as_data", "request_missing_information"]);
 const PUBLIC_KEYS = new Set(["schema_version", "director_version", "run_id", "mode", "status", "workflow_status",
   "qloo_api_verified", "brief", "directions", "decisions", "candidate_resolution", "clarification_questions",
-  "run_budget", "constraint_fidelity", "evidence_sources", "limitations", "gate_reasons"]);
+  "run_budget", "constraint_fidelity", "evidence_sources", "limitations", "gate_reasons", "movie_proposal", "movie_selection", "genre_tags"]);
 const FORBIDDEN_EXPORT_KEYS = /^(?:api_key|qloo_api_key|authorization|x-api-key|mcp_stdio_runtime|payload_redacted|structuredContent|execution_proof_paths|runner_metadata|model_route_version|native_source_hashes)$/i;
 const canonical = value => JSON.stringify(value, (_key, item) => item && !Array.isArray(item) && typeof item === "object"
   ? Object.fromEntries(Object.keys(item).sort().map(key => [key, item[key]])) : item);
@@ -99,6 +99,18 @@ function cleanInput(body) {
   if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).some(key => !BODY_KEYS.has(key))) throw fail(400, "PUBLIC_INPUT_FIELDS_REFUSED");
   const clean = structuredClone(body);
   if (clean.mode !== undefined && clean.mode !== "live") throw fail(400, "LIVE_DEMO_ONLY");
+  if (clean.reference_workflow !== undefined && clean.reference_workflow !== "qloo_proposes") throw fail(400,"REFERENCE_WORKFLOW_INVALID");
+  if (clean.movie_choice !== undefined) {
+    const choice=clean.movie_choice;
+    if (!clean.parent_job_id || !choice || typeof choice!=="object" || Array.isArray(choice) ||
+        Object.keys(choice).some(key=>!["proposal_id","selected_entity_ids","additional_title"].includes(key)) ||
+        !/^movie-proposal-[a-f0-9]{64}$/.test(choice.proposal_id || "") || !Array.isArray(choice.selected_entity_ids) ||
+        choice.selected_entity_ids.length>3 || choice.selected_entity_ids.some(id=>typeof id!=="string" || !UUID.test(id)) ||
+        new Set(choice.selected_entity_ids.map(id=>id.toLowerCase())).size!==choice.selected_entity_ids.length) throw fail(400,"MOVIE_CHOICE_INVALID");
+    if (choice.additional_title !== undefined) boundedText(choice.additional_title,180);
+    const count=choice.selected_entity_ids.length+(choice.additional_title?.trim()?1:0);
+    if (count<1 || count>3) throw fail(400,"MOVIE_CHOICE_INVALID");
+  }
   if (clean.frozen_case_id !== undefined && !/^C0[1-8]$/.test(clean.frozen_case_id)) throw fail(400, "CASE_INVALID");
   if (clean.synopsis !== undefined) boundedText(clean.synopsis, 8000);
   for (const field of ["suggested_public_references", "confirmed_entity_ids"]) {

@@ -28,12 +28,12 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import crypto from "node:crypto";
 import { initialiseGuardRun, readPhysicalCounter } from "./qloo_fetch_budget_preload.mjs";
-import { buildMovieRecommendArgs } from "./movie_proposal.mjs";
+import { buildMovieRecommendArgs,buildMovieProposal,chooseMovieProposal } from "./movie_proposal.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const BACKEND_ADAPTER_VERSION = "2.6.2-physical-signal-coverage-20261020";
+export const BACKEND_ADAPTER_VERSION = "2.7.0-propose-confirm-20261027";
 export const FETCH_BUDGET_PRELOAD_PATH = path.join(__dirname, "qloo_fetch_budget_preload.mjs");
 export const FETCH_BUDGET_PRELOAD_URL = pathToFileURL(FETCH_BUDGET_PRELOAD_PATH).href;
 export const INSTALLED_HARNESS_ROOT =
@@ -111,19 +111,6 @@ export const PINNED_REQUIREMENTS = Object.freeze({
     toolTimeoutMs: 15000,
     activeTimeLimitMs: 90000,
   },
-});
-
-const DEFAULT_SHORTLIST_OPTIONS = Object.freeze({
-  movie: [
-    "Arrival (Denis Villeneuve, 2016)",
-    "Blade Runner 2049 (Denis Villeneuve, 2017)",
-    "Solaris (Andrei Tarkovsky, 1972)",
-  ],
-  artist: [
-    "Jóhann Jóhannsson",
-    "Max Richter",
-    "Colin Stetson",
-  ],
 });
 
 const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
@@ -214,7 +201,8 @@ export function buildCanonicalRankArgs({ optionType, options, signals }) {
   if (!QLOO_RANK_OPTION_TYPES.includes(shortType)) {
     throw new Error(`Unsupported qloo_rank option_type '${shortType}'.`);
   }
-  const cleanOptions = (Array.isArray(options) && options.length > 0 ? options : DEFAULT_SHORTLIST_OPTIONS[shortType] || DEFAULT_SHORTLIST_OPTIONS.movie)
+  if (!Array.isArray(options) || !options.length || options.length>10) throw new Error("An explicit shortlist is required before rank");
+  const cleanOptions = options
     .map((o) => redactText(o))
     .filter(Boolean)
     .slice(0, 10);
@@ -725,15 +713,19 @@ export function enrichRankWithPhysicalEvidence(envelope, rawEnvelope, physicalEv
 }
 
 /** Owner-only execution surface. The public gateway applies a stricter input whitelist. */
-export async function executeDirectorRequest(body, activeEnv = process.env) {
+export async function executeDirectorRequest(body, activeEnv = process.env, dependencies = {}) {
   const started=performance.now();
+  const invoke=dependencies.invokeDirector || invokePythonDirector;
+  const createSession=dependencies.sessionFactory || ((env,options)=>new QlooStdioSession(env,options));
   const fields = ["case_id", "synopsis", "suggested_public_references", "user_constraints", "confirmed_entity_ids",
     "mode", "cancel_requested", "rank_domains", "shortlist_options", "explicit_run_id", "frozen_case_sha256",
     "frozen_cases_file_sha256", "qloo_network_attempt_limit", "llm_call_limit", "active_time_limit_ms",
-    "resolution_choices", "resolution_choice_provenance", "budget_profile", "allow_repair"];
+    "resolution_choices", "resolution_choice_provenance", "budget_profile", "allow_repair", "reference_workflow", "movie_choice"];
   let payload = Object.fromEntries(fields.filter(k => Object.hasOwn(body,k)).map(k => [k,structuredClone(body[k])]));
   payload.mode ??= "live"; payload.rank_domains ??= ["movie"];
-  payload.shortlist_options ??= {movie: [...DEFAULT_SHORTLIST_OPTIONS.movie]};
+  payload.reference_workflow ??= payload.mode==="live" && !payload.shortlist_options?"qloo_proposes":"explicit_shortlist";
+  if (!["qloo_proposes","explicit_shortlist"].includes(payload.reference_workflow)) throw new Error("Unknown reference workflow");
+  payload.shortlist_options ??= {};
   payload.qloo_network_attempt_limit ??= 8; payload.llm_call_limit ??= 3;
   payload.active_time_limit_ms ??= 120000;
   if (payload.mode !== "live" && payload.mode !== "fixture") throw new Error("Recorded live is a read-only evidence view, not a new run");
@@ -741,7 +733,7 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
   if (!SAFE_RUN_ID_RE.test(runId)) throw new Error("Invalid run id");
   payload.explicit_run_id = runId;
   fs.mkdirSync(RUNS_DIR,{recursive:true,mode:0o700});
-  let familyId=runId, previousMs=0, parent=null;
+  let familyId=runId, previousMs=0, parent=null,submittedChoice=null,originalProposal=null;
   if (body.parent_run_id) {
     if (!SAFE_RUN_ID_RE.test(body.parent_run_id)) throw new Error("Invalid parent run");
     parent=loadServerOwnedBundle(body.parent_run_id);
@@ -749,14 +741,22 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
     const saved=JSON.parse(fs.readFileSync(path.join(RUNS_DIR,`${body.parent_run_id}-request.json`),"utf8"));
     for (const key of ["case_id","synopsis","suggested_public_references","user_constraints","rank_domains","shortlist_options"])
       if (Object.hasOwn(body,key) && JSON.stringify(body[key])!==JSON.stringify(saved[key])) throw new Error("Clarification cannot rewrite its original brief");
-    const choices=payload.resolution_choices;
-    if (!choices || !Object.keys(choices).length) throw new Error("Explicit resolution choices required");
-    payload={...saved,resolution_choices:choices,explicit_run_id:runId,
+    const choices=parent.movie_proposal?.proposal_id?(saved.resolution_choices || {}):(payload.resolution_choices || saved.resolution_choices || {});
+    if (parent.movie_proposal?.proposal_id) {
+      submittedChoice=chooseMovieProposal(parent.movie_proposal,payload.movie_choice,parent.movie_proposal.input_hash);
+      originalProposal=parent.movie_selection?.original_proposal || parent.movie_proposal;
+    } else if (!Object.keys(choices).length) throw new Error("Explicit resolution choices required");
+    const movieChoice=payload.movie_choice;
+    payload={...saved,resolution_choices:choices,explicit_run_id:runId,...(movieChoice?{movie_choice:movieChoice}:{}),
       resolution_choice_provenance:{parent_run_id:body.parent_run_id,source:body.resolution_choice_provenance?.source || "explicit_gateway_submission",submitted_at:new Date().toISOString()}};
     familyId=parent.mcp_stdio_runtime.family_run_id || parent.run_id;
     previousMs=parent.mcp_stdio_runtime.active_time_used_ms || 0;
   }
-  let pre=invokePythonDirector("--preflight-json",payload,activeEnv);
+  if (payload.movie_choice && !submittedChoice) throw new Error("A server-owned movie proposal is required");
+  const proposeMovies=payload.reference_workflow==="qloo_proposes";
+  if (proposeMovies) {payload.shortlist_options={};delete payload.insights_tool;delete payload.explicit_selected_ids;}
+  let pre=invoke("--preflight-json",payload,activeEnv);
+  const mayPropose=()=>proposeMovies && pre.candidate_resolution.gate_status==="ok" && pre.gate_reasons.every(reason=>reason.startsWith("explicit_same_type_shortlist_required:"));
   payload=pre.normalized_request;
   const requestPath=path.join(RUNS_DIR,`${runId}-request.json`);
   fs.writeFileSync(requestPath,JSON.stringify(payload,null,2)+"\n",{flag:"wx",mode:0o600});
@@ -777,7 +777,8 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
   payload.physical_http_attempts_used=before.attempts;
   const runtime={run_id:runId,family_run_id:familyId,executed_over_stdio:false,tool_calls:[],gate_reasons:pre.gate_reasons,
     physical_http_attempts_used:before.attempts,physical_http_attempt_limit:before.limit,physical_http_events:before.events};
-  let session=null;
+  let session=null,pendingProposal=null,selectionReceipt=null;
+  const genreTags=[...(payload.source_genre_tags || [])];
   const stamp = (raw, entry, beforeCount) => {
     const current=session.getPhysicalHttpStats();
     const fresh=current.events.slice(beforeCount);
@@ -789,17 +790,27 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
       requested_at:entry.requested_at,received_at:entry.received_at,network_attempt_made:fresh.length>0,
       tool_call_provenance:{tool:entry.tool,arguments:structuredClone(entry.arguments),source_payload_sha256:entry.source_payload_sha256,run_id:runId,input_hash:pre.input_hash}});
     fs.writeFileSync(path.join(guardDirectory,`mcp-${runId}-${String(session.toolCalls.length).padStart(2,"0")}.json`),JSON.stringify(raw,null,2).split(activeEnv.QLOO_API_KEY || "__NO_SECRET__").join("[REDACTED]")+"\n",{flag:"wx",mode:0o600});
+    for (const event of fresh.filter(e=>e.path==="/entities"&&e.status===200)) {
+      const bytes=fs.readFileSync(path.join(guardDirectory,`http-${String(event.attempt).padStart(2,"0")}-response.txt`));
+      if (crypto.createHash("sha256").update(bytes).digest("hex")!==event.redacted_response_sha256) throw new Error("PHYSICAL_PROVENANCE_MISMATCH");
+      const data=JSON.parse(bytes.toString("utf8")),entities=Array.isArray(data.results)?data.results:data.results?.entities || [];
+      for (const entity of entities.filter(item=>item&&typeof item==="object")) for (const tag of (Array.isArray(entity.tags)?entity.tags:[]).filter(item=>item&&typeof item==="object")) {
+        const urn=tag.id || tag.tag_id;
+        if (typeof urn==="string"&&/^urn:tag:genre(?::|$)/.test(urn)&&typeof tag.name==="string"&&tag.name.trim()&&tag.name.length<=240)
+          genreTags.push({urn,name:tag.name,seed_entity_id:entity.entity_id || entity.id,source:{tool:entry.tool,run_id:runId,requested_at:entry.requested_at,received_at:entry.received_at,response_sha256:event.response_sha256}});
+      }
+    }
     return ["qloo_rank","qloo_recommend"].includes(entry.tool)?enrichInsightsWithPhysicalEvidence(result,raw,fresh,guardDirectory,entry.arguments.signals || [],entry.tool):result;
   };
   try {
-    if (payload.mode==="live" && (pre.allow_resolution_http || pre.allow_rank_http)) {
+    if (payload.mode==="live" && (pre.allow_resolution_http || pre.allow_rank_http || mayPropose())) {
       if (!activeEnv.QLOO_API_KEY) throw new Error("QLOO_SERVER_KEY_MISSING");
       if (activeEnv.QLOO_BASE_URL!=="https://hackathon.api.qloo.com" || activeEnv.QLOO_TRUSTED_BASE_URL!==activeEnv.QLOO_BASE_URL) throw new Error("QLOO_ORIGIN_NOT_APPROVED");
       if (activeEnv.DIRECTOR_ENABLE_LIVE_LLM!=="1" || activeEnv.DIRECTOR_LLM_PROVIDER!=="guarded_qwen_18080") throw new Error("Native model route required");
       if (activeEnv.DIRECTOR_QWEN_BRIDGE_ENTRY!==path.join(__dirname,"bridge","director_entry.py")) throw new Error("Native bridge path mismatch");
       for (const [file, expected] of [["cultural_launch_director.py",activeEnv.DIRECTOR_QWEN_EXPECTED_DIRECTOR_SHA256],["guarded_qwen_runner.py",activeEnv.DIRECTOR_QWEN_EXPECTED_RUNNER_SHA256]])
         if (crypto.createHash("sha256").update(fs.readFileSync(path.join(__dirname,file))).digest("hex")!==expected) throw new Error("Source changed before transport");
-      session=new QlooStdioSession({...activeEnv,QLOO_GUARD_DIR:guardDirectory},{attemptLimit:before.limit,
+      session=createSession({...activeEnv,QLOO_GUARD_DIR:guardDirectory},{attemptLimit:before.limit,
         activeTimeLimitMs:Math.max(0,payload.active_time_limit_ms-previousMs-Math.ceil(performance.now()-started))});
       const init=await session.initialize();
       const cap=await session.getCapabilities();
@@ -815,10 +826,49 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
         }
       }
       payload.physical_http_attempts_used=session.getPhysicalHttpStats().attempts;
-      pre=invokePythonDirector("--preflight-json",payload,activeEnv);
+      pre=invoke("--preflight-json",payload,activeEnv);
       payload=pre.normalized_request;
       payload.precollected_envelopes={};
-      if (pre.allow_rank_http && !session.getPhysicalHttpStats().halted) {
+      if (mayPropose() && !session.getPhysicalHttpStats().halted) {
+        const seeds=pre.candidate_resolution.confirmed_entity_ids;
+        let picked=submittedChoice?[...submittedChoice.author_selected_entity_ids]:[],needsRank=false,unresolvedTitle=false;
+        if (submittedChoice?.additional_reference) {
+          const n=session.getPhysicalHttpStats().attempts;
+          const raw=await session.describeEntity(submittedChoice.additional_reference.query+" (movie)");
+          const described=stamp(raw,session.toolCalls.at(-1),n),rows=Array.isArray(described.results)?described.results:described.results?.entities || [];
+          const item=rows.length===1?rows[0]:null,eid=item?.entity_id || item?.id;
+          if (described.status!=="ok" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(eid || "") || !["movie","urn:entity:movie"].includes(item?.subtype || item?.type)) unresolvedTitle=true;
+          else {
+            const original=parent.movie_proposal.candidates.find(c=>c.entity_id.toLowerCase()===eid.toLowerCase());
+            needsRank=!original;
+            if (!picked.some(id=>id.toLowerCase()===eid.toLowerCase())) picked.push(original?.entity_id || eid);
+          }
+        }
+        if (unresolvedTitle) {
+          pendingProposal=parent.movie_proposal;
+          selectionReceipt={original_proposal:originalProposal,submitted_choice:payload.movie_choice,status:"needs_reference_resolution",reason:"The added title is unresolved or ambiguous. Add its director/year, or choose only proposed films."};
+        } else {
+          if (submittedChoice) {
+            payload.shortlist_options={movie:picked};payload.explicit_selected_ids=picked;
+            payload.insights_tool=needsRank?"qloo_rank":"qloo_recommend";
+            pre=invoke("--preflight-json",payload,activeEnv);payload=pre.normalized_request;
+          }
+          const n=session.getPhysicalHttpStats().attempts;
+          const raw=needsRank?await session.rankOptions({optionType:"movie",options:picked,signals:seeds}):await session.recommendMovies(seeds);
+          const checked=stamp(raw,session.toolCalls.at(-1),n);
+          const fresh=needsRank?null:buildMovieProposal({seedIds:seeds,inputHash:pre.input_hash,envelope:checked});
+          if (!submittedChoice) pendingProposal=fresh;
+          else {
+            const rows=Array.isArray(checked.results)?checked.results:checked.results?.entities || [],returned=new Set(rows.map(c=>String(c.entity_id || c.id).toLowerCase()));
+            const supported=checked.status==="ok" && (needsRank || fresh.status==="needs_input") && picked.every(id=>returned.has(id.toLowerCase()));
+            selectionReceipt={original_proposal:originalProposal,submitted_choice:payload.movie_choice,submitted_entity_ids:picked,adopted_entity_ids:supported?picked:[],
+              verification:{tool:needsRank?"qloo_rank":"qloo_recommend",run_id:runId,source_payload_sha256:checked.source_payload_sha256,candidates:needsRank?rows.map((c,i)=>({entity_id:c.entity_id || c.id,name:c.name,score_value:c.affinity??c.query?.affinity,returned_order:i})):fresh.candidates},
+              status:supported?"confirmed":"stopped_without_substitution",new_rank_requested:needsRank};
+            if (supported) payload.precollected_envelopes.movie=checked;
+            else pendingProposal={status:checked.status==="ok"?"empty":checked.status,candidates:[],reason:"The fresh response does not support every explicit choice. Nothing was substituted or generated."};
+          }
+        }
+      } else if (!proposeMovies && pre.allow_rank_http && !session.getPhysicalHttpStats().halted) {
         const resolvedSignals=pre.candidate_resolution.confirmed_entity_ids;
         for (const domain of payload.rank_domains) {
           const n=session.getPhysicalHttpStats().attempts;
@@ -839,16 +889,34 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
   }
   const stats=readPhysicalCounter(guardDirectory).state;
   payload.physical_http_attempts_used=stats.attempts;
+  if (pendingProposal) {
+    // Pending or rejected choices produce an ungenerated brief, never an empty scored selection.
+    payload.shortlist_options={};payload.precollected_envelopes={};
+    delete payload.insights_tool;delete payload.explicit_selected_ids;
+  }
+  const seeds=new Set(pre.candidate_resolution.confirmed_entity_ids.map(id=>id.toLowerCase()));
+  payload.source_genre_tags=[...new Map(genreTags.filter(tag=>typeof tag.seed_entity_id==="string"&&seeds.has(tag.seed_entity_id.toLowerCase())).map(tag=>[tag.seed_entity_id.toLowerCase()+":"+tag.urn,tag])).values()].slice(0,8);
   payload.active_time_already_used_ms=Math.min(payload.active_time_limit_ms,previousMs+Math.ceil(performance.now()-started));
-  pre=invokePythonDirector("--preflight-json",payload,activeEnv);
+  pre=invoke("--preflight-json",payload,activeEnv);
   runtime.gate_reasons=pre.gate_reasons;
-  const modelReady=pre.allow_model && !runtime.error_code && Object.values(payload.precollected_envelopes || {}).length>0 &&
+  const modelReady=pre.allow_model && !pendingProposal && !runtime.error_code && Object.values(payload.precollected_envelopes || {}).length>0 &&
     Object.values(payload.precollected_envelopes).every(e=>e.status==="ok" && e.authentication_state==="authenticated");
   fs.writeFileSync(requestPath,JSON.stringify(payload,null,2)+"\n",{mode:0o600});
-  const bundle=invokePythonDirector("--run-json",payload,{...activeEnv,DIRECTOR_PREFLIGHT_READY:modelReady?"1":"0"});
+  const bundle=invoke("--run-json",payload,{...activeEnv,DIRECTOR_PREFLIGHT_READY:modelReady?"1":"0"});
+  if (pendingProposal && !runtime.error_code) {
+    const pendingStatus=pendingProposal.status==="needs_input"?"needs_input":pendingProposal.status;
+    bundle.workflow_status=pendingStatus;bundle.brief.qloo_api_verified=false;
+    bundle.audit.pre_qloo_gate.gate_reasons=[pendingStatus==="needs_input"?"explicit_movie_choice_required":"movie_proposal_not_usable"];
+    Object.assign(bundle.public_export,{status:pendingStatus,workflow_status:pendingStatus,qloo_api_verified:false,gate_reasons:bundle.audit.pre_qloo_gate.gate_reasons});
+    bundle.movie_proposal=pendingProposal;bundle.public_export.movie_proposal=pendingProposal;
+    for (const brief of [bundle.brief,bundle.public_export.brief]) brief.limitations=(brief.limitations || []).filter(text=>!text.startsWith("explicit_same_type_shortlist_required:")).concat(pendingProposal.reason || "Explicitly choose the films proposed by Qloo before a brief is written.");
+  }
+  if (selectionReceipt) {bundle.movie_selection=selectionReceipt;bundle.public_export.movie_selection=selectionReceipt;}
+  bundle.public_export.genre_tags=payload.source_genre_tags;
   Object.assign(runtime,{physical_http_attempts_used:stats.attempts,physical_http_attempt_limit:stats.limit,physical_http_events:stats.events,
     active_time_used_ms:previousMs+Math.ceil(performance.now()-started),describe_calls_count:runtime.tool_calls.filter(x=>x.tool==="qloo_describe").length,
-    rank_calls_count:runtime.tool_calls.filter(x=>x.tool==="qloo_rank").length});
+    rank_calls_count:runtime.tool_calls.filter(x=>x.tool==="qloo_rank").length,
+    recommend_calls_count:runtime.tool_calls.filter(x=>x.tool==="qloo_recommend").length});
   bundle.mcp_stdio_runtime=runtime;
   if (runtime.error_code) {
     const safeError={code: String(runtime.error_code).replace(/[^a-zA-Z0-9_ -]/g, "").slice(0,100),retryable:false};

@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {buildMovieRecommendArgs,buildMovieProposal,chooseMovieProposal} from '../taste-matched-trailer/movie_proposal.mjs';
-import {normalizeHarnessEnvelope,enrichInsightsWithPhysicalEvidence,enrichRankWithPhysicalEvidence} from '../taste-matched-trailer/qloo_mcp_backend.mjs';
+import {buildCanonicalRankArgs,normalizeHarnessEnvelope,enrichInsightsWithPhysicalEvidence,enrichRankWithPhysicalEvidence} from '../taste-matched-trailer/qloo_mcp_backend.mjs';
 
 // Synthetic protocol inputs only; no captured Qloo response, key or network access.
 const seed='a0000000-0000-4000-8000-000000000001';
@@ -17,6 +17,7 @@ const propose=(envelope=response())=>buildMovieProposal({seedIds:[seed],inputHas
 test('recommend arguments use explicit resolved signals and contain no supplied film shortlist',()=>{
   assert.deepEqual(buildMovieRecommendArgs([seed]),{target_type:'movie',signals:[seed],limit:6});
   for(const signals of [[],['Arrival'],[seed,seed],Array(4).fill(seed)])assert.throws(()=>buildMovieRecommendArgs(signals));
+  assert.throws(()=>buildCanonicalRankArgs({optionType:'movie',signals:[seed]}),/explicit shortlist/);
 });
 test('the proposal preserves response order even when affinities are not sorted, and does not choose for the author',()=>{
   const envelope=response(),before=JSON.stringify(envelope),p=propose(envelope);

@@ -45,7 +45,7 @@ from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Callable
 
-DIRECTOR_VERSION = "2.6.6-creature-negation-20261025"
+DIRECTOR_VERSION = "2.7.0-qloo-proposes-20261027"
 REFERENCE_LINK_LIMITATION = ("Per-shot reference links are compatibility provenance of received sources, "
     "not instructions to the writer or evidence that a reference caused any scene.")
 RULE_VERSION = "det-select-v1.5"
@@ -1663,6 +1663,7 @@ def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[s
         out=llm_runner("role_2_creative_redactor",{"run_id":run_id,"mode":mode,
             "synopsis":validated_brief["synopsis"],"themes":analysis.get("themes") or [],
             "retained_references":bindings,"user_constraints":constraints,"shot_plan":writer_plans,
+            **({"source_genre_tags":copy.deepcopy(validated_brief["source_genre_tags"])} if validated_brief.get("source_genre_tags") else {}),
             "creative_contract":"Write all four complete, distinct shots. Retained references are documentary source context only, not mandatory artistic borrowings. Rank alone assigns neither a shot nor a brief-wide reference. Do not invent a cultural reason or causal link. No copying, sales or audience prediction. An independent editorial shot has no Qloo lineage; never invent it. Keep the phenomenon strictly invisible when requested; an ordinary narrator face remains allowed unless assets forbid people. Follow the requested delivery language, otherwise the synopsis language, not internal planning labels."})
         if not isinstance(out,dict): raise ValueError("Role2 output must be an object")
         overrides=out.get("shot_overrides")
@@ -2391,6 +2392,8 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
         raise ValueError("A movie recommendation requires explicit submitted IDs before writing")
     explicit_selected_ids = _checked_explicit_ids(explicit_selected_ids,required=insights_tool=="qloo_recommend")
     start=time.monotonic(); validated=validate_brief(synopsis,suggested_public_references,user_constraints)
+    if (request_audit or {}).get("source_genre_tags"):
+        validated["source_genre_tags"]=copy.deepcopy(request_audit["source_genre_tags"])
     validated["input_hash"]=_workflow_input_hash(validated["input_hash"],rank_domains,shortlist_options,resolution_choices,insights_tool,explicit_selected_ids)
     run_id=_allocate_execution_run_id(validated["input_hash"],mode,explicit_run_id)
     budget=make_initial_run_budget(run_id,qloo_network_attempt_limit,llm_call_limit,active_time_limit_ms,physical_http_attempts_used or 0)
@@ -2904,7 +2907,7 @@ def _cli_main(argv: list[str] | None = None) -> int:
                 if not isinstance(env,dict): return {"status":"error","error":{"code":"MISSING_DOMAIN_ENVELOPE","retryable":False},"results":[]}
                 result=copy.deepcopy(env); result["network_attempt_made"]=False
                 return result
-        audit={k:copy.deepcopy(req[k]) for k in ("case_id","frozen_case_sha256","frozen_cases_file_sha256","resolution_choices","resolution_choice_provenance","budget_profile") if k in req}
+        audit={k:copy.deepcopy(req[k]) for k in ("case_id","frozen_case_sha256","frozen_cases_file_sha256","resolution_choices","resolution_choice_provenance","budget_profile","source_genre_tags") if k in req}
         archive=req.get("precollected_describe") or {}
         audit["resolution_observations"]=[]
         for query,envelope in archive.items() if isinstance(archive,dict) else []:

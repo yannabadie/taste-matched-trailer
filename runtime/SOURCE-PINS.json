@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-27T16:50:01.412228+00:00",
-  "release": "2.6.6",
+  "generated_at": "2026-10-27T17:48:52.186026+00:00",
+  "release": "2.7.0-candidate",
   "runtime": "1.1.3-pointer-expiry",
-  "scope": "Isolated candidate: recommendation-aware model-core decisions with explicit selected IDs, separate submitted order, exact tool provenance and per-shot ID-based documentary citations. Existing legacy default requests retain their input-hash construction. Full HTTP/UI recommendation workflow is not connected or published; native runner, bridge, gateway, budgets and recorded capture unchanged.",
+  "scope": "Isolated 2.7.0 candidate: recognized signals -> recommend movie proposals -> explicit server-owned choice -> fresh child verification or rank only for a truly new resolved film -> ID-bound four-shot brief. Source genre labels come from verified entity-response metadata. Gateway and browser fields are wired; historical recording, native runner/bridge, family caps and shared state unchanged. No real-provider/native qualification or deployment.",
   "sha256": {
-    "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
-    "taste-matched-trailer/qloo_mcp_backend.mjs": "3546ac4da245b7ff4dd0c3376fdfb425e483504ffebafb0eb56d62a418381004",
+    "taste-matched-trailer/public_gateway.mjs": "da9ebcef12841329712b0ae7836fbe00e300e38ce0acdce8757896765405fe05",
+    "taste-matched-trailer/qloo_mcp_backend.mjs": "7f5d8569629f2197b88124e156272d715a4aca5baeb054d62f00dd202d1a7d49",
     "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "cf29cfdcf52a0891a74320204e5be8846f1e132c5abb4c29667314f6de05c249",
-    "taste-matched-trailer/cultural_launch_director.py": "d109ced27a6dd2556bb4706e95d6943b21d08141910507514ed07f51ee3fea3d",
+    "taste-matched-trailer/cultural_launch_director.py": "37ee85c7e57eab2a0e57f20199659b2d384d61fe233ab15343bfd0da2a14a782",
     "taste-matched-trailer/guarded_qwen_runner.py": "fe3133f64559397ddda9f4d6ed31974807a7a2b90b8ae4fd9f06edaaa7845c05",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
@@ -18,7 +18,7 @@
     "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9",
     "taste-matched-trailer/movie_proposal.mjs": "5843038f4e99e65119f28d94e44e254201c6386ccf8a462474ca8e00a3bd8559"
   },
-  "previous_source_pins_sha256": "f6c193be685d3251b4b02c15e39c241e5e1b38c78de3093109d609750091fef2",
+  "previous_source_pins_sha256": "db6675982eee7dd41f308d4417995a6ef8416e315b7d91f1db920730ba800676",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
   "recorded_capture": {
     "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -42,21 +42,24 @@
   "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.6.",
   "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
   "qualification_scope": {
-    "current_source": "Targeted synthetic model-core recommendation/selection/citation tests, protocol and deadline tests, affected reference-context and semantic checks; installed 0.1.26 SDK over five loopback-HTTP stand-ins. Simulated callbacks are not native model calls. No full application, stdio MCP or real-provider qualification.",
+    "current_source": "Targeted unit regressions plus five installed-SDK/controller/Python-core loopback simulations and isolated-browser receipt of synthetic jobs. Three role callbacks are simulated, not native Qwen. Missing selected film stops with zero callbacks, known alias adds no rank, genuinely new resolved film ranks once. This does not qualify actual Qloo/model availability, output quality or judge availability.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
     "runtime": "1.1.3-pointer-expiry",
     "native_Qwen_2_6_5": "not_executed",
     "native_Qwen_2_6_6": "not_executed",
-    "recommend_full_application": "not_executed"
+    "recommend_full_application": "synthetic_http_and_browser_only",
+    "native_Qwen_2_7_0": "not_executed",
+    "new_Qloo_2_7_0": "not_executed"
   },
   "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7",
   "candidate_stage": {
-    "kind": "isolated_recommendation_model_core",
-    "source_base": "945e8c02c28912e380c9df57662875b6223a1ced",
-    "full_application_connected": false,
+    "kind": "isolated_connected_recommendation_workflow",
+    "source_base": "2eb886a20d54ec5a702da01d6c2ffdf05bfee9e0",
+    "full_application_connected": true,
     "real_provider_call": false,
-    "runtime_restarted": false
+    "runtime_restarted": false,
+    "public_adoption": false
   }
 }

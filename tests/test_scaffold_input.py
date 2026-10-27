@@ -13,7 +13,7 @@ import unittest
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "comparisons"))
-from capture_scaffold_inputs import capture, diff_paths, load
+from capture_scaffold_inputs import capture as capture_product_input, diff_paths, load
 
 
 def offline_only(event, args):
@@ -26,6 +26,26 @@ core = load("test_scaffold_director", ROOT / "taste-matched-trailer/cultural_lau
 runner = load("test_scaffold_runner", ROOT / "taste-matched-trailer/guarded_qwen_runner.py")
 document = json.loads((ROOT / "comparisons/scaffold_cases.json").read_bytes())
 synthetic_parent = {"decisions": [{"id": "synthetic-decision", "status": "proposed", "selected_entity_ids": ["synthetic-ref-a", "synthetic-ref-b"], "evidence_refs": ["synthetic-ev#/0", "synthetic-ev#/1"], "candidates": [{"entity_id": "synthetic-ref-a", "name": "Synthetic A", "returned_order": 0}, {"entity_id": "synthetic-ref-b", "name": "Synthetic B", "returned_order": 1}]}]}
+
+
+def prepared_synthetic_parent(case, parent=synthetic_parent):
+    """Complete this test's invented sources; never relabel a real captured acquisition."""
+    result = copy.deepcopy(parent)
+    run_id = "run-scaffold-" + case["id"]
+    payload = {"results": [{"entity_id": "synthetic-ref-a"}, {"entity_id": "synthetic-ref-b"}]}
+    for decision in result["decisions"]:
+        assert all(value.startswith("synthetic-") for value in decision["selected_entity_ids"])
+        decision["run_id"] = run_id
+        decision["evidence_refs"] = [{"evidence_id": "synthetic-ev", "item_pointer": "/results/" + str(i)} for i in range(2)]
+    result["evidence_sources"] = [{"id": "synthetic-ev", "run_id": run_id, "mode": "fixture",
+        "status": "ok", "source_type": "synthetic_fixture", "authentication_state": "not_checked",
+        "payload_redacted": payload, "payload_redacted_sha256": core.sha256_canonical(payload),
+        "used_items": [{"entity_id": "synthetic-ref-" + value, "item_pointer": "/results/" + str(i)} for i, value in enumerate(["a", "b"])]}]
+    return result
+
+
+def capture(core_module, runner_module, case, cases, parent):
+    return capture_product_input(core_module, runner_module, case, cases, prepared_synthetic_parent(case, parent))
 
 
 class WriterInputContract(unittest.TestCase):
@@ -71,7 +91,7 @@ class WriterInputContract(unittest.TestCase):
         self.assertTrue(all("retained_reference" not in s for s in plans))
         self.assertEqual([s["entity_id"] for s in result["payload"]["retained_references"]], ["synthetic-ref-a", "synthetic-ref-b"])
         self.assertTrue(all(s["assets"] == ["objects", "typography"] for s in plans))
-        self.assertEqual(core.DIRECTOR_VERSION, "2.6.6-creature-negation-20261025")
+        self.assertEqual(core.DIRECTOR_VERSION, "2.7.0-qloo-proposes-20261027")
 
     def test_synthetic_response_without_reference_fields_is_consumed_without_new_inference(self):
         case = document["cases"][2]
@@ -90,8 +110,9 @@ class WriterInputContract(unittest.TestCase):
             validated = core.validate_brief(case["synopsis"], ["The Turn of the Screw (book)"],
                 {**document["common_constraints"], **case["constraints"]})
             budget = core.make_initial_run_budget("run-scaffold-" + case["id"], 0, 1)
+            parent = prepared_synthetic_parent(case)
             return core.llm_role_2_creative_redactor(budget["run_id"], "recorded_live", validated,
-                copy.deepcopy(document["analysis"]), [], copy.deepcopy(synthetic_parent["decisions"]), budget, False, fixture_callback)
+                copy.deepcopy(document["analysis"]), parent["evidence_sources"], parent["decisions"], budget, False, fixture_callback)
         brief, _ = consume_fixture()
         self.assertEqual(core.validate_constraint_fidelity(brief), [])
         self.assertEqual(len(callbacks), 1)
