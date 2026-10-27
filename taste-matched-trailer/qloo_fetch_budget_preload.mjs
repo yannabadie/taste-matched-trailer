@@ -42,7 +42,9 @@ export function initialiseGuardRun(directory, runId, { maxAttempts = 8, activeMs
 }
 
 export function createPhysicalBudgetFetch({ directory, baseFetch = globalThis.fetch,
-    now = Date.now, pause = ms => new Promise(resolve => setTimeout(resolve, ms)) }) {
+    now = Date.now, pause = ms => new Promise(resolve => setTimeout(resolve, ms)), phaseDeadlineMs = null }) {
+  if (phaseDeadlineMs !== null && (!Number.isSafeInteger(phaseDeadlineMs) || phaseDeadlineMs<0)) throw new Error("INVALID_FAMILY_DEADLINE");
+  const phaseRemaining=()=>phaseDeadlineMs===null?Infinity:phaseDeadlineMs-now();
   const { config, state } = readPhysicalCounter(directory);
   const lockPath = path.join(directory, "active.lock");
   const token = crypto.randomUUID();
@@ -75,6 +77,7 @@ export function createPhysicalBudgetFetch({ directory, baseFetch = globalThis.fe
   const fetch = (input, options = {}) => {
     const pending = chain.then(async () => {
       if (closed) throw new Error("QLOO_GUARD_CLOSED");
+      if (phaseRemaining()<=0) throw new Error("QLOO_FAMILY_ACTIVE_DEADLINE");
       const disk = readPhysicalCounter(directory).state;
       if (JSON.stringify(disk) !== JSON.stringify(state)) throw new Error("QLOO_COUNTER_EPOCH_CHANGED");
       const url = new URL(typeof input === "string" || input instanceof URL ? String(input) : input.url);
@@ -87,8 +90,10 @@ export function createPhysicalBudgetFetch({ directory, baseFetch = globalThis.fe
         throw new Error("QLOO_RUN_BUDGET_CLOSED");
       }
       const wait = state.last_started_ms ? Math.max(0, config.min_interval_ms - (now() - state.last_started_ms)) : 0;
+      if (wait>=phaseRemaining()) throw new Error("QLOO_FAMILY_ACTIVE_DEADLINE");
       if (state.active_ms + wait >= config.active_ms_limit) throw new Error("QLOO_RUN_DEADLINE");
       if (wait) { await pause(wait); state.active_ms += wait; }
+      if (phaseRemaining()<=0) throw new Error("QLOO_FAMILY_ACTIVE_DEADLINE");
       const start = now();
       const row = { run_id: state.run_id, attempt: ++state.attempts, method, host: url.host,
         path: url.pathname, query: redact(url.search), requested_at: new Date(start).toISOString(), outcome: "in_flight" };
@@ -99,7 +104,7 @@ export function createPhysicalBudgetFetch({ directory, baseFetch = globalThis.fe
       const upstream = options.signal || input?.signal;
       const cancel = () => abort.abort();
       if (upstream?.aborted) cancel(); else upstream?.addEventListener("abort", cancel, { once: true });
-      const timer = setTimeout(cancel, Math.min(config.request_timeout_ms, config.active_ms_limit - state.active_ms));
+      const timer = setTimeout(cancel, Math.max(1,Math.min(config.request_timeout_ms, config.active_ms_limit - state.active_ms,phaseRemaining())));
       try {
         const response = await baseFetch(input, { ...options, method, redirect: "error", signal: abort.signal });
         const raw = await response.clone().text();
@@ -142,6 +147,7 @@ export function createPhysicalBudgetFetch({ directory, baseFetch = globalThis.fe
 if (process.env.QLOO_PHYSICAL_GUARD_INSTALL === "1") {
   // Metadata-only MCP processes may not have a run directory; their transport stays closed.
   globalThis.fetch = process.env.QLOO_GUARD_DIR
-    ? createPhysicalBudgetFetch({ directory: process.env.QLOO_GUARD_DIR, baseFetch: globalThis.fetch.bind(globalThis) })
+    ? createPhysicalBudgetFetch({ directory: process.env.QLOO_GUARD_DIR, baseFetch: globalThis.fetch.bind(globalThis),
+        phaseDeadlineMs:process.env.QLOO_GUARD_PHASE_DEADLINE_MS===undefined?null:Number(process.env.QLOO_GUARD_PHASE_DEADLINE_MS) })
     : async () => { throw new Error("QLOO_OFFLINE_TRANSPORT_REFUSED"); };
 }

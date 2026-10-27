@@ -34,7 +34,15 @@ class DocumentaryReferenceContext(unittest.TestCase):
         case=case or CASES['cases'][0]
         validated=core.validate_brief(case['synopsis'],['The Turn of the Screw (book)'],
             {**CASES['common_constraints'],**case['constraints']})
-        return capture(core,runner,validated,CASES['analysis'],[],decisions if decisions is not None else [DECISION])
+        # These are synthetic documentary sources, not authenticated Qloo data.
+        # Complete matching citations are now required even before the stopped writer callback.
+        payload={'results':[{'entity_id':'synthetic-a'},{'entity_id':'synthetic-b'}]}
+        source={'id':'synthetic-evidence','run_id':RUN_ID,'mode':'fixture','status':'ok',
+            'source_type':'synthetic_fixture','authentication_state':'not_checked',
+            'payload_redacted':payload,'payload_redacted_sha256':core.sha256_canonical(payload),
+            'used_items':[{'entity_id':'synthetic-a','item_pointer':'/results/0'},
+                          {'entity_id':'synthetic-b','item_pointer':'/results/1'}]}
+        return capture(core,runner,validated,CASES['analysis'],[source],decisions if decisions is not None else [DECISION])
 
     def test_complete_messages_have_no_positional_assignment_but_keep_source_catalogue(self):
         document=self.document();payload=document['payload'];system,user=document['messages']

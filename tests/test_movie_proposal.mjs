@@ -1,12 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {buildMovieRecommendArgs,buildMovieProposal,chooseMovieProposal} from '../taste-matched-trailer/movie_proposal.mjs';
+import {normalizeHarnessEnvelope,enrichInsightsWithPhysicalEvidence,enrichRankWithPhysicalEvidence} from '../taste-matched-trailer/qloo_mcp_backend.mjs';
 
 // Synthetic protocol inputs only; no captured Qloo response, key or network access.
-const seed='10000000-0000-4000-8000-000000000001';
+const seed='a0000000-0000-4000-8000-000000000001';
 const ids=[1,2,3].map(n=>'20000000-0000-4000-8000-'+String(n).padStart(12,'0'));
 const inputHash='a'.repeat(64);
-function response(){return {status:'ok',authentication_state:'authenticated',input_hash:inputHash,run_id:'run-synthetic-proposal',source_payload_sha256:'b'.repeat(64),physical_http_warning_refs:[{attempt:4,response_sha256:'c'.repeat(64),redacted_response_sha256:'d'.repeat(64)}],physical_http_warnings:[],results:ids.map((entity_id,i)=>({entity_id,name:'Synthetic film '+i,type:'urn:entity:movie',affinity:[0.2,0.9,0.6][i]}))};}
+function response(){return {status:'ok',authentication_state:'authenticated',input_hash:inputHash,run_id:'run-synthetic-proposal',source_payload_sha256:'b'.repeat(64),physical_http_warning_refs:[{attempt:4,response_sha256:'c'.repeat(64),redacted_response_sha256:'d'.repeat(64)}],physical_http_warnings:[],warnings:[],limitations:[],tool_call_provenance:{tool:'qloo_recommend',arguments:buildMovieRecommendArgs([seed]),run_id:'run-synthetic-proposal',input_hash:inputHash,source_payload_sha256:'b'.repeat(64)},results:ids.map((entity_id,i)=>({entity_id,name:'Synthetic film '+i,type:'urn:entity:movie',affinity:[0.2,0.9,0.6][i]}))};}
 const propose=(envelope=response())=>buildMovieProposal({seedIds:[seed],inputHash,envelope});
 
 test('recommend arguments use explicit resolved signals and contain no supplied film shortlist',()=>{
@@ -30,6 +35,21 @@ test('API errors, absent provenance, missing affinities and invalid or duplicate
     const e=response();change(e);const p=propose(e);assert.notEqual(p.status,'needs_input');assert.deepEqual(p.candidates,[]);
   }
 });
+test('an incomplete MCP list is not qualified after the normalizer silently removes its malformed row',()=>{
+  const original=response(),raw={structuredContent:{status:'ok',results:[...original.results,{name:'Missing identity',affinity:null}]}};
+  const normalized=Object.assign(normalizeHarnessEnvelope(raw,{hasServerKey:false}),{authentication_state:'authenticated',input_hash:inputHash,run_id:original.run_id,source_payload_sha256:original.source_payload_sha256,physical_http_warning_refs:original.physical_http_warning_refs,physical_http_warnings:[]});
+  assert.equal(normalized.status,'invalid_contract');assert.deepEqual(propose(normalized).candidates,[]);
+});
+test('recommend provenance identifies the exact tool, arguments, execution and response',()=>{
+  for(const field of ['wrong_tool','other_signals','other_response','other_execution']){
+    const e=response();e.tool_call_provenance={tool:'qloo_recommend',arguments:buildMovieRecommendArgs([seed]),run_id:e.run_id,input_hash:inputHash,source_payload_sha256:e.source_payload_sha256};
+    if(field==='wrong_tool')e.tool_call_provenance.tool='qloo_rank';
+    if(field==='other_signals')e.tool_call_provenance.arguments.signals=[ids[0]];
+    if(field==='other_response')e.tool_call_provenance.source_payload_sha256='e'.repeat(64);
+    if(field==='other_execution')e.tool_call_provenance.run_id='run-synthetic-other';
+    assert.equal(propose(e).status,'invalid_contract');
+  }
+});
 test('explicit author order and response order are separate; rearranging or choosing a subset does not request rank',()=>{
   const p=propose(),choice=chooseMovieProposal(p,{proposal_id:p.proposal_id,selected_entity_ids:[ids[2],ids[0]]},inputHash);
   assert.equal(choice.status,'ready');assert.deepEqual(choice.author_selected_entity_ids,[ids[2],ids[0]]);
@@ -49,4 +69,19 @@ test('one author-supplied title requires resolution before ranking and never rec
   assert.equal('rank_required_after_resolution' in choice,false,'A typed title can resolve to an already proposed entity; rank cannot yet be required.');
   assert.equal(choice.rank_decision_pending,true);
   assert.deepEqual(choice.additional_reference,{query:'A film named explicitly by the author',entity_id:null,status:'not_resolved'});
+});
+test('recommend transport preserves physical ignored-signal warnings even when the harness reports ok',()=>{
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'qloo-synthetic-insights-'));
+  try{
+    const body=Buffer.from(JSON.stringify({warnings:[{type:'not_found','signal.interests.entities':[seed]}],results:{entities:response().results}}));
+    fs.writeFileSync(path.join(directory,'http-04-response.txt'),body);
+    const digest=createHash('sha256').update(body).digest('hex');
+    const events=[{path:'/v2/insights',status:200,attempt:4,response_sha256:digest,redacted_response_sha256:digest}];
+    const e=response(),raw={structuredContent:{status:'ok',interpretation:{signals:[{entityId:seed,name:'Synthetic book'}]}}};
+    const checked=enrichInsightsWithPhysicalEvidence(e,raw,events,directory,[seed.toUpperCase()],'qloo_recommend');
+    assert.equal(checked.status,'empty');assert.equal(propose(checked).status,'empty');
+    assert.match(checked.limitations.join(' '),/recommendation/);assert.equal(checked.physical_http_warnings[0].type,'not_found');
+    assert.throws(()=>enrichInsightsWithPhysicalEvidence(response(),raw,[{...events[0],redacted_response_sha256:'0'.repeat(64)}],directory,[seed],'qloo_recommend'),/PROVENANCE/);
+    const legacy=enrichRankWithPhysicalEvidence(response(),raw,events,directory,[seed]);assert.match(legacy.limitations.join(' '),/ranking/);
+  }finally{fs.rmSync(directory,{recursive:true,force:true});}
 });

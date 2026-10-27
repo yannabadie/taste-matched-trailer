@@ -1206,6 +1206,7 @@ def select_from_valid_results(
     requested_entity_type: str,
     constraints_origin: list[dict[str, Any]],
     max_select: int = 2,
+    explicit_selected_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     """Step E (`select_from_valid_results`): deterministic selection on a homogeneous shortlist.
 
@@ -1214,6 +1215,14 @@ def select_from_valid_results(
     - `is_tie`: boolean indicating if the candidate shares the same rank/score with another item
     - `qualification_state`: `"retenu"` | `"écarté"` | `"non_évaluable"`
     """
+    wanted = None
+    if explicit_selected_ids is not None:
+        if (not isinstance(explicit_selected_ids, list) or not 1 <= len(explicit_selected_ids) <= 3
+                or any(not isinstance(value, str) or not value.strip() for value in explicit_selected_ids)
+                or len({value.casefold() for value in explicit_selected_ids}) != len(explicit_selected_ids)):
+            raise ValueError("An explicit choice needs one to three distinct supplied movie IDs")
+        wanted = {value.casefold() for value in explicit_selected_ids}
+        max_select = len(wanted)
     raw_results_container = evidence["payload_redacted"].get("results")
     if isinstance(raw_results_container, list):
         raw_entities = raw_results_container
@@ -1278,6 +1287,9 @@ def select_from_valid_results(
         elif norm_requested_type and ent_type != norm_requested_type:
             qual_state = "non_évaluable"
             excl_reason = f"type_mismatch_expected_{norm_requested_type}"
+        elif wanted is not None and ent_id.casefold() not in wanted:
+            qual_state = "écarté"
+            excl_reason = "not_selected_in_explicit_submission"
         elif len(selected_ids) >= max_select:
             qual_state = "écarté"
             excl_reason = "rank_cutoff_exceeded"
@@ -1310,6 +1322,8 @@ def select_from_valid_results(
             }
         )
 
+    if wanted is not None and {value.casefold() for value in selected_ids} != wanted:
+        raise ValueError("The explicit choice contains an unsupplied or non-evaluable movie ID")
     is_authentic_non_fixture = (
         evidence["source_type"] == "qloo_response"
         and evidence["mode"] in ("live", "recorded_live")
@@ -1347,6 +1361,11 @@ def select_from_valid_results(
         decision_status = "proposed"
         rationale = "No authenticated Qloo entity proof available; falling back to explicit user constraints and unverified proposal."
 
+    if wanted is not None:
+        rationale = ("Explicitly submitted references from the received Qloo-order candidate list; "
+                     "submitted preference is not a measured quality gain. " + rationale)
+        constraints_origin = copy.deepcopy(constraints_origin) + [{"source": "explicit_submission",
+            "submitted_entity_ids": list(explicit_selected_ids), "preference_is_not_measured_quality": True}]
     return {
         "id": decision_id,
         "run_id": run_id,
@@ -1552,20 +1571,59 @@ def validate_constraint_fidelity(brief: dict[str, Any]) -> list[str]:
     return errors
 
 
+def retained_source_bindings(run_id: str, decisions: list[dict[str, Any]],
+        evidences: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Resolve citations by entity identity before any writer can consume them."""
+    ev_by_id = {ev["id"]: ev for ev in evidences}
+    if len(ev_by_id) != len(evidences):
+        raise ValueError("Duplicate evidence identity")
+    bindings = []
+    for decision in decisions:
+        if decision.get("status") not in ("supported", "proposed"):
+            continue
+        if decision.get("run_id") != run_id:
+            raise ValueError("Foreign decision source")
+        selected = decision.get("selected_entity_ids") or []
+        if not isinstance(selected, list) or any(not isinstance(eid, str) or not eid.strip() for eid in selected):
+            raise ValueError("Invalid retained source identity")
+        wanted = {str(eid).casefold() for eid in selected}
+        if len(wanted) != len(selected):
+            raise ValueError("Duplicate retained source")
+        refs_by_id = {}
+        for ref in decision.get("evidence_refs") or []:
+            ev = ev_by_id.get(ref.get("evidence_id"))
+            if not ev or ev.get("run_id") != run_id or ev.get("payload_redacted_sha256") != sha256_canonical(ev.get("payload_redacted")):
+                raise ValueError("Unmatched evidence source or payload")
+            try:
+                target = resolve_json_pointer(ev["payload_redacted"], ref["item_pointer"])
+                eid = str(target.get("entity_id") or target.get("id") or "")
+            except (KeyError, TypeError, AttributeError, ValueError, IndexError) as exc:
+                raise ValueError("Invalid retained source pointer") from exc
+            matching = [item for item in ev.get("used_items") or [] if item.get("item_pointer") == ref["item_pointer"]
+                        and str(item.get("entity_id") or "").casefold() == eid.casefold()]
+            if not eid or eid.casefold() not in wanted or eid.casefold() in refs_by_id or len(matching) != 1:
+                raise ValueError("Retained source IDs and decision citations disagree")
+            refs_by_id[eid.casefold()] = copy.deepcopy(ref)
+        if set(refs_by_id) != wanted:
+            raise ValueError("A retained source has no unique citation")
+        candidates = {str(c.get("entity_id") or "").casefold(): c for c in decision.get("candidates") or []}
+        for eid in selected:
+            candidate = candidates.get(eid.casefold())
+            if not candidate:
+                raise ValueError("Retained source is absent from the candidate list")
+            bindings.append({"entity_id": eid, "name": candidate.get("name", eid), "decision_id": decision["id"],
+                "evidence_ref": refs_by_id[eid.casefold()], "returned_order": candidate.get("returned_order"),
+                "score_field": candidate.get("score_field"), "score_value": candidate.get("score_value")})
+    return bindings
+
+
 def llm_role_2_creative_redactor(run_id: str, mode: str, validated_brief: dict[str, Any],
         analysis: dict[str, Any], evidences: list[dict[str, Any]], decisions: list[dict[str, Any]],
         budget: dict[str, Any], qloo_api_verified: bool,
         llm_runner: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None
         ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    constraints=copy.deepcopy(validated_brief["user_constraints"]); bindings=[]
-    for decision in decisions:
-        if decision.get("status") not in ("supported","proposed"): continue
-        for idx,eid in enumerate(decision.get("selected_entity_ids") or []):
-            candidate=next((c for c in decision.get("candidates",[]) if c.get("entity_id")==eid),{})
-            refs=decision.get("evidence_refs") or []
-            bindings.append({"entity_id":eid,"name":candidate.get("name",eid),"decision_id":decision["id"],
-                "evidence_ref":refs[idx] if idx<len(refs) else None,
-                "returned_order":candidate.get("returned_order"),"score_field":candidate.get("score_field"),"score_value":candidate.get("score_value")})
+    constraints=copy.deepcopy(validated_brief["user_constraints"])
+    bindings=retained_source_bindings(run_id,decisions,evidences)
     plans=_shot_plan(constraints,bindings)
     directions=[]; shots=[]; generated=False
     if llm_runner is not None:
@@ -1753,8 +1811,21 @@ def validate_contract_links(
         for d_ref in shot.get("decision_refs", []):
             if d_ref not in dec_by_id:
                 errors.append(f"Shot {shot['id']} references unknown decision_ref {d_ref!r}.")
+        resolved_shot_ids = []
         for ev_ref in shot.get("evidence_refs", []):
-            check_ev_ref(ev_ref, f"Shot {shot['id']}")
+            _, resolved_id = check_ev_ref(ev_ref, f"Shot {shot['id']}")
+            if resolved_id:
+                resolved_shot_ids.append(resolved_id.casefold())
+        if shot.get("line_status", "active") == "active":
+            retained = {str(value).casefold() for value in shot.get("retained_entity_refs", [])}
+            decision_ids = {str(value).casefold() for ref in shot.get("decision_refs", [])
+                            for value in dec_by_id.get(ref, {}).get("selected_entity_ids", [])}
+            allowed_refs = {(ref.get("evidence_id"), ref.get("item_pointer")) for d_ref in shot.get("decision_refs", [])
+                            for ref in dec_by_id.get(d_ref, {}).get("evidence_refs", [])}
+            if set(resolved_shot_ids) != retained or not retained <= decision_ids:
+                errors.append(f"Shot {shot['id']} source identity does not match retained_entity_refs and its cited decisions.")
+            if any((ref.get("evidence_id"), ref.get("item_pointer")) not in allowed_refs for ref in shot.get("evidence_refs", [])):
+                errors.append(f"Shot {shot['id']} cites a source outside its own decision.")
         for r_id in shot.get("retained_entity_refs", []):
             if r_id not in all_retained_ids and shot.get("line_status", "active") == "active":
                 errors.append(f"Shot {shot['id']} consumes non-retained entity {r_id!r} while marked active.")
@@ -2313,6 +2384,9 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
     if not validated["suggested_public_references"]: reasons.append("no_explicit_cultural_reference")
     if cancel_requested: reasons.append("run_cancelled")
     if reasons: return finish("needs_input",_unproduced_brief(run_id,mode,validated,"needs_input",reasons))
+    if elapsed() >= active_time_limit_ms:
+        reasons.append("active_family_budget_exhausted")
+        return finish("error",_unproduced_brief(run_id,mode,validated,"not_generated",reasons))
     require_time()
     resolution=resolve_candidates(validated["suggested_public_references"],validated["user_constraints"],confirmed_entity_ids,mode,custom_resolver,resolution_choices)
     if resolution["gate_status"]!="ok" or simulated_harness_state=="needs_input":
@@ -2376,6 +2450,11 @@ def run_cultural_launch_director(synopsis: str, suggested_public_references: lis
     if llm_runner is not None and llm_call_limit<3:
         reasons.append("three_role_budget_required_before_first_model_call")
         return finish("needs_input",_unproduced_brief(run_id,mode,validated,"not_generated",reasons))
+    try:
+        retained_source_bindings(run_id,decisions,evidences)
+    except (ValueError,KeyError,TypeError):
+        reasons.append("retained_source_identity_mismatch")
+        return finish("invalid_contract",_unproduced_brief(run_id,mode,validated,"not_generated",reasons))
     try:
         require_time(); analysis=llm_role_1_brief_analyst(validated,budget,llm_runner=llm_runner)
         require_time(); brief,directions=llm_role_2_creative_redactor(run_id,mode,validated,analysis,evidences,decisions,budget,qloo_verified,llm_runner)

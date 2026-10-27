@@ -27,6 +27,10 @@ export function buildMovieProposal({seedIds,inputHash,envelope}){
       !Array.isArray(refs)||!refs.length||refs.some(r=>!r||!Number.isSafeInteger(r.attempt)||r.attempt<1||!isHash(r.response_sha256)||!isHash(r.redacted_response_sha256))||!Array.isArray(envelope.physical_http_warnings)){
     return unavailable('invalid_contract','Matching physical provenance and input are required before proposing films.');
   }
+  const call=envelope.tool_call_provenance;
+  if(!call||call.tool!=='qloo_recommend'||stable(call.arguments)!==stable(args)||call.source_payload_sha256!==envelope.source_payload_sha256||call.run_id!==envelope.run_id||call.input_hash!==inputHash){
+    return unavailable('invalid_contract','The acquisition must match the exact recommendation operation, arguments, response and execution.');
+  }
   const ignored=new Set(envelope.physical_http_warnings.flatMap(w=>w&&typeof w==='object'&&w.type==='not_found'&&Array.isArray(w['signal.interests.entities'])?w['signal.interests.entities'].filter(x=>typeof x==='string').map(key):[]));
   if(args.signals.every(id=>ignored.has(key(id))))return unavailable('empty','Qloo did not recognize the supplied signal. Choose a different public film reference; no replacement was made.');
   if(envelope.physical_http_warnings.length||(Array.isArray(envelope.warnings)&&envelope.warnings.length))return unavailable('degraded','Qloo warned about the supplied input. No complete proposal is qualified.');
@@ -44,7 +48,7 @@ export function buildMovieProposal({seedIds,inputHash,envelope}){
   }
   const proposal={schema:'movie-proposal/1',status:'needs_input',input_hash:inputHash,seed_entity_ids:args.signals,
     candidates,default_proposed_entity_ids:candidates.slice(0,2).map(c=>c.entity_id),author_choice:null,
-    source:{tool:'qloo_recommend',run_id:envelope.run_id,source_payload_sha256:envelope.source_payload_sha256,
+    source:{tool:call.tool,arguments:structuredClone(call.arguments),run_id:envelope.run_id,source_payload_sha256:envelope.source_payload_sha256,
       physical_response_refs:refs.map(r=>({attempt:r.attempt,response_sha256:r.response_sha256,redacted_response_sha256:r.redacted_response_sha256}))},
     limitation:'Relative Qloo affinities propose references; the author must explicitly choose before a brief is written.'};
   return {...proposal,proposal_id:identity(proposal)};

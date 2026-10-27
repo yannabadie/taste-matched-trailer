@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-25T11:41:16.598021+00:00",
+  "generated_at": "2026-10-27T16:30:23.173621+00:00",
   "release": "2.6.6",
   "runtime": "1.1.3-pointer-expiry",
-  "scope": "Source-only narrow lexical fix for explicit creature-exclusion lists with EN/FR normalization, plus a shared-mask boundary that preserves affirmative clauses after comma-and/et, including coordinated subjects. Explicitly negative nor/ni joins retain scope. No writer-message/schema/model-route/runtime1.1.3/budget/recorded-capture or native qualification change.",
+  "scope": "Isolated candidate: explicit recommendation choice, exact operation/source binding, complete physical-result validation, ID-based source citations and shared remaining family deadlines. No proposed-movie application flow is connected or published. Existing native runner, bridge, gateway, budgets and recorded capture remain unchanged.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "7299cbbc7fc9e5a1325a38cb50186aa487c7d13a8f30026335a0b72830749d42",
-    "taste-matched-trailer/qloo_mcp_backend.mjs": "e727ad82b079bdb530c59115c9b8318411cb3ea2d6e8a7e80c4d9077cab64f3a",
-    "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "652d0a5ec2b01a06e3568f2b98e84fa231c4902e6cfec216fea4ab001751bd86",
-    "taste-matched-trailer/cultural_launch_director.py": "cc34f427cb0053b92ed93b6b13d98d54b4af9236535fbcfe82a259bbdbf51c30",
+    "taste-matched-trailer/qloo_mcp_backend.mjs": "256d4daea6148f409a3c240824feae30102f63d432ff96e129050b2bb56815e9",
+    "taste-matched-trailer/qloo_fetch_budget_preload.mjs": "cf29cfdcf52a0891a74320204e5be8846f1e132c5abb4c29667314f6de05c249",
+    "taste-matched-trailer/cultural_launch_director.py": "e337af44f40e3cae262138c7c5320e30f10c33bd9771abe4d92474b4236ad7ec",
     "taste-matched-trailer/guarded_qwen_runner.py": "fe3133f64559397ddda9f4d6ed31974807a7a2b90b8ae4fd9f06edaaa7845c05",
     "taste-matched-trailer/bridge/director_entry.py": "a1cde0c607565896d326b211b92f89437d3c815d2402ef1876fa032baeddafe2",
     "taste-matched-trailer/bridge/native_bootstrap.py": "0264947cca1a30077e008954efded9b0dc246b0625e57f8214e8165f0a05bb02",
@@ -15,9 +15,10 @@
     "campagne-hackathon-2026-10-19/conception/CONTRATS.schema.json": "cd995049bd30e8f1c9f617df99780139dd8fa01c5d900553b48c93a545263408",
     "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
     "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
-    "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9"
+    "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9",
+    "taste-matched-trailer/movie_proposal.mjs": "5843038f4e99e65119f28d94e44e254201c6386ccf8a462474ca8e00a3bd8559"
   },
-  "previous_source_pins_sha256": "a667828284bf8c96fb4336bd0068b63d8592916cef1ce4a9612e61f817d222fa",
+  "previous_source_pins_sha256": "9e0739fa39e3f7608d0fac7b91ba1506736b46d6bc6cba565d591548220cfdb3",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
   "recorded_capture": {
     "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -41,13 +42,21 @@
   "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.6.",
   "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
   "qualification_scope": {
-    "current_source": "Targeted pure offline creature and directly affected shared-mask regressions, plus the version assertion reception. First exclusion false positive and comma-and affirmative false negative are preserved. No model/API, semantic or creative-quality qualification.",
+    "current_source": "Targeted synthetic proposal/transport tests, family-deadline tests and explicit-selection/citation tests; affected reference-context and semantic-contract regressions. Installed 0.1.26 SDK over loopback HTTP: five synthetic cases, no retries. Not a full application, stdio MCP or real-provider qualification.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
     "runtime": "1.1.3-pointer-expiry",
     "native_Qwen_2_6_5": "not_executed",
-    "native_Qwen_2_6_6": "not_executed"
+    "native_Qwen_2_6_6": "not_executed",
+    "recommend_full_application": "not_executed"
   },
-  "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7"
+  "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7",
+  "candidate_stage": {
+    "kind": "isolated_recommend_foundations_after_adversarial_review",
+    "source_base": "5199db1fabd27b629c2a3e7e9a20545c8f0e5282",
+    "full_application_connected": false,
+    "real_provider_call": false,
+    "runtime_restarted": false
+  }
 }

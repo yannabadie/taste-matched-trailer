@@ -28,6 +28,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import crypto from "node:crypto";
 import { initialiseGuardRun, readPhysicalCounter } from "./qloo_fetch_budget_preload.mjs";
+import { buildMovieRecommendArgs } from "./movie_proposal.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -311,6 +312,11 @@ export function normalizeHarnessEnvelope(rawEnvelope, { hasServerKey = Boolean(p
   const validEntities = rawEntities.filter(
     (e) => e && typeof e === "object" && String(e.entity_id || e.id || "").trim()
   );
+  if (rawStatus === "ok" && validEntities.length !== rawEntities.length) {
+    return {status:"invalid_contract",authentication_state:authState,results:[],warnings:rawWarnings,
+      limitations:[...rawLimitations,"The response contained items without an identity; a filtered subset is not a complete result."],
+      structuredContent:sc || undefined,error:{code:"MALFORMED_RESULT_ITEMS",retryable:false},network_attempt_made:rawEnvelope.network_attempt_made!==false};
+  }
 
   // `QLOO_AUTH` from `@qloo/qloo-harness` is rejected locally before any network call is made
   const networkAttemptMade =
@@ -365,7 +371,10 @@ export function normalizeHarnessEnvelope(rawEnvelope, { hasServerKey = Boolean(p
  * is counted and gated at the 8-attempt ceiling before network transport.
  */
 export class QlooStdioSession {
-  constructor(envOverride = null, { attemptLimit = PINNED_REQUIREMENTS.budgetLimits.qlooNetworkAttemptLimit, offlineOnly = false } = {}) {
+  constructor(envOverride = null, { attemptLimit = PINNED_REQUIREMENTS.budgetLimits.qlooNetworkAttemptLimit, offlineOnly = false, activeTimeLimitMs = null } = {}) {
+    if (activeTimeLimitMs !== null && (typeof activeTimeLimitMs !== "number" || !Number.isFinite(activeTimeLimitMs) || activeTimeLimitMs < 0 || activeTimeLimitMs > 120000)) throw new Error("Invalid remaining family time");
+    this.deadlineAt = activeTimeLimitMs === null ? null : performance.now()+activeTimeLimitMs;
+    this.wallDeadline = activeTimeLimitMs === null ? null : Math.floor(Date.now()+activeTimeLimitMs);
     this.proc = null;
     this.nextId = 1;
     this.pending = new Map();
@@ -393,6 +402,7 @@ export class QlooStdioSession {
       delete childEnv.QLOO_GUARD_DIR;
     }
     childEnv.QLOO_PHYSICAL_GUARD_INSTALL = "1";
+    if (this.wallDeadline !== null) childEnv.QLOO_GUARD_PHASE_DEADLINE_MS=String(this.wallDeadline);
     childEnv.NODE_OPTIONS = `--import ${FETCH_BUDGET_PRELOAD_URL}`;
 
     this.proc = spawn(execSpec.command, execSpec.args, {
@@ -452,14 +462,22 @@ export class QlooStdioSession {
   }
 
   async request(method, params = {}, timeoutMs = PINNED_REQUIREMENTS.budgetLimits.toolTimeoutMs) {
+    if (this.deadlineAt !== null && performance.now() >= this.deadlineAt) throw Object.assign(new Error("QLOO_FAMILY_ACTIVE_DEADLINE"),{code:"QLOO_FAMILY_ACTIVE_DEADLINE",retryable:false});
     this.start();
+    const remaining=this.deadlineAt===null?Infinity:this.deadlineAt-performance.now();
+    if (remaining <= 0) {
+      this.proc?.kill("SIGTERM");
+      throw Object.assign(new Error("QLOO_FAMILY_ACTIVE_DEADLINE"),{code:"QLOO_FAMILY_ACTIVE_DEADLINE",retryable:false});
+    }
+    const familyLimited=remaining<=timeoutMs;
     const id = this.nextId++;
     const payload = JSON.stringify({ jsonrpc: "2.0", id, method, params }) + "\n";
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(Object.assign(new Error("MCP tool timeout; outcome unknown, no retry"), { code: "TOOL_TIMEOUT", retryable: false }));
-      }, timeoutMs);
+        if (familyLimited) this.proc?.kill("SIGTERM");
+        reject(Object.assign(new Error(familyLimited?"QLOO_FAMILY_ACTIVE_DEADLINE; outcome unknown, no retry":"MCP tool timeout; outcome unknown, no retry"), { code: familyLimited?"QLOO_FAMILY_ACTIVE_DEADLINE":"TOOL_TIMEOUT", retryable: false }));
+      }, Math.max(1,Math.min(timeoutMs,remaining)));
       this.pending.set(id, { resolve, reject, timer });
       this.proc.stdin.write(payload);
     });
@@ -545,6 +563,10 @@ export class QlooStdioSession {
   async rankOptions({ optionType, options, signals }) {
     const args = buildCanonicalRankArgs({ optionType, options, signals });
     return this.callTool("qloo_rank", args);
+  }
+
+  async recommendMovies(seedIds) {
+    return this.callTool("qloo_recommend", buildMovieRecommendArgs(seedIds));
   }
 
   close() {
@@ -654,39 +676,59 @@ export function invokePythonDirector(cliFlag, payloadObj, sourceEnv = process.en
 
 
 /** Read the actual HTTP warning channel: the upstream MCP harness can omit it. */
-export function enrichRankWithPhysicalEvidence(envelope, rawEnvelope, physicalEvents, guardDirectory, requestedSignals) {
-  const warnings=[]; const references=[];
+export function enrichInsightsWithPhysicalEvidence(envelope, rawEnvelope, physicalEvents, guardDirectory, requestedSignals, tool = "qloo_rank") {
+  if (!["qloo_rank", "qloo_recommend"].includes(tool)) throw new Error("Unsupported insights operation");
+  const label=tool==="qloo_recommend"?"recommendation":"ranking";
+  const warnings=[]; const references=[];let malformedRecommendation=false;
+  const returned=Array.isArray(envelope.results)?envelope.results:envelope.results?.entities || [];
   for (const event of physicalEvents.filter(e=>e.path==="/v2/insights" && e.status===200)) {
     const bytes=fs.readFileSync(path.join(guardDirectory,`http-${String(event.attempt).padStart(2,"0")}-response.txt`));
     if (crypto.createHash("sha256").update(bytes).digest("hex")!==event.redacted_response_sha256) throw new Error("PHYSICAL_PROVENANCE_MISMATCH");
     const body=JSON.parse(bytes.toString("utf8"));
+    if (tool==="qloo_recommend") {
+      const rows=Array.isArray(body.results)?body.results:body.results?.entities;
+      if (!Array.isArray(rows) || rows.length!==returned.length || rows.some(row=>!row || typeof row!=="object" ||
+          typeof (row.entity_id??row.id)!=="string" || !(row.entity_id??row.id).trim() ||
+          typeof (row.affinity??row.query?.affinity)!=="number" || !Number.isFinite(row.affinity??row.query?.affinity))) malformedRecommendation=true;
+    }
     if (Array.isArray(body.warnings)) warnings.push(...body.warnings);
     references.push({attempt:event.attempt,response_sha256:event.response_sha256,redacted_response_sha256:event.redacted_response_sha256});
   }
   envelope.physical_http_warnings=warnings;
   envelope.physical_http_warning_refs=references;
   const absent=new Set(warnings.flatMap(w=>w && typeof w==="object" && w.type==="not_found" && Array.isArray(w["signal.interests.entities"])?w["signal.interests.entities"]:[]));
-  const allAbsent=requestedSignals.length>0 && requestedSignals.every(id=>absent.has(id));
+  const absentKeys=new Set([...absent].map(id=>String(id).toLowerCase()));
+  const allAbsent=requestedSignals.length>0 && requestedSignals.every(id=>absentKeys.has(String(id).toLowerCase()));
   const items=Array.isArray(envelope.results)?envelope.results:envelope.results?.entities || [];
   const measured=item=>[item.affinity,item.query?.affinity].some(v=>typeof v==="number" && Number.isFinite(v));
   if (warnings.length) {
     envelope.status=allAbsent?"empty":"degraded";
-    envelope.limitations.push(allAbsent?"Qloo ranking ignored every supplied seed. No cultural ranking is qualified.":"Qloo ranking ignored or warned about part of the supplied input. No complete result is qualified.");
+    envelope.limitations.push(allAbsent?`Qloo ${label} ignored every supplied seed. No cultural ${label} is qualified.`:`Qloo ${label} ignored or warned about part of the supplied input. No complete result is qualified.`);
     if (absent.size) {
       const signals=rawEnvelope?.structuredContent?.interpretation?.signals || [];
-      const labels=[...absent].map(id=>{const item=signals.find(x=>x.entityId===id);return item?.name?`${item.name} (${id})`:id;});
-      envelope.limitations.push("Ranking endpoint did not recognize: "+labels.join(", ")+". Use a different public reference in a separate brief; no supplied reference was silently removed.");
+      const labels=[...absent].map(id=>{const item=signals.find(x=>String(x.entityId).toLowerCase()===String(id).toLowerCase());return item?.name?`${item.name} (${id})`:id;});
+      envelope.limitations.push((tool==="qloo_recommend"?"Recommendation":"Ranking")+" endpoint did not recognize: "+labels.join(", ")+". Use a different public reference in a separate brief; no supplied reference was silently removed.");
     }
   }
   if (items.length && !items.every(measured) && ["ok","partial","degraded","empty"].includes(envelope.status)) {
     envelope.status=items.some(measured)?"degraded":"empty";
-    envelope.limitations.push("Measured affinity is missing. Returned or input order is not a qualified cultural ranking.");
+    envelope.limitations.push("Measured affinity is missing. Returned or input order is not a qualified cultural "+label+".");
+  }
+  if (malformedRecommendation) {
+    envelope.status="invalid_contract";
+    envelope.limitations.push("The physical recommendation response is incomplete or differs from the normalized list; no filtered subset is qualified.");
   }
   return envelope;
 }
 
+// Existing callers retain the same ranking operation and diagnostic wording.
+export function enrichRankWithPhysicalEvidence(envelope, rawEnvelope, physicalEvents, guardDirectory, requestedSignals) {
+  return enrichInsightsWithPhysicalEvidence(envelope,rawEnvelope,physicalEvents,guardDirectory,requestedSignals,"qloo_rank");
+}
+
 /** Owner-only execution surface. The public gateway applies a stricter input whitelist. */
 export async function executeDirectorRequest(body, activeEnv = process.env) {
+  const started=performance.now();
   const fields = ["case_id", "synopsis", "suggested_public_references", "user_constraints", "confirmed_entity_ids",
     "mode", "cancel_requested", "rank_domains", "shortlist_options", "explicit_run_id", "frozen_case_sha256",
     "frozen_cases_file_sha256", "qloo_network_attempt_limit", "llm_call_limit", "active_time_limit_ms",
@@ -730,10 +772,11 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
   if (family.family_run_id!==familyId || family.inflight || (parent && family.last_run_id!==parent.run_id)) throw new Error("Family phase already consumed or outcome unreconciled");
   if (parent && family.models_used>0) throw new Error("Native generation already consumed; explicit separately reserved correction required");
   previousMs=family.active_ms;
+  if (!Number.isSafeInteger(previousMs) || previousMs<0) throw new Error("Family active time ledger invalid");
+  if (previousMs+Math.ceil(performance.now()-started)>=payload.active_time_limit_ms) throw Object.assign(new Error("QLOO_FAMILY_ACTIVE_DEADLINE"),{code:"QLOO_FAMILY_ACTIVE_DEADLINE",retryable:false});
   const saveFamily=()=>{const temp=familyFile+".tmp";fs.writeFileSync(temp,JSON.stringify(family)+"\n",{mode:0o600});fs.renameSync(temp,familyFile);};
   family.inflight=runId;saveFamily();
   payload.physical_http_attempts_used=before.attempts;
-  const started=performance.now();
   const runtime={run_id:runId,family_run_id:familyId,executed_over_stdio:false,tool_calls:[],gate_reasons:pre.gate_reasons,
     physical_http_attempts_used:before.attempts,physical_http_attempt_limit:before.limit,physical_http_events:before.events};
   let session=null;
@@ -745,9 +788,10 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
     const result=normalizeHarnessEnvelope(raw,{hasServerKey:false});
     result.authentication_state=authenticated?"authenticated":(fresh.some(e=>e.status===401 || e.status===403)?"not_authenticated":"not_checked");
     Object.assign(result,{source_payload_sha256:entry.source_payload_sha256,run_id:runId,input_hash:pre.input_hash,
-      requested_at:entry.requested_at,received_at:entry.received_at,network_attempt_made:fresh.length>0});
+      requested_at:entry.requested_at,received_at:entry.received_at,network_attempt_made:fresh.length>0,
+      tool_call_provenance:{tool:entry.tool,arguments:structuredClone(entry.arguments),source_payload_sha256:entry.source_payload_sha256,run_id:runId,input_hash:pre.input_hash}});
     fs.writeFileSync(path.join(guardDirectory,`mcp-${runId}-${String(session.toolCalls.length).padStart(2,"0")}.json`),JSON.stringify(raw,null,2).split(activeEnv.QLOO_API_KEY || "__NO_SECRET__").join("[REDACTED]")+"\n",{flag:"wx",mode:0o600});
-    return entry.tool==="qloo_rank"?enrichRankWithPhysicalEvidence(result,raw,fresh,guardDirectory,entry.arguments.signals || []):result;
+    return ["qloo_rank","qloo_recommend"].includes(entry.tool)?enrichInsightsWithPhysicalEvidence(result,raw,fresh,guardDirectory,entry.arguments.signals || [],entry.tool):result;
   };
   try {
     if (payload.mode==="live" && (pre.allow_resolution_http || pre.allow_rank_http)) {
@@ -757,7 +801,8 @@ export async function executeDirectorRequest(body, activeEnv = process.env) {
       if (activeEnv.DIRECTOR_QWEN_BRIDGE_ENTRY!==path.join(__dirname,"bridge","director_entry.py")) throw new Error("Native bridge path mismatch");
       for (const [file, expected] of [["cultural_launch_director.py",activeEnv.DIRECTOR_QWEN_EXPECTED_DIRECTOR_SHA256],["guarded_qwen_runner.py",activeEnv.DIRECTOR_QWEN_EXPECTED_RUNNER_SHA256]])
         if (crypto.createHash("sha256").update(fs.readFileSync(path.join(__dirname,file))).digest("hex")!==expected) throw new Error("Source changed before transport");
-      session=new QlooStdioSession({...activeEnv,QLOO_GUARD_DIR:guardDirectory},{attemptLimit:before.limit});
+      session=new QlooStdioSession({...activeEnv,QLOO_GUARD_DIR:guardDirectory},{attemptLimit:before.limit,
+        activeTimeLimitMs:Math.max(0,payload.active_time_limit_ms-previousMs-Math.ceil(performance.now()-started))});
       const init=await session.initialize();
       const cap=await session.getCapabilities();
       if (cap?.structuredContent?.contract_checksum!==PINNED_REQUIREMENTS.contractChecksum) throw new Error("MCP_CONTRACT_DRIFT");
