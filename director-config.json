@@ -4,8 +4,8 @@
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-fb261a7638bd41ed9001d8ad87ce0b27",
-  "runtime_status": "offline",
-  "updated_at": "2026-10-29T16:05:10.227227Z",
-  "expires_at": "2026-10-30T16:05:10.227227Z"
+  "revision": "runtime-42839dcb240948ddbf59d4f4cf8cb6bd",
+  "runtime_status": "ready",
+  "updated_at": "2026-10-29T16:12:51.103645Z",
+  "expires_at": "2026-10-30T16:12:51.103645Z"
 }
