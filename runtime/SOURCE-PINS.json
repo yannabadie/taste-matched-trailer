@@ -19,12 +19,14 @@
     "taste-matched-trailer/movie_proposal.mjs": "d4af9d060597181ac6d33ebf09a8d6f057fb1e55af0c8c1e109f2fb9c9b1c3a6",
     "index.html": "fd19da24199795764cecf57fc897e5e871b715a68b6ceaa792f6f4eac91fc533",
     "taste-matched-trailer/index.html": "fd19da24199795764cecf57fc897e5e871b715a68b6ceaa792f6f4eac91fc533",
-    "qloo-proposed-recording.html": "3c65f2cc97144460fa5ab5fa053481c5084861ec9009d967868e8dc5de4db17b",
-    "taste-matched-trailer/qloo-proposed-recording.html": "3c65f2cc97144460fa5ab5fa053481c5084861ec9009d967868e8dc5de4db17b",
+    "qloo-proposed-recording.html": "983eeb6b3e929eac16936fb1907ee9a98ad27f2c422f31fad9d11784ff8a6bed",
+    "taste-matched-trailer/qloo-proposed-recording.html": "983eeb6b3e929eac16936fb1907ee9a98ad27f2c422f31fad9d11784ff8a6bed",
     "recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76",
     "taste-matched-trailer/recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76",
     "recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593",
-    "taste-matched-trailer/recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593"
+    "taste-matched-trailer/recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593",
+    "WRITER-INPUT-RECEPTION-20261029.json": "b3077b4d2a67ce0495b74d89d4c44e94cad8f71b6c3f8281ccf8f4e53c1c6466",
+    "taste-matched-trailer/WRITER-INPUT-RECEPTION-20261029.json": "b3077b4d2a67ce0495b74d89d4c44e94cad8f71b6c3f8281ccf8f4e53c1c6466"
   },
   "previous_source_pins_sha256": "435a73114393e3110aaf68cc1521ef5afb110dd1e6767ed1d34935f865fd49b6",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
@@ -67,7 +69,8 @@
       "native_models": 0,
       "preserved": true
     },
-    "frontend_default": "The custom form now prefills the exact English James synopsis received in the 29 October native case,16:9/sound off/no visible monster. Historical presets and native case bytes unchanged. This form correction makes no new provider/model call."
+    "frontend_default": "The custom form now prefills the exact English James synopsis received in the 29 October native case,16:9/sound off/no visible monster. Historical presets and native case bytes unchanged. This form correction makes no new provider/model call.",
+    "writer_context_reception": "Eight sourced book tags and French shot purposes are present in the reconstructed writer messages; canonical SHA matches the received native request. No new generation; artistic/language causality not isolated."
   },
   "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7",
   "candidate_stage": {

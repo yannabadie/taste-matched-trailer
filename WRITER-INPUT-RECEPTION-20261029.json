@@ -1,0 +1,17 @@
+{
+  "kind": "writer_input_construction_reception",
+  "source_commit": "fdbf503ecf518364a02b3bc1c0cf1818e2e71088",
+  "run_id": "run-mak27-20261029-fdbf-confirm",
+  "native_message_sha256": "c4ba81e7b8b2481443ee38ca7b4d995ec5844b1a9ebe8c2680df8961eda47e9a",
+  "reconstructed_message_sha256": "c4ba81e7b8b2481443ee38ca7b4d995ec5844b1a9ebe8c2680df8961eda47e9a",
+  "method": "Offline construction from the exact received source and archived inputs; canonical SYSTEM+USER digest matches both native network and runner receipts. Construction stopped before generation.",
+  "included_fields": {
+    "source_genre_tags_count": 8,
+    "synopsis_language": "en",
+    "shot_plan_purpose_language": "fr"
+  },
+  "scope": "Confirms which context was supplied. It does not establish artistic influence or isolate why the writer answered in French. No provider response data is embedded in this receipt.",
+  "new_Qloo_calls": 0,
+  "new_model_calls": 0,
+  "quota_changes": 0
+}
