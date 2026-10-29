@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T16:02:54.978077+00:00",
+  "generated_at": "2026-10-29T16:10:10.908541+00:00",
   "release": "2.7.0-controlled-promotion",
   "runtime": "1.2.0-release-identity",
   "scope": "Controlled promotion of the received fdbf503 application case, with a separate English reading aid and runtime identity gates. No new Qloo acquisition, native inference, or render is part of this change.",
@@ -17,8 +17,8 @@
     "runtime/qloo_runtime.py": "72b5a4dd09af013c53f7bae7064d387e3669d1c17e029717bbfeec536ad98d18",
     "runtime/publish_pointer.py": "cb815f6cdbe23d7987ed5e4be0075de0d4c9c901b1e6d7c6f95e08c082877320",
     "taste-matched-trailer/movie_proposal.mjs": "d4af9d060597181ac6d33ebf09a8d6f057fb1e55af0c8c1e109f2fb9c9b1c3a6",
-    "index.html": "c7b03984d0bf7a5598bf4f0fd44760d9ba335606a1403f392c01bbc6cb1af788",
-    "taste-matched-trailer/index.html": "c7b03984d0bf7a5598bf4f0fd44760d9ba335606a1403f392c01bbc6cb1af788",
+    "index.html": "6d841e4bf5bed04919293890941ff8bdcde10f8359a34ff41c521fc524279c82",
+    "taste-matched-trailer/index.html": "6d841e4bf5bed04919293890941ff8bdcde10f8359a34ff41c521fc524279c82",
     "qloo-proposed-recording.html": "29b1937448f5102bc409c2ef3280d9f487d3112de672c2c4e2d067a0c984b753",
     "taste-matched-trailer/qloo-proposed-recording.html": "29b1937448f5102bc409c2ef3280d9f487d3112de672c2c4e2d067a0c984b753",
     "recordings/qloo-proposed-20261029.json": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
@@ -68,7 +68,8 @@
       "real_requests": 4,
       "native_models": 0,
       "preserved": true
-    }
+    },
+    "frontend_default": "The custom form now prefills the exact English James synopsis received in the 29 October native case,16:9/sound off/no visible monster. Historical presets and native case bytes unchanged. This form correction makes no new provider/model call."
   },
   "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7",
   "candidate_stage": {

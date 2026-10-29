@@ -527,10 +527,10 @@ function loadPreset(){
     $('synopsisInput').value=HISTORICAL_DEMO_REQUEST.synopsis;$('referencesInput').value='The Turn of the Screw (book)';
     $('presetNote').textContent='Historical qualification inputs from 19 October 2026: The Devil and Daniel Johnston, Grey Gardens and I Am Divine. These are fixed inputs to rank, not fresh evidence for the next run. Choose Live explicitly.';
   }else{
-    $('synopsisInput').value='A narrator doubts their perceptions and senses an unseen presence. Preserve the uncertainty without showing a creature. Create an intimate, tense trailer brief.';
-    $('referencesInput').value='The Turn of the Screw (book)';$('presetNote').textContent='Demo default: The Turn of the Screw (book), a previously covered seed. Edit the brief or references as needed; a new run must establish current coverage.';
+    $('synopsisInput').value="Henry James's The Turn of the Screw: a young governess is hired to care for Miles and Flora at Bly, an isolated English country house. She reports seeing the former valet Peter Quint and her predecessor Miss Jessel, both dead, and fears that they threaten the children. Her conviction grows, but the children do not give her an unambiguous confirmation. The trailer should keep the governess, Bly, Miles and Flora at its centre and preserve the uncertainty between a haunting and the governess's interpretation. Do not replace the story with a solitary male narrator or settle the supernatural explanation.";
+    $('referencesInput').value='The Turn of the Screw (book)';$('presetNote').textContent='29 October example: the governess, Bly, Miles and Flora, with the uncertainty preserved. Edit this brief or its book reference; Qloo will propose films, then ask you to confirm your choice.';
   }
-  const constraints=c?c.user_constraints:(historical?HISTORICAL_DEMO_REQUEST.user_constraints:{no_visible_monster:true});
+  const constraints=c?c.user_constraints:(historical?HISTORICAL_DEMO_REQUEST.user_constraints:{aspect_ratio:'16:9',sound_off:true,no_visible_monster:true});
   $('constraintRatioSelect').value=constraints.aspect_ratio||'16:9';$('constraintSoundSelect').value=constraints.sound_off?'sound_off':'narrated';$('noMonsterInput').checked=Boolean(constraints.no_visible_monster);
   for(const id of ['synopsisInput','referencesInput','constraintRatioSelect','constraintSoundSelect','noMonsterInput'])$(id).disabled=Boolean(c||historical);
   status('Review the inputs and evidence mode. No request has been sent.');
