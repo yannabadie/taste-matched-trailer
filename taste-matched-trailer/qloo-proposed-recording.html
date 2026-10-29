@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://qloo-jury-evidence.russetpig129.chatgpt.site; frame-src 'none'; base-uri 'none'">
 <title>Qloo-proposed references — recorded brief, 29 October 2026</title>
 <style>
 :root{color-scheme:light;--bg:#e9eff2;--panel:#fbfcfd;--inset:#edf2f4;--line:#c6d3da;--accent:#225d60;--text:#18303a;--muted:#50666f;--warning:#805a12}
@@ -16,15 +16,17 @@
 <div id="received" hidden>
 <section class="panel" aria-labelledby="referencesHeading"><h2 id="referencesHeading">What Qloo returned</h2><p id="choice" class="muted"></p><ol id="references" class="references"></ol><p class="muted">Affinities are relative to this query. They do not measure reader response, trailer quality or sales.</p></section>
 <section class="panel" aria-labelledby="shotsHeading"><h2 id="shotsHeading">The four-shot brief</h2><p class="muted" id="readingAid">English reading aid — editorial translation by Claude and Codex, not native model output. The original French text is preserved under each shot and in the download. Reference links document the received source; they do not prove that a film caused a creative choice.</p><ol id="shots" class="shots"></ol></section>
-<section class="panel review" aria-labelledby="reviewHeading"><h2 id="reviewHeading">Editorial review remains open</h2><p><strong>The execution completed; the original writing still needs review.</strong> The English synopsis produced French writing. A typo and an overly certain caption are preserved in the recording and called out here.</p><ul id="reviewNotes"></ul><p>Proposed corrections are separate editorial suggestions. They have not replaced the received text, and no trailer was rendered from this run.</p></section>
-<section class="panel" aria-labelledby="provenanceHeading"><h2 id="provenanceHeading">Read or keep the evidence</h2><p><a href="./recordings/qloo-proposed-20261029.json" download>Download this recorded public document</a> · <a href="./recordings/qloo-proposed-20261029-manifest.json" download>Download its manifest</a> · <a href="./recordings/qloo-proposed-20261029-en.json" download>Download the separate English reading aid</a></p><p><a href="./index.html">The 20 October example and its editing desk remain available separately.</a></p><details><summary>Recording identity and scope</summary><pre id="provenance"></pre></details></section>
+<section class="panel review" aria-labelledby="reviewHeading"><h2 id="reviewHeading">Editorial review remains open</h2><p><strong>The execution completed; the original writing still needs review.</strong> The English synopsis produced French writing. A typo and an overly certain caption are preserved in the recording and called out here.</p><ul id="reviewNotes"></ul><p>Proposed corrections are separate editorial suggestions. They have not replaced the received text. A rendered adaptation is separate from this preserved brief; no public video is linked here yet.</p></section>
+<section class="panel" aria-labelledby="provenanceHeading"><h2 id="provenanceHeading">Read or keep the evidence</h2><p><a href="https://qloo-jury-evidence.russetpig129.chatgpt.site/api/director/recorded-20261029/archive" download>Download the recorded result</a> · <a href="https://qloo-jury-evidence.russetpig129.chatgpt.site/api/director/recorded-20261029/manifest" download>Download its manifest</a> · <a href="./recordings/qloo-proposed-20261029-en.json" download>Download the separate English reading aid</a></p><p><a href="./index.html">The 20 October example and its editing desk remain available separately.</a></p><details><summary>Recording identity and scope</summary><pre id="provenance"></pre></details></section>
 </div>
 </main><footer>One recorded integration case. No human preference study, commercial benefit, full canon validation or future live availability is established by this result.</footer>
 <script type="module">
 const get=id=>document.getElementById(id);
 const element=(tag,text,cls)=>{const node=document.createElement(tag);node.textContent=text;if(cls)node.className=cls;return node;};
 const base=new URL('./recordings/',location.href);
-async function readFile(name){const response=await fetch(new URL(name,base),{credentials:'omit',redirect:'error',cache:'no-store'});if(!response.ok)throw Error('Recording file unavailable.');return response;}
+const recordedService='https://qloo-jury-evidence.russetpig129.chatgpt.site/api/director/recorded-20261029/';
+const resources={'qloo-proposed-20261029.json':recordedService+'archive','qloo-proposed-20261029-manifest.json':recordedService+'manifest','qloo-proposed-20261029-en.json':new URL('qloo-proposed-20261029-en.json',base).href};
+async function readFile(name){if(!Object.hasOwn(resources,name))throw Error('Unknown recording resource.');const response=await fetch(resources[name],{credentials:'omit',redirect:'error',cache:'no-store'});if(!response.ok)throw Error('Recording file unavailable.');return response;}
 try{
  const manifest=await (await readFile('qloo-proposed-20261029-manifest.json')).json();
  if(manifest.kind!=='recorded_authentic_qloo_proposal_manifest'||manifest.recording!=='qloo-proposed-20261029.json')throw Error('Unexpected recording manifest.');
@@ -52,7 +54,7 @@ try{
   item.append(heading,element('blockquote',translation.caption),element('p',translation.visual_gloss,'visual'));
   if(translation.native_text_note)item.append(element('p',translation.native_text_note,'muted'));
   if(translation.separate_editorial_proposal)item.append(element('p','Separate editorial proposal, not applied to the recording: '+translation.separate_editorial_proposal,'muted'));
-  item.append(element('p',refs.length?'Documentary reference linked: '+refs.join(', '):'Editorial shot, with no linked Qloo reference.','lineage'),element('p','Format, duration and sound off: brief constraints. Framing and wording: editorial interpretation.','lineage'));
+  item.append(element('p',refs.length?'Source film linked: '+refs.join(', '):'Editorial shot, with no linked Qloo reference.','lineage'),element('p','Format, duration and sound off: brief constraints. Framing and wording: editorial interpretation.','lineage'));
   const native=element('details',''),nativeBody=element('div','');nativeBody.lang='fr';nativeBody.append(element('blockquote',shot.on_screen_text),element('p',shot.visual_prompt,'visual'));native.append(element('summary','Original French text — unchanged'),nativeBody);item.append(native);get('shots').append(item);
  }
  for(const note of capture.editorial_reservations){const row=element('li',note.observation);if(note.proposed_editorial_amendment)row.append(element('p','Separate proposal: '+note.proposed_editorial_amendment,'muted'));get('reviewNotes').append(row);}
