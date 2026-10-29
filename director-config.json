@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://regardless-adjacent-decorating-nodes.trycloudflare.com",
+  "api_base_url": "https://commons-huntington-socket-influence.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
-  "release": "2.6.3",
-  "revision": "runtime-1ef7523fc3a74ae4aca712ef717a8296",
-  "runtime_status": "ready",
-  "updated_at": "2026-10-29T04:05:20.409206Z",
-  "expires_at": "2026-10-30T04:05:20.409206Z"
+  "release": "2.7.0",
+  "revision": "runtime-fb261a7638bd41ed9001d8ad87ce0b27",
+  "runtime_status": "offline",
+  "updated_at": "2026-10-29T16:05:10.227227Z",
+  "expires_at": "2026-10-30T16:05:10.227227Z"
 }
