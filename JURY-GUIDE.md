@@ -4,13 +4,15 @@ Open the application at **https://yannabadie.github.io/taste-matched-trailer/**.
 No Qloo key, local installation or personal account is required in the public
 application.
 
-For the dated result, open the **[hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/)** directly or choose **Try the recorded sound-off example** in the application. Recorded reading makes no new API or model call.
+For the **29 October Qloo-proposed case**, open the **[new recorded reader](https://yannabadie.github.io/taste-matched-trailer/qloo-proposed-recording.html)** first. It shows six proposals, two retained after explicit confirmation, four native French shots and a separately attributed English reading aid. The two proposed editorial amendments remain separate from the preserved source. It makes no API or model call.
+
+For the separate **20 October** dated result, open the **[hosted jury reader](https://qloo-jury-evidence.russetpig129.chatgpt.site/)** directly or choose **Try the recorded sound-off example** in the application. Recorded reading makes no new API or model call.
 
 ## What this application produces
 
 Cultural Launch Director turns a creative brief and a cultural reference into
 an evidence-linked, four-shot creative brief. Qloo resolves the references and
-provides measured affinities for an explicit movie shortlist. Native
+proposes movie references from the resolved book signal. The author explicitly confirms a selection before generation. A new title can require ranking; reordering or taking a subset of the same proposals does not. The older 20 October recording instead ranked a supplied shortlist. Native
 Hermes/Qwen analyst, writer and verifier roles interpret and check those
 measurements when a complete live run can be admitted.
 
@@ -18,10 +20,7 @@ The output is a creative brief, not a rendered trailer. Timing, framing, sound
 and captions are editorial choices; the current profile measures movie
 affinities, not music affinities or audience demographics.
 
-The published core source is version **2.6.6**, with documented runtime
-**1.1.3**. The last complete native qualification remains the dated **2.6.3**
-run below. Source publication and local editing do not establish a fresh
-complete native 2.6.6 qualification, the current active process or live availability.
+The current core source is **2.7.0**, with runtime **1.2.0** version/source identity gates. One authentic fdbf503 case was received on 29 October: six real Qloo GETs, three local Qwen calls and 84,417 ms active, followed by four 9.5-second shots. Claude confirmed the first two returned proposals for the author. The earlier bff2 validator failure (four GETs, zero model calls) is preserved. This is one received integration case, not a general creative qualification or a guarantee of live availability. The older **2.6.3** recording below retains its own provenance.
 The writer/verifier contract distinguishes an editorial shot from a claim of
 Qloo-backed evidence and keeps the unseen phenomenon off-screen. A requested
 revision remains visible as an unqualified result. The saved example retains
@@ -29,7 +28,7 @@ its original execution date and French native creative text. Its separate
 English editorial translation is a reading aid; automatic English output is
 not guaranteed for new live runs.
 
-## Inspect the received result
+## Inspect the older 20 October result
 
 The independently received example uses **The Turn of the Screw (book)**.
 Its original execution completed on 20 October 2026 at approximately 13:32 UTC.
@@ -59,6 +58,10 @@ The Mac-cache wording in the preserved manifest describes the original capture;
 the current read path uses Sites. The original bytes have not been rewritten.
 
 ## Follow a reference through the decision
+
+In the **29 October reader**, compare the six original proposals with the two retained entity IDs. The first two were explicitly confirmed by Claude for the author, not inferred as a human preference. Shots 1 and 3 link to The Devil and Daniel Johnston, shot 2 to Grey Gardens, and shot 4 has no Qloo reference. These are ID-bound documentary links, not measured influence on the creative writing. The native French and English editorial translation are both inspectable; proposed typo and certainty corrections are labelled separately.
+
+The remaining instructions in this section describe the **20 October** recording and its preserved positional links.
 
 In the hosted recording, compare each candidate's returned position and finite
 affinity with the selected reference IDs. The selector follows the received
