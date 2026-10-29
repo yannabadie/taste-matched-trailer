@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T16:10:10.908541+00:00",
+  "generated_at": "2026-10-29T18:53:29.858738+00:00",
   "release": "2.7.0-controlled-promotion",
   "runtime": "1.2.0-release-identity",
   "scope": "Controlled promotion of the received fdbf503 application case, with a separate English reading aid and runtime identity gates. No new Qloo acquisition, native inference, or render is part of this change.",
@@ -21,9 +21,7 @@
     "taste-matched-trailer/index.html": "6d841e4bf5bed04919293890941ff8bdcde10f8359a34ff41c521fc524279c82",
     "qloo-proposed-recording.html": "29b1937448f5102bc409c2ef3280d9f487d3112de672c2c4e2d067a0c984b753",
     "taste-matched-trailer/qloo-proposed-recording.html": "29b1937448f5102bc409c2ef3280d9f487d3112de672c2c4e2d067a0c984b753",
-    "recordings/qloo-proposed-20261029.json": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
     "recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76",
-    "taste-matched-trailer/recordings/qloo-proposed-20261029.json": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
     "taste-matched-trailer/recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76",
     "recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593",
     "taste-matched-trailer/recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593"
@@ -80,5 +78,6 @@
     "runtime_restarted": false,
     "public_adoption": false,
     "owner_adoption": "Paperclip MAK-27 a986a032-7694-4e17-a88e-548a5738f06e"
-  }
+  },
+  "public_data_correction": "Qloo response-derived archive withdrawn from public HEAD; exact private original retained. No historical purge is claimed. Server-only cache delivery is being prepared."
 }

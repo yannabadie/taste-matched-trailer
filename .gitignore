@@ -10,3 +10,8 @@ node_modules/
 **/evidence/*-recorded.json
 **/evidence/recorded-demo-manifest.json
 **/recorded-cache/
+
+# Authentic saved API-derived exports are private server-side cache, never source assets.
+**/recordings/qloo-proposed-*.json
+!**/recordings/*-manifest.json
+!**/recordings/*-en.json

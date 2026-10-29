@@ -59,7 +59,7 @@ the current read path uses Sites. The original bytes have not been rewritten.
 
 ## Follow a reference through the decision
 
-In the **29 October reader**, compare the six original proposals with the two retained entity IDs. The first two were explicitly confirmed by Claude for the author, not inferred as a human preference. Shots 1 and 3 link to The Devil and Daniel Johnston, shot 2 to Grey Gardens, and shot 4 has no Qloo reference. These are ID-bound documentary links, not measured influence on the creative writing. The native French and English editorial translation are both inspectable; proposed typo and certainty corrections are labelled separately.
+In the **29 October reader**, compare the six original proposals with the two retained entity IDs. The first two were explicitly confirmed by Claude for the author, not inferred as a human preference. Shots 1 and 3 link to the first retained film, shot 2 to the second, and shot 4 has no Qloo reference. These are ID-bound documentary links, not measured influence on the creative writing. The native French and English editorial translation are both inspectable; proposed typo and certainty corrections are labelled separately.
 
 The remaining instructions in this section describe the **20 October** recording and its preserved positional links.
 
