@@ -40,7 +40,8 @@ export function buildMovieProposal({seedIds,inputHash,envelope}){
   const candidates=[],seen=new Set();
   for(const [returned_order,row] of rows.entries()){
     const entity_id=row?.entity_id??row?.id,score=row?.affinity??row?.query?.affinity;
-    if(typeof entity_id!=='string'||!UUID.test(entity_id)||seen.has(key(entity_id))||!['movie','urn:entity:movie'].includes(row?.type)||typeof row?.name!=='string'||!row.name.trim()||row.name.length>500||typeof score!=='number'||!Number.isFinite(score)){
+    const entityType=row?.type==='urn:entity'?row?.subtype:row?.type;
+    if(typeof entity_id!=='string'||!UUID.test(entity_id)||seen.has(key(entity_id))||!['movie','urn:entity:movie'].includes(entityType)||typeof row?.name!=='string'||!row.name.trim()||row.name.length>500||typeof score!=='number'||!Number.isFinite(score)){
       return unavailable('invalid_contract','A recommendation is missing a distinct movie ID, name or measured affinity.');
     }
     seen.add(key(entity_id));

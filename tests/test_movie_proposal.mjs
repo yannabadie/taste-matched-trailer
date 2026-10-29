@@ -26,6 +26,23 @@ test('the proposal preserves response order even when affinities are not sorted,
   assert.deepEqual(p.default_proposed_entity_ids,ids.slice(0,2));assert.equal(p.author_choice,null);
   assert.equal(JSON.stringify(envelope),before);assert.equal('structuredContent' in p,false);
 });
+test('a generic entity with movie subtype is a film; other or missing subtypes remain unusable',()=>{
+  const envelope=response();
+  for(const row of envelope.results){row.type='urn:entity';row.subtype='urn:entity:movie';}
+  const before=JSON.stringify(envelope),proposal=propose(envelope);
+  assert.equal(proposal.status,'needs_input');
+  assert.deepEqual(proposal.candidates.map(row=>row.entity_id),ids);
+  assert.deepEqual(proposal.candidates.map(row=>row.score_value),[0.2,0.9,0.6]);
+  assert.equal(proposal.author_choice,null);
+  assert.equal(JSON.stringify(envelope),before);
+  for(const [type,subtype] of [['urn:entity',undefined],['urn:entity',null],['urn:entity','urn:entity:book'],['urn:entity','urn:entity:artist'],['urn:entity:book','urn:entity:movie']]){
+    const invalid=structuredClone(envelope);
+    Object.assign(invalid.results[1],{type,subtype});
+    const rejected=propose(invalid);
+    assert.equal(rejected.status,'invalid_contract');
+    assert.deepEqual(rejected.candidates,[]);
+  }
+});
 test('a provider not_found warning cannot turn a popular list into recommendations from the book',()=>{
   const envelope=response();envelope.physical_http_warnings=[{type:'not_found','signal.interests.entities':[seed]}];
   const p=propose(envelope);assert.equal(p.status,'empty');assert.deepEqual(p.candidates,[]);assert.equal(p.author_choice,null);

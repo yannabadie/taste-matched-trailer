@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-27T17:48:52.186026+00:00",
-  "release": "2.7.0-candidate",
+  "generated_at": "2026-10-29T11:31:10.520790+00:00",
+  "release": "2.7.0-candidate-type-fix",
   "runtime": "1.1.3-pointer-expiry",
-  "scope": "Isolated 2.7.0 candidate: recognized signals -> recommend movie proposals -> explicit server-owned choice -> fresh child verification or rank only for a truly new resolved film -> ID-bound four-shot brief. Source genre labels come from verified entity-response metadata. Gateway and browser fields are wired; historical recording, native runner/bridge, family caps and shared state unchanged. No real-provider/native qualification or deployment.",
+  "scope": "Offline isolated correction of the movie-proposal domain check: a generic urn:entity requires movie subtype; directly typed movie results remain accepted. Original bff2 first authentic result and source copy are preserved. No new supplier/native calls, deployment or runtime state change.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "da9ebcef12841329712b0ae7836fbe00e300e38ce0acdce8757896765405fe05",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "7f5d8569629f2197b88124e156272d715a4aca5baeb054d62f00dd202d1a7d49",
@@ -16,9 +16,9 @@
     "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
     "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
     "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9",
-    "taste-matched-trailer/movie_proposal.mjs": "5843038f4e99e65119f28d94e44e254201c6386ccf8a462474ca8e00a3bd8559"
+    "taste-matched-trailer/movie_proposal.mjs": "d4af9d060597181ac6d33ebf09a8d6f057fb1e55af0c8c1e109f2fb9c9b1c3a6"
   },
-  "previous_source_pins_sha256": "db6675982eee7dd41f308d4417995a6ef8416e315b7d91f1db920730ba800676",
+  "previous_source_pins_sha256": "d162d1b19d07b0820c979f3c92c175eaa359298a8bf33b21ce7184c0ecac1c5a",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
   "recorded_capture": {
     "run_id": "run-public-928b9561-7216-4dac-b091-2a660f0f3a1d",
@@ -42,7 +42,7 @@
   "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.6.",
   "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
   "qualification_scope": {
-    "current_source": "Targeted unit regressions plus five installed-SDK/controller/Python-core loopback simulations and isolated-browser receipt of synthetic jobs. Three role callbacks are simulated, not native Qwen. Missing selected film stops with zero callbacks, known alias adds no rank, genuinely new resolved film ranks once. This does not qualify actual Qloo/model availability, output quality or judge availability.",
+    "current_source": "11 focused offline proposal tests (new generic-type regression red before fix, green after) and pure replay of the same captured real MCP/HTTP rows: old code invalid_contract, corrected code needs_input with six films in unchanged API order and exact affinities. No new provider call, native Qwen, author selection or brief. Earlier full-controller/browser simulations refer to base bff2, not a new end-to-end reception.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
@@ -51,12 +51,19 @@
     "native_Qwen_2_6_6": "not_executed",
     "recommend_full_application": "synthetic_http_and_browser_only",
     "native_Qwen_2_7_0": "not_executed",
-    "new_Qloo_2_7_0": "not_executed"
+    "new_Qloo_2_7_0": "base_bff2_first_attempt_failed_before_models; corrected_source_not_executed",
+    "base_bff2_first_authentic_attempt": {
+      "run_id": "run-mak27-20261029-bff2-proposal",
+      "status": "invalid_contract",
+      "real_requests": 4,
+      "native_models": 0,
+      "preserved": true
+    }
   },
   "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7",
   "candidate_stage": {
-    "kind": "isolated_connected_recommendation_workflow",
-    "source_base": "2eb886a20d54ec5a702da01d6c2ffdf05bfee9e0",
+    "kind": "isolated_offline_movie_type_fix",
+    "source_base": "bff2d5a274d25c4aacca6ea29feb9f7c6de6852c",
     "full_application_connected": true,
     "real_provider_call": false,
     "runtime_restarted": false,
