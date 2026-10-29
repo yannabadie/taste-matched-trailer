@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://franklin-hoped-supplied-theaters.trycloudflare.com",
+  "api_base_url": "https://regardless-adjacent-decorating-nodes.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.6.3",
-  "revision": "runtime-b0a592b710e648638328ab46821ffb02",
+  "revision": "runtime-1ef7523fc3a74ae4aca712ef717a8296",
   "runtime_status": "ready",
-  "updated_at": "2026-10-27T10:05:12.843296Z",
-  "expires_at": "2026-10-28T10:05:12.843296Z"
+  "updated_at": "2026-10-29T04:05:20.409206Z",
+  "expires_at": "2026-10-30T04:05:20.409206Z"
 }
