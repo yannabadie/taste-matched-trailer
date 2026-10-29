@@ -1,0 +1,10 @@
+{
+  "kind": "recorded_authentic_qloo_proposal_manifest",
+  "recording": "qloo-proposed-20261029.json",
+  "sha256": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
+  "bytes": 26898,
+  "source_commit": "fdbf503ecf518364a02b3bc1c0cf1818e2e71088",
+  "source_run_id": "run-mak27-20261029-fdbf-confirm",
+  "native_text_language": "fr",
+  "scope": "One received integration case. This recording does not establish global quality, canon, human benefit or future live availability."
+}

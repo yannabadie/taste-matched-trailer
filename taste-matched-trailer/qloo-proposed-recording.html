@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src 'none'; base-uri 'none'">
+<title>Qloo-proposed references — recorded brief, 29 October 2026</title>
+<style>
+:root{color-scheme:light;--bg:#e9eff2;--panel:#fbfcfd;--inset:#edf2f4;--line:#c6d3da;--accent:#225d60;--text:#18303a;--muted:#50666f;--warning:#805a12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Avenir Next","Trebuchet MS",sans-serif}header,main,footer{max-width:74rem;margin:auto;padding:1.5rem}header{padding-bottom:.5rem}h1{font:500 clamp(2rem,5vw,3.5rem)/1.1 "Iowan Old Style",Palatino,serif;letter-spacing:-.025em;max-width:20ch;margin:1.5rem 0 1rem}h2{font-size:1.35rem;margin:0 0 1rem}h3{font-size:1rem;margin:0}a{color:var(--accent)}a:focus-visible,summary:focus-visible{outline:3px solid #285b9a;outline-offset:4px}.topline,.metrics,.reference,.shot-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}.brand{font-weight:750;text-decoration:none}.eyebrow{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}.lede{max-width:65ch;color:var(--muted);font-size:1.05rem}.panel{background:var(--panel);border:1px solid var(--line);border-radius:.6rem;padding:1.5rem;margin:1rem 0}.metrics{justify-content:flex-start;gap:.5rem;margin:1rem 0}.tag{background:var(--inset);border:1px solid var(--line);padding:.25rem .65rem;border-radius:1rem;font-size:.8rem}.muted,small{color:var(--muted)}p{margin:.5rem 0 1rem}.references,.shots{padding:0;list-style:none}.reference{border-top:1px solid var(--line);padding:.8rem 0;align-items:flex-start}.reference-name{flex:1;min-width:10rem}.reference-score{font-variant-numeric:tabular-nums;color:var(--accent)}.retained{font-weight:700}.shot{border-top:1px solid var(--line);padding:1.25rem 0}.shot-heading{justify-content:flex-start;align-items:baseline}.time{font: .8rem ui-monospace,monospace;color:var(--muted)}blockquote{margin:1rem 0;padding:.5rem 1rem;border-left:3px solid var(--accent);font-size:1.15rem}.visual{max-width:75ch}.lineage{font-size:.85rem;color:var(--muted)}.review{border-left:4px solid var(--warning)}.review strong{color:var(--warning)}details{border-top:1px solid var(--line);padding-top:.8rem;margin-top:1rem}summary{cursor:pointer;color:var(--accent);font-weight:650}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:.8rem/1.5 ui-monospace,monospace}footer{font-size:.85rem;color:var(--muted)}[hidden]{display:none!important}@media(max-width:600px){header,main,footer{padding:1rem}.panel{padding:1rem}.reference-name{min-width:0;flex-basis:65%}}
+</style>
+</head>
+<body>
+<header><nav class="topline" aria-label="Recording navigation"><a class="brand" href="./index.html">Cultural Launch Director</a><a href="./index.html">Back to the editing desk</a></nav><p class="eyebrow">Recorded result · 29 October 2026</p><h1>Qloo proposed the film references.</h1><p class="lede">Six references returned for <em>The Turn of the Screw</em>, two explicitly retained, and four written shots. The received French text is preserved below.</p><p>This is a saved result. Opening this page makes no new Qloo or model call.</p><div id="metrics" class="metrics"></div></header>
+<main>
+<p id="loadStatus" role="status" aria-live="polite">Reading the preserved result…</p>
+<div id="received" hidden>
+<section class="panel" aria-labelledby="referencesHeading"><h2 id="referencesHeading">What Qloo returned</h2><p id="choice" class="muted"></p><ol id="references" class="references"></ol><p class="muted">Affinities are relative to this query. They do not measure reader response, trailer quality or sales.</p></section>
+<section class="panel" aria-labelledby="shotsHeading"><h2 id="shotsHeading">The four-shot brief</h2><p class="muted">Native writing: French. Visuals and captions are editorial text from the local model. Reference links document the received source; they do not prove that a film caused a creative choice.</p><ol id="shots" class="shots" lang="fr"></ol></section>
+<section class="panel review" aria-labelledby="reviewHeading"><h2 id="reviewHeading">Editorial review remains open</h2><p><strong>The execution completed; the original writing still needs review.</strong> The English synopsis produced French writing. A typo and an overly certain caption are preserved in the recording and called out here.</p><ul id="reviewNotes"></ul><p>Proposed corrections are separate editorial suggestions. They have not replaced the received text, and no trailer was rendered from this run.</p></section>
+<section class="panel" aria-labelledby="provenanceHeading"><h2 id="provenanceHeading">Read or keep the evidence</h2><p><a href="./recordings/qloo-proposed-20261029.json" download>Download this recorded public document</a> · <a href="./recordings/qloo-proposed-20261029-manifest.json" download>Download its manifest</a></p><p><a href="./index.html">The 20 October example and its editing desk remain available separately.</a></p><details><summary>Recording identity and scope</summary><pre id="provenance"></pre></details></section>
+</div>
+</main><footer>One recorded integration case. No human preference study, commercial benefit, full canon validation or future live availability is established by this result.</footer>
+<script type="module">
+const get=id=>document.getElementById(id);
+const element=(tag,text,cls)=>{const node=document.createElement(tag);node.textContent=text;if(cls)node.className=cls;return node;};
+const base=new URL('./recordings/',location.href);
+async function readFile(name){const response=await fetch(new URL(name,base),{credentials:'omit',redirect:'error',cache:'no-store'});if(!response.ok)throw Error('Recording file unavailable.');return response;}
+try{
+ const manifest=await (await readFile('qloo-proposed-20261029-manifest.json')).json();
+ if(manifest.kind!=='recorded_authentic_qloo_proposal_manifest'||manifest.recording!=='qloo-proposed-20261029.json')throw Error('Unexpected recording manifest.');
+ const bytes=await (await readFile(manifest.recording)).arrayBuffer();
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),n=>n.toString(16).padStart(2,'0')).join('');
+ if(hash!==manifest.sha256||bytes.byteLength!==manifest.bytes)throw Error('The recording bytes differ from the manifest.');
+ const capture=JSON.parse(new TextDecoder().decode(bytes)),doc=capture.document;
+ if(capture.kind!=='recorded_authentic_qloo_proposal'||capture.source_commit!==manifest.source_commit||capture.source_run_id!==manifest.source_run_id||doc.run_id!==manifest.source_run_id||doc.workflow_status!=='ok'||doc.qloo_api_verified!==true||doc.brief.shots.length!==4)throw Error('Recording provenance does not match.');
+ const selected=new Set(doc.movie_selection.adopted_entity_ids);
+ const candidates=doc.movie_selection.original_proposal.candidates;
+ const names=new Map(candidates.map(c=>[c.entity_id,c.name]));
+ for(const text of ['38 seconds','16:9','Sound off',`${capture.metrics.qloo_requests} Qloo requests`,`${capture.metrics.native_model_calls} local model calls`,`${(capture.metrics.active_ms/1000).toFixed(1)} seconds active`])get('metrics').append(element('span',text,'tag'));
+ get('choice').textContent=capture.choice_origin;
+ for(const candidate of candidates){const row=element('li','','reference'),retained=selected.has(candidate.entity_id);row.append(element('span',String(candidate.returned_order+1),'time'),element('span',candidate.name,'reference-name'),element('span',candidate.score_value.toFixed(3),'reference-score'),element('span',retained?'Retained':'Not retained',retained?'retained':'muted'));row.querySelector('.reference-score').title=String(candidate.score_value);get('references').append(row);}
+ let start=0;
+ for(const [i,shot] of doc.brief.shots.entries()){
+  const item=element('li','','shot'),heading=element('div','','shot-heading');
+  heading.append(element('h3',`Plan ${i+1}`),element('span',`${start.toFixed(1)}–${(start+shot.duration_seconds).toFixed(1)} s`,'time'));start+=shot.duration_seconds;
+  const refs=shot.retained_entity_refs.map(id=>names.get(id)||'Unknown retained reference');
+  item.append(heading,element('blockquote',shot.on_screen_text),element('p',shot.visual_prompt,'visual'),element('p',refs.length?'Référence documentaire liée : '+refs.join(', '):'Plan éditorial, sans référence Qloo liée.','lineage'),element('p','Format, durée et absence de son : contraintes du brief. Cadrage et formulation : interprétation éditoriale.','lineage'));get('shots').append(item);
+ }
+ for(const note of capture.editorial_reservations){const row=element('li',note.observation);if(note.proposed_editorial_amendment)row.append(element('p','Separate proposal: '+note.proposed_editorial_amendment,'muted'));get('reviewNotes').append(row);}
+ get('provenance').textContent=JSON.stringify({recorded_at:capture.captured_at,original_created_at:capture.source_created_at,run_id:capture.source_run_id,source_commit:capture.source_commit,recording_sha256:hash,source_mode:doc.mode,view_kind:'recorded',first_failed_attempt_preserved:capture.first_failed_attempt,scope:manifest.scope},null,2);
+ get('loadStatus').textContent='Preserved result received. No new analysis was requested.';get('received').hidden=false;
+}catch(error){get('loadStatus').textContent='This recording could not be verified. The editing desk remains available; no live request has been sent.';get('loadStatus').dataset.state='unavailable';}
+</script>
+</body></html>
