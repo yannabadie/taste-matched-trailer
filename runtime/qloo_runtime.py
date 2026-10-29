@@ -20,7 +20,7 @@ import time
 import urllib.request
 import uuid
 
-from publish_pointer import atomic_json, publish, DEADLINE, pointer_expiry, pointer_needs_renewal, pointer_unexpired
+from publish_pointer import atomic_json, publish, DEADLINE, APPLICATION_RELEASE, pointer_expiry, pointer_needs_renewal, pointer_unexpired
 
 BASE = Path(__file__).resolve().parents[1]
 APP = BASE / "taste-matched-trailer"
@@ -41,6 +41,8 @@ PAGE_ORIGIN = "https://yannabadie.github.io"
 LOG_LIMIT = 256 * 1024
 STOP = threading.Event()
 LOG_LOCK = threading.Lock()
+EXPECTED_BACKEND_VERSION = "2.7.0-propose-confirm-20261027"
+EXPECTED_GATEWAY_VERSION = "1.2.0-movie-choice-20261027"
 
 
 def sha(path):
@@ -179,7 +181,12 @@ def backend_health():
     try:
         with urllib.request.urlopen(HOSTS["backend"] + "/api/health", timeout=3) as response:
             health = json.load(response)
-        return health.get("status") == "ok" and health.get("qloo_key_present_on_server") is True and health.get("llm_route_configured") == "guarded_qwen_18080"
+        with urllib.request.urlopen(HOSTS["gateway"] + "/api/health", timeout=3) as response:
+            gateway = json.load(response)
+        return (health.get("status") == "ok" and health.get("adapter_version") == EXPECTED_BACKEND_VERSION
+                and health.get("qloo_key_present_on_server") is True
+                and health.get("llm_route_configured") == "guarded_qwen_18080"
+                and gateway.get("status") == "ok" and gateway.get("gateway_version") == EXPECTED_GATEWAY_VERSION)
     except Exception:
         return False
 
@@ -241,7 +248,8 @@ class Supervisor:
         self.gateway_ready = False
 
     def save(self):
-        data = {"release": "2.6.3", "supervisor_pid": os.getpid(), "managed_by": LABEL,
+        data = {"release": APPLICATION_RELEASE, "source_pins_sha256": sha(BASE / "runtime/SOURCE-PINS.json"),
+                "supervisor_pid": os.getpid(), "managed_by": LABEL,
                 "components": self.roles, "backend_origin": HOSTS["backend"], "gateway_origin": HOSTS["gateway"],
                 "tunnel_url": self.url, "application_only": True, "autostart_after_user_login": True,
                 "available_before_login_or_filevault_unlock": False, "api_calls_on_start": 0, "model_calls_on_start": 0}
@@ -307,6 +315,10 @@ class Supervisor:
         metadata = json.loads(META.read_text())
         if metadata.get("managed_by") != LABEL:
             raise RuntimeError("LEGACY_PROCESSES_REQUIRE_CONTROLLED_TAKEOVER")
+        live_components = any(alive(record["pid"]) for record in metadata.get("components", {}).values())
+        if live_components and (metadata.get("release") != APPLICATION_RELEASE
+                                or metadata.get("source_pins_sha256") != sha(BASE / "runtime/SOURCE-PINS.json")):
+            raise RuntimeError("MANAGED_RELEASE_CHANGE_REQUIRES_CONTROLLED_RESTART")
         for role, record in metadata.get("components", {}).items():
             if matches(record):
                 self.roles[role] = record

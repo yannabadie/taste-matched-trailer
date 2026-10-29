@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-29T14:33:40.622181+00:00",
-  "release": "2.7.0-publication-proposal",
-  "runtime": "1.1.3-pointer-expiry",
-  "scope": "Offline isolated correction of the movie-proposal domain check: a generic urn:entity requires movie subtype; directly typed movie results remain accepted. Original bff2 first authentic result and source copy are preserved. No new supplier/native calls, deployment or runtime state change.",
+  "generated_at": "2026-10-29T16:02:54.978077+00:00",
+  "release": "2.7.0-controlled-promotion",
+  "runtime": "1.2.0-release-identity",
+  "scope": "Controlled promotion of the received fdbf503 application case, with a separate English reading aid and runtime identity gates. No new Qloo acquisition, native inference, or render is part of this change.",
   "sha256": {
     "taste-matched-trailer/public_gateway.mjs": "da9ebcef12841329712b0ae7836fbe00e300e38ce0acdce8757896765405fe05",
     "taste-matched-trailer/qloo_mcp_backend.mjs": "7f5d8569629f2197b88124e156272d715a4aca5baeb054d62f00dd202d1a7d49",
@@ -14,17 +14,19 @@
     "taste-matched-trailer/bridge/cpu_counter.py": "bcda630e2d17904b6969f9820efc7481858db5a8c6f266cd1e6291c2e0d737c7",
     "campagne-hackathon-2026-10-19/conception/CONTRATS.schema.json": "cd995049bd30e8f1c9f617df99780139dd8fa01c5d900553b48c93a545263408",
     "campagne-hackathon-2026-10-19/validation/CAS-EVALUATION.json": "a50d82b02c80dcfbfeb865146b9c98b4e680b7e3ccbfa9a94b142f3de604ca60",
-    "runtime/qloo_runtime.py": "4bf28ddea726b9983ddcff230423729fd1ef6010e2ec7633491902bd7bf69bf7",
-    "runtime/publish_pointer.py": "a4d91f8db0f2f0288b3b27089d31b5bd2970ba3309c8c6c341e3fb4dbb4a9da9",
+    "runtime/qloo_runtime.py": "72b5a4dd09af013c53f7bae7064d387e3669d1c17e029717bbfeec536ad98d18",
+    "runtime/publish_pointer.py": "cb815f6cdbe23d7987ed5e4be0075de0d4c9c901b1e6d7c6f95e08c082877320",
     "taste-matched-trailer/movie_proposal.mjs": "d4af9d060597181ac6d33ebf09a8d6f057fb1e55af0c8c1e109f2fb9c9b1c3a6",
     "index.html": "c7b03984d0bf7a5598bf4f0fd44760d9ba335606a1403f392c01bbc6cb1af788",
     "taste-matched-trailer/index.html": "c7b03984d0bf7a5598bf4f0fd44760d9ba335606a1403f392c01bbc6cb1af788",
-    "qloo-proposed-recording.html": "d19e496de53a591112521c7598d3c4c277ba9632917136c2caa54191dcc85336",
-    "taste-matched-trailer/qloo-proposed-recording.html": "d19e496de53a591112521c7598d3c4c277ba9632917136c2caa54191dcc85336",
+    "qloo-proposed-recording.html": "29b1937448f5102bc409c2ef3280d9f487d3112de672c2c4e2d067a0c984b753",
+    "taste-matched-trailer/qloo-proposed-recording.html": "29b1937448f5102bc409c2ef3280d9f487d3112de672c2c4e2d067a0c984b753",
     "recordings/qloo-proposed-20261029.json": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
     "recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76",
     "taste-matched-trailer/recordings/qloo-proposed-20261029.json": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
-    "taste-matched-trailer/recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76"
+    "taste-matched-trailer/recordings/qloo-proposed-20261029-manifest.json": "051b605808dd630941c20ab16a0a5051abc629e188c283fc6ce04cf6c60f1d76",
+    "recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593",
+    "taste-matched-trailer/recordings/qloo-proposed-20261029-en.json": "fc16a294089568ca1a0da169fb5e77cd510019c34daccbe999d0bc1c3c6ea593"
   },
   "previous_source_pins_sha256": "435a73114393e3110aaf68cc1521ef5afb110dd1e6767ed1d34935f865fd49b6",
   "candidate_manifest_sha256": "0cddb847d5ea7cf8a509b2e574cc01a83f5e4b4e1c85d185871937cd485bae3c",
@@ -37,24 +39,24 @@
     "original_export_sha256": "53b2f25bdfc431a2567ef7af4f1b9d51282ca62904a7e121dc484e1985c0435d"
   },
   "runtime_change": {
-    "reason": "Restart could delay renewal beyond public pointer expiry",
-    "patch_sha256": "02a2588048dadda2f4d94801582e14123fa299944f03e8c4770d235aae54ad93",
+    "reason": "Refuse stale backend/gateway versions and cross-source adoption of live managed PIDs; declare the actual application release.",
     "offline_tests": {
-      "targeted": 6,
+      "targeted": 5,
       "failures": 0,
-      "errors": 0
+      "errors": 0,
+      "red_failures_before_fix": 3
     },
     "application_e2e_rerun": false
   },
   "candidate_manifest_scope": "Historical2.6.3 manifest retained unchanged; not a2.6.6 native acceptance.",
   "recorded_capture_scope": "Unchanged historical2.6.3 run928; never an acceptance of2.6.6.",
-  "runtime_change_scope": "Existing1.1.3 pointer-expiry change preserved; runtime source unchanged in this release.",
+  "runtime_change_scope": "Release/source identity and both health version gates changed; five offline tests, including three failures demonstrated before the fix. No new application native run.",
   "qualification_scope": {
-    "current_source": "The13 runtime source pins match unchanged fdbf503 received on one authentic6Qloo/3nativeQwen case. The added read-only recording viewer was received locally with the actual public projection,6references/4shots,1280and320px/nooverflow; a corrupted response is refused without fallback. This is a prepared publication branch, not a deployment or global quality qualification.",
+    "current_source": "Eleven application/model/bridge/domain source pins match the received fdbf503 authentic case. Two runtime lifecycle/publisher sources changed for 2.7.0 identity; targeted offline tests received. English reading aid is separate editorial text, bound by run ID and native recording SHA; French recording bytes unchanged. Publication is pending controlled deployment.",
     "native_Qwen_2_6_4": "not_executed",
     "new_Qloo_acquisition": "not_executed",
     "historical_native_qualified_release": "2.6.3",
-    "runtime": "1.1.3-pointer-expiry",
+    "runtime": "1.2.0-release-identity",
     "native_Qwen_2_6_5": "not_executed",
     "native_Qwen_2_6_6": "not_executed",
     "recommend_full_application": "synthetic_http_and_browser_only",
@@ -70,11 +72,12 @@
   },
   "reviewed_prompt_correction_manifest_sha256": "354f413422cdf2eb262d7e0e4cac1667a01705f0f915352213b9e4a63ffa34b7",
   "candidate_stage": {
-    "kind": "publication_proposal_not_deployed",
+    "kind": "controlled_promotion_prepared",
     "source_base": "fdbf503ecf518364a02b3bc1c0cf1818e2e71088",
     "full_application_connected": true,
     "real_provider_call": true,
     "runtime_restarted": false,
-    "public_adoption": false
+    "public_adoption": false,
+    "owner_adoption": "Paperclip MAK-27 a986a032-7694-4e17-a88e-548a5738f06e"
   }
 }

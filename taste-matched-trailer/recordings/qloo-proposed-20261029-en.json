@@ -1,0 +1,31 @@
+{
+  "kind": "editorial_english_reading_aid",
+  "language": "en",
+  "source_run_id": "run-mak27-20261029-fdbf-confirm",
+  "source_sha256": "6c62f7476c56e67567ccc4a34bae45e9df10ccd483df1c8e457728966d9abd22",
+  "attribution": "Captions supplied by Claude; short visual glosses written by Codex. This is an editorial translation for reading, not native model output. The original French recording is unchanged.",
+  "shots": [
+    {
+      "id": "shot_01",
+      "caption": "Bly. A house that forgets nothing.",
+      "visual_gloss": "An aerial view of Bly, isolated in a grey, misty landscape. Dark windows appear to watch the viewer. Silent, oppressive atmosphere."
+    },
+    {
+      "id": "shot_02",
+      "caption": "She sees them. Or does she believe she does?",
+      "visual_gloss": "A close-up of the governess’s hands holding a letter tightly. Her partially visible face expresses quiet unease. Dim light casts soft shadows.",
+      "native_text_note": "The French visual prompt contains the typo “gouvernasse”; this reading aid uses the intended word “governess”. The native prompt is preserved below."
+    },
+    {
+      "id": "shot_03",
+      "caption": "The children confirm nothing. But they know.",
+      "visual_gloss": "Miles and Flora sit in an empty drawing room, avoiding the camera. The atmosphere carries a silent tension; old furniture seems to bear the weight of the past.",
+      "separate_editorial_proposal": "The children confirm nothing. What do they know?"
+    },
+    {
+      "id": "shot_04",
+      "caption": "Read it. Decide for yourself.",
+      "visual_gloss": "The governess stands beside a window, looking outside. Her silhouette is blurred and indistinct. Thickening mist erases the contours of the world beyond."
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import uuid
 
 REPOSITORY = "https://github.com/yannabadie/taste-matched-trailer.git"
 CONFIG_PATH = "director-config.json"
+APPLICATION_RELEASE = "2.7.0"
 DEADLINE = dt.datetime.fromisoformat("2026-11-17T04:45:00+00:00")
 
 
@@ -117,7 +118,7 @@ def publish(private_directory, api_base, runtime_status, acquire_lock):
         if instant >= DEADLINE:
             runtime_status = "offline"
         expiry = min(DEADLINE, instant + dt.timedelta(hours=24))
-        if current.get("api_base_url") == api_base and current.get("runtime_status") == runtime_status and current.get("release") == "2.6.3" and not pointer_needs_renewal(current, instant):
+        if current.get("api_base_url") == api_base and current.get("runtime_status") == runtime_status and current.get("release") == APPLICATION_RELEASE and not pointer_needs_renewal(current, instant):
             return {"changed": False, "config": current, "config_sha256": digest(remote_bytes)}
         # Refuse unrelated local commits; only our one pending config commit may rebase.
         ahead = git(checkout, "rev-list", "--count", "origin/main..HEAD").decode().strip()
@@ -128,7 +129,7 @@ def publish(private_directory, api_base, runtime_status, acquire_lock):
             git(checkout, "rebase", "origin/main")
         else:
             git(checkout, "merge", "--ff-only", "origin/main")
-        document = {"api_base_url": api_base, "supported_modes": ["live"], "release": "2.6.3",
+        document = {"api_base_url": api_base, "supported_modes": ["live"], "release": APPLICATION_RELEASE,
                     "revision": "runtime-" + uuid.uuid4().hex, "runtime_status": runtime_status,
                     "updated_at": instant.isoformat().replace("+00:00", "Z"),
                     "expires_at": expiry.isoformat().replace("+00:00", "Z")}

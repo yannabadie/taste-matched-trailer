@@ -15,9 +15,9 @@
 <p id="loadStatus" role="status" aria-live="polite">Reading the preserved result…</p>
 <div id="received" hidden>
 <section class="panel" aria-labelledby="referencesHeading"><h2 id="referencesHeading">What Qloo returned</h2><p id="choice" class="muted"></p><ol id="references" class="references"></ol><p class="muted">Affinities are relative to this query. They do not measure reader response, trailer quality or sales.</p></section>
-<section class="panel" aria-labelledby="shotsHeading"><h2 id="shotsHeading">The four-shot brief</h2><p class="muted">Native writing: French. Visuals and captions are editorial text from the local model. Reference links document the received source; they do not prove that a film caused a creative choice.</p><ol id="shots" class="shots" lang="fr"></ol></section>
+<section class="panel" aria-labelledby="shotsHeading"><h2 id="shotsHeading">The four-shot brief</h2><p class="muted" id="readingAid">English reading aid — editorial translation by Claude and Codex, not native model output. The original French text is preserved under each shot and in the download. Reference links document the received source; they do not prove that a film caused a creative choice.</p><ol id="shots" class="shots"></ol></section>
 <section class="panel review" aria-labelledby="reviewHeading"><h2 id="reviewHeading">Editorial review remains open</h2><p><strong>The execution completed; the original writing still needs review.</strong> The English synopsis produced French writing. A typo and an overly certain caption are preserved in the recording and called out here.</p><ul id="reviewNotes"></ul><p>Proposed corrections are separate editorial suggestions. They have not replaced the received text, and no trailer was rendered from this run.</p></section>
-<section class="panel" aria-labelledby="provenanceHeading"><h2 id="provenanceHeading">Read or keep the evidence</h2><p><a href="./recordings/qloo-proposed-20261029.json" download>Download this recorded public document</a> · <a href="./recordings/qloo-proposed-20261029-manifest.json" download>Download its manifest</a></p><p><a href="./index.html">The 20 October example and its editing desk remain available separately.</a></p><details><summary>Recording identity and scope</summary><pre id="provenance"></pre></details></section>
+<section class="panel" aria-labelledby="provenanceHeading"><h2 id="provenanceHeading">Read or keep the evidence</h2><p><a href="./recordings/qloo-proposed-20261029.json" download>Download this recorded public document</a> · <a href="./recordings/qloo-proposed-20261029-manifest.json" download>Download its manifest</a> · <a href="./recordings/qloo-proposed-20261029-en.json" download>Download the separate English reading aid</a></p><p><a href="./index.html">The 20 October example and its editing desk remain available separately.</a></p><details><summary>Recording identity and scope</summary><pre id="provenance"></pre></details></section>
 </div>
 </main><footer>One recorded integration case. No human preference study, commercial benefit, full canon validation or future live availability is established by this result.</footer>
 <script type="module">
@@ -33,6 +33,10 @@ try{
  if(hash!==manifest.sha256||bytes.byteLength!==manifest.bytes)throw Error('The recording bytes differ from the manifest.');
  const capture=JSON.parse(new TextDecoder().decode(bytes)),doc=capture.document;
  if(capture.kind!=='recorded_authentic_qloo_proposal'||capture.source_commit!==manifest.source_commit||capture.source_run_id!==manifest.source_run_id||doc.run_id!==manifest.source_run_id||doc.workflow_status!=='ok'||doc.qloo_api_verified!==true||doc.brief.shots.length!==4)throw Error('Recording provenance does not match.');
+ const aid=await (await readFile('qloo-proposed-20261029-en.json')).json();
+ if(aid.kind!=='editorial_english_reading_aid'||aid.source_run_id!==capture.source_run_id||aid.source_sha256!==hash||!Array.isArray(aid.shots)||aid.shots.length!==4)throw Error('Reading aid provenance does not match.');
+ const translations=new Map(aid.shots.map(shot=>[shot.id,shot]));
+ if(translations.size!==4||doc.brief.shots.some(shot=>!translations.has(shot.id)))throw Error('Reading aid shot identity does not match.');
  const selected=new Set(doc.movie_selection.adopted_entity_ids);
  const candidates=doc.movie_selection.original_proposal.candidates;
  const names=new Map(candidates.map(c=>[c.entity_id,c.name]));
@@ -41,10 +45,15 @@ try{
  for(const candidate of candidates){const row=element('li','','reference'),retained=selected.has(candidate.entity_id);row.append(element('span',String(candidate.returned_order+1),'time'),element('span',candidate.name,'reference-name'),element('span',candidate.score_value.toFixed(3),'reference-score'),element('span',retained?'Retained':'Not retained',retained?'retained':'muted'));row.querySelector('.reference-score').title=String(candidate.score_value);get('references').append(row);}
  let start=0;
  for(const [i,shot] of doc.brief.shots.entries()){
+  const translation=translations.get(shot.id);
   const item=element('li','','shot'),heading=element('div','','shot-heading');
-  heading.append(element('h3',`Plan ${i+1}`),element('span',`${start.toFixed(1)}–${(start+shot.duration_seconds).toFixed(1)} s`,'time'));start+=shot.duration_seconds;
+  heading.append(element('h3',`Shot ${i+1}`),element('span',`${start.toFixed(1)}–${(start+shot.duration_seconds).toFixed(1)} s`,'time'));start+=shot.duration_seconds;
   const refs=shot.retained_entity_refs.map(id=>names.get(id)||'Unknown retained reference');
-  item.append(heading,element('blockquote',shot.on_screen_text),element('p',shot.visual_prompt,'visual'),element('p',refs.length?'Référence documentaire liée : '+refs.join(', '):'Plan éditorial, sans référence Qloo liée.','lineage'),element('p','Format, durée et absence de son : contraintes du brief. Cadrage et formulation : interprétation éditoriale.','lineage'));get('shots').append(item);
+  item.append(heading,element('blockquote',translation.caption),element('p',translation.visual_gloss,'visual'));
+  if(translation.native_text_note)item.append(element('p',translation.native_text_note,'muted'));
+  if(translation.separate_editorial_proposal)item.append(element('p','Separate editorial proposal, not applied to the recording: '+translation.separate_editorial_proposal,'muted'));
+  item.append(element('p',refs.length?'Documentary reference linked: '+refs.join(', '):'Editorial shot, with no linked Qloo reference.','lineage'),element('p','Format, duration and sound off: brief constraints. Framing and wording: editorial interpretation.','lineage'));
+  const native=element('details',''),nativeBody=element('div','');nativeBody.lang='fr';nativeBody.append(element('blockquote',shot.on_screen_text),element('p',shot.visual_prompt,'visual'));native.append(element('summary','Original French text — unchanged'),nativeBody);item.append(native);get('shots').append(item);
  }
  for(const note of capture.editorial_reservations){const row=element('li',note.observation);if(note.proposed_editorial_amendment)row.append(element('p','Separate proposal: '+note.proposed_editorial_amendment,'muted'));get('reviewNotes').append(row);}
  get('provenance').textContent=JSON.stringify({recorded_at:capture.captured_at,original_created_at:capture.source_created_at,run_id:capture.source_run_id,source_commit:capture.source_commit,recording_sha256:hash,source_mode:doc.mode,view_kind:'recorded',first_failed_attempt_preserved:capture.first_failed_attempt,scope:manifest.scope},null,2);
