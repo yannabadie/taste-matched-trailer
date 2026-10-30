@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://commons-huntington-socket-influence.trycloudflare.com",
+  "api_base_url": "https://chronic-joint-election-here.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-05cc8cfd0e4a4e8b976c33ba37c0582f",
+  "revision": "runtime-9881672c22b040acbd1fdd6022f6a6cf",
   "runtime_status": "ready",
-  "updated_at": "2026-10-30T15:33:10.879566Z",
-  "expires_at": "2026-10-31T15:33:10.879566Z"
+  "updated_at": "2026-10-30T16:05:20.509593Z",
+  "expires_at": "2026-10-31T16:05:20.509593Z"
 }
