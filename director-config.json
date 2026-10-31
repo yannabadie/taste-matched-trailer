@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://chronic-joint-election-here.trycloudflare.com",
+  "api_base_url": "https://alike-border-approach-static.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-0bc084e0e1b044acb7bfe63e4140bd65",
+  "revision": "runtime-791471f6433a4455910f07e082a43854",
   "runtime_status": "ready",
-  "updated_at": "2026-10-30T19:54:28.835518Z",
-  "expires_at": "2026-10-31T19:54:28.835518Z"
+  "updated_at": "2026-10-31T08:10:42.010355Z",
+  "expires_at": "2026-11-01T08:10:42.010355Z"
 }
