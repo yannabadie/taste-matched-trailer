@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://alike-border-approach-static.trycloudflare.com",
+  "api_base_url": "https://blair-cooler-sept-twins.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-19a64b99e6db4b958c6bb78207caa24a",
+  "revision": "runtime-fa764254d9474417b317d228dfae3ecd",
   "runtime_status": "ready",
-  "updated_at": "2026-10-31T18:55:32.114766Z",
-  "expires_at": "2026-11-01T18:55:32.114766Z"
+  "updated_at": "2026-11-01T08:10:50.138569Z",
+  "expires_at": "2026-11-02T08:10:50.138569Z"
 }
