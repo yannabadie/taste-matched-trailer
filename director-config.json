@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://blair-cooler-sept-twins.trycloudflare.com",
+  "api_base_url": "https://ten-albert-satin-link.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-bf73889be3644e2b83382f60f5c75c64",
+  "revision": "runtime-513c6349e584453bb0a3ce656c95399e",
   "runtime_status": "ready",
-  "updated_at": "2026-11-01T16:44:35.169342Z",
-  "expires_at": "2026-11-02T16:44:35.169342Z"
+  "updated_at": "2026-11-02T08:10:56.674556Z",
+  "expires_at": "2026-11-03T08:10:56.674556Z"
 }
