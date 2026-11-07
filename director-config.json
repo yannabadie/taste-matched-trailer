@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://twins-respective-struct-advocacy.trycloudflare.com",
+  "api_base_url": "https://livecam-asks-represent-nav.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-1fd4df25c10d4fa3986c484b81666179",
+  "revision": "runtime-23361f13f1e344d0953cf6060757cc44",
   "runtime_status": "ready",
-  "updated_at": "2026-11-06T21:25:01.475163Z",
-  "expires_at": "2026-11-07T21:25:01.475163Z"
+  "updated_at": "2026-11-07T08:11:24.379576Z",
+  "expires_at": "2026-11-08T08:11:24.379576Z"
 }
