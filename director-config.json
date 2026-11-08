@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://livecam-asks-represent-nav.trycloudflare.com",
+  "api_base_url": "https://emails-heavy-soviet-premier.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-b4a71cff1ed849b48e2fc6ababc8151d",
+  "revision": "runtime-617a59dbb5374d2fb0d0b89477636774",
   "runtime_status": "ready",
-  "updated_at": "2026-11-07T15:11:29.012993Z",
-  "expires_at": "2026-11-08T15:11:29.012993Z"
+  "updated_at": "2026-11-08T08:11:31.846718Z",
+  "expires_at": "2026-11-09T08:11:31.846718Z"
 }
