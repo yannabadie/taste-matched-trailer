@@ -1,11 +1,11 @@
 {
-  "api_base_url": "https://emails-heavy-soviet-premier.trycloudflare.com",
+  "api_base_url": "https://yarn-apr-injuries-voltage.trycloudflare.com",
   "supported_modes": [
     "live"
   ],
   "release": "2.7.0",
-  "revision": "runtime-bd57a4dcc89e45d68632c0fbaa15cdae",
-  "runtime_status": "offline",
-  "updated_at": "2026-11-16T16:25:57.923076Z",
+  "revision": "runtime-ef27e142103f45a495615a9e20907a71",
+  "runtime_status": "ready",
+  "updated_at": "2026-11-16T16:26:50.205568Z",
   "expires_at": "2026-11-17T04:45:00Z"
 }
